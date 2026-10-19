@@ -4,7 +4,7 @@ This project uses Expo SDK 58. Read the exact versioned docs at https://docs.exp
 
 # Project conventions
 
-- Read `docs/ARQUITETURA.md` first: it holds the architecture, the decisions already made with the user, and the staged plan.
+- Read `docs/briefing-produto.md` (product spec), `docs/roteiro-fases.md` (phase order) and `docs/decisoes.md` (decision log) first. `docs/ARQUITETURA.md` is the earlier architecture history.
 - `src/domain/` is pure TypeScript: no React, Expo or SQLite imports. Business rules live here, with tests.
 - Screens never touch SQL: they go through the repositories in `src/data/repositories/` (via `useQuery` / `useRepositories`).
 - Every repository write goes through `ctx.write(...)` and emits the changed tables on the bus.
