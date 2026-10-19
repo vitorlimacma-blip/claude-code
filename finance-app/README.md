@@ -18,22 +18,19 @@ O app roda no navegador do seu PC com o **mesmo código** da versão de celular.
 que for refinado aqui vai pronto para o iPhone e o Android.
 
 1. **Uma vez só:** instale o [Node.js LTS](https://nodejs.org) e o
-   [Git](https://git-scm.com).
-2. **Baixe o código e instale as dependências** (uma vez só):
+   [Git](https://git-scm.com) e baixe o código:
    ```bash
    git clone https://github.com/vitorlimacma-blip/claude-code.git
    cd claude-code
    git checkout claude/finance-ai-app-e6keyb
-   cd finance-app
-   npm install
    ```
-3. **Para abrir o app**, na pasta `finance-app`:
+2. **Para abrir o app**, sempre o mesmo comando, na pasta `finance-app`:
    ```bash
-   npm run web
+   node run.js
    ```
-   O app abre no navegador em **http://localhost:8081**. Use Chrome ou Edge.
-4. **Para atualizar** quando houver uma versão nova: `git pull`, depois `npm install`
-   e `npm run web`.
+   O comando busca a versão mais nova do código, instala o que for preciso (demora
+   alguns minutos só na primeira vez) e abre o app em **http://localhost:8081**. Use
+   Chrome ou Edge. Para fechar, aperte `Ctrl+C` no terminal.
 
 **Ativando a IA:** vá em **Ajustes › Inteligência artificial**, escolha **Claude** ou
 **ChatGPT** e cole a sua chave de API:
