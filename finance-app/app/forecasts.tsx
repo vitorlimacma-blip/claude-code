@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { fromDateKey, startOfYearKey } from '../../src/domain/dates';
-import { formatCents } from '../../src/domain/money';
-import { buildMonthOverview } from '../../src/domain/overview';
-import { useQuery } from '../../src/state/useQuery';
-import { useToday } from '../../src/state/useToday';
-import { Card, MutedText, Screen, Title } from '../../src/ui/components';
-import { useTheme } from '../../src/ui/theme';
+import { fromDateKey, startOfYearKey } from '../src/domain/dates';
+import { formatCents } from '../src/domain/money';
+import { buildMonthOverview } from '../src/domain/overview';
+import { useQuery } from '../src/state/useQuery';
+import { useToday } from '../src/state/useToday';
+import { Card, MutedText, Screen } from '../src/ui/components';
+import { useTheme } from '../src/ui/theme';
 
 export default function ForecastsScreen() {
   const theme = useTheme();
@@ -16,7 +16,7 @@ export default function ForecastsScreen() {
     async (r) => {
       const [categories, transactions] = await Promise.all([
         r.categories.list({ kind: 'expense' }),
-        r.transactions.list({ from: startOfYearKey(fromDateKey(today)), to: today, type: 'expense' }),
+        r.transactions.list({ from: startOfYearKey(fromDateKey(today)), to: today }),
       ]);
       return { categories, transactions };
     },
@@ -34,7 +34,6 @@ export default function ForecastsScreen() {
 
   return (
     <Screen>
-      <Title>Previsões</Title>
       <MutedText>
         Projeção linear: supõe que o ritmo de gastos observado até hoje continua até o fim do período. Na Etapa 6, a IA
         passa a considerar despesas recorrentes e faturas.

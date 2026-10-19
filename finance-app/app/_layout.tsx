@@ -32,6 +32,8 @@ export default function RootLayout() {
             <Stack.Screen name="accounts" options={{ title: 'Contas e cartões' }} />
             <Stack.Screen name="ai-settings" options={{ title: 'Inteligência artificial' }} />
             <Stack.Screen name="backup" options={{ title: 'Backup e restauração' }} />
+            {/* Outside the tabs: hidden tabs (href: null) can't be navigated to with js-tabs. */}
+            <Stack.Screen name="forecasts" options={{ title: 'Previsões' }} />
           </Stack>
         </AIContextProvider>
       </DataProvider>

@@ -36,8 +36,6 @@ export default function TabsLayout() {
       <Tabs.Screen name="assistant" options={{ title: 'Assistente', tabBarIcon: tabIcon('sparkles-outline') }} />
       <Tabs.Screen name="categories" options={{ title: 'Categorias', tabBarIcon: tabIcon('pricetags-outline') }} />
       <Tabs.Screen name="settings" options={{ title: 'Ajustes', tabBarIcon: tabIcon('settings-outline') }} />
-      {/* Reached from the dashboard, not from the tab bar (5 tabs is the most a phone fits well). */}
-      <Tabs.Screen name="forecasts" options={{ title: 'Previsões', href: null }} />
     </Tabs>
   );
 }
