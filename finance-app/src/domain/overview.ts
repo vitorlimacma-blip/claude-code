@@ -1,13 +1,14 @@
 import { computeMonthlyAlert, sortBySeverityDesc } from './alerts';
 import { groupByCategoryTree } from './categories';
 import { fromDateKey } from './dates';
-import { computeCategoryForecast, sumCents } from './forecast';
+import { computeCategoryForecast } from './forecast';
+import { resultEffect, summarizePeriod } from './ledger';
 import type { Category, CategoryMonthlyAlert, Cents, DateKey, ForecastPoint, Transaction } from './types';
 
 export interface MonthOverview {
   spent: Cents;
   income: Cents;
-  /** income - spent; transfers between own accounts don't count. */
+  /** income - spent; transfers, card payments and investment moves don't count (see ledger.ts). */
   balance: Cents;
   uncategorizedCount: number;
   /** One alert per category that has a budget, most severe first. */
@@ -34,11 +35,11 @@ export function buildMonthOverview(input: {
   const monthPrefix = today.slice(0, 7);
 
   const monthTx = transactions.filter((t) => t.date.startsWith(monthPrefix) && t.date <= today);
-  const spent = sumCents(monthTx.filter((t) => t.type === 'expense'));
-  const income = sumCents(monthTx.filter((t) => t.type === 'income'));
-  const uncategorizedCount = monthTx.filter(
-    (t) => (t.type === 'expense' || t.type === 'income') && t.categoryId === null
-  ).length;
+  const totals = summarizePeriod(monthTx);
+  const uncategorizedCount = monthTx.filter((t) => {
+    const effect = resultEffect(t);
+    return (effect === 'income' || effect === 'expense') && t.categoryId === null;
+  }).length;
 
   const grouped = groupByCategoryTree(categories, transactions);
   const byId = new Map(categories.map((c) => [c.id, c]));
@@ -67,9 +68,9 @@ export function buildMonthOverview(input: {
     .sort((a, b) => b.projectedMonthTotal - a.projectedMonthTotal);
 
   return {
-    spent,
-    income,
-    balance: income - spent,
+    spent: totals.expenses,
+    income: totals.income,
+    balance: totals.result,
     uncategorizedCount,
     alerts: sortBySeverityDesc(alerts),
     forecasts,

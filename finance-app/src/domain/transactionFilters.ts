@@ -1,4 +1,5 @@
 import { rootCategoryIds } from './categories';
+import { isTransferNature, resultDelta } from './ledger';
 import type { Category, Cents, PaymentMethod, Transaction } from './types';
 
 /** Stands for "Sem categoria" in the category filter. */
@@ -27,9 +28,9 @@ export function toggleValue<T>(values: T[], value: T): T[] {
   return values.includes(value) ? values.filter((v) => v !== value) : [...values, value];
 }
 
-const isTransfer = (t: Pick<Transaction, 'type'>) => t.type === 'transfer_in' || t.type === 'transfer_out';
-
-export function applyTransactionFilters<T extends Pick<Transaction, 'type' | 'categoryId' | 'paymentMethod' | 'accountId'>>(
+export function applyTransactionFilters<
+  T extends Pick<Transaction, 'type' | 'nature' | 'categoryId' | 'paymentMethod' | 'accountId'>,
+>(
   transactions: T[],
   filters: TransactionFilters,
   categories: Category[]
@@ -47,7 +48,7 @@ export function applyTransactionFilters<T extends Pick<Transaction, 'type' | 'ca
     if (wantedCategories.size > 0) {
       // Transfers between own accounts have no category by design, so a
       // category filter (even "Sem categoria") never matches them.
-      if (isTransfer(t)) return false;
+      if (isTransferNature(t.nature)) return false;
       if (t.categoryId === null) return wantsUncategorized;
       // A category deleted since is shown as "Sem categoria" in the list.
       const root = roots.get(t.categoryId);
@@ -59,18 +60,19 @@ export function applyTransactionFilters<T extends Pick<Transaction, 'type' | 'ca
 
 export interface FilteredSummary {
   count: number;
-  /** Incomes minus expenses; transfers between own accounts don't change the total. */
+  /** Incomes minus spending (net of refunds), by the ledger's rules. */
   total: Cents;
+  /** Rows that don't change the total: transfers, card payments, investment moves, yields, adjustments. */
   transferCount: number;
 }
 
-export function summarizeTransactions(transactions: Pick<Transaction, 'type' | 'amount'>[]): FilteredSummary {
+export function summarizeTransactions(transactions: Pick<Transaction, 'type' | 'nature' | 'amount'>[]): FilteredSummary {
   let total = 0;
   let transferCount = 0;
   for (const t of transactions) {
-    if (t.type === 'income') total += t.amount;
-    else if (t.type === 'expense') total -= t.amount;
-    else transferCount++;
+    const delta = resultDelta(t);
+    if (delta === 0) transferCount++;
+    total += delta;
   }
   return { count: transactions.length, total, transferCount };
 }

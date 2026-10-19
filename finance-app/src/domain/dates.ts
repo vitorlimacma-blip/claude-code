@@ -18,11 +18,10 @@ export function daysInYear(year: number): number {
   return isLeapYear(year) ? 366 : 365;
 }
 
-/** 1-indexed day-of-year for the given date. */
+/** 1-indexed day-of-year for the given date. Counted in UTC so a daylight-saving change can't lose a day. */
 export function dayOfYear(date: Date): number {
-  const start = new Date(date.getFullYear(), 0, 1);
-  const diff = date.getTime() - start.getTime();
-  return Math.floor(diff / 86_400_000) + 1;
+  const diff = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 1);
+  return diff / 86_400_000 + 1;
 }
 
 export function startOfMonthKey(date: Date): string {
@@ -90,4 +89,38 @@ export function addMonths(monthKey: string, delta: number): string {
 export function monthRange(monthKey: string): { from: string; to: string } {
   const [y, m] = monthKey.split('-').map(Number);
   return { from: `${monthKey}-01`, to: `${monthKey}-${String(daysInMonth(y, m - 1)).padStart(2, '0')}` };
+}
+
+/** Time zone dates are interpreted in unless the user picks another (decision D-009). */
+export const DEFAULT_TIME_ZONE = 'America/Sao_Paulo';
+
+/**
+ * Today's date key in `timeZone`, regardless of the device's own zone, so
+ * "today" doesn't jump a day early or late around midnight. Falls back to the
+ * device zone if the runtime lacks time zone data.
+ */
+export function todayKey(now: Date = new Date(), timeZone: string = DEFAULT_TIME_ZONE): string {
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
+      .formatToParts(now)
+      .reduce<Record<string, string>>((acc, p) => ({ ...acc, [p.type]: p.value }), {});
+    if (parts.year && parts.month && parts.day) return `${parts.year}-${parts.month}-${parts.day}`;
+  } catch {
+    // Fall through to the device zone.
+  }
+  return toDateKey(now);
+}
+
+/** Same day `delta` months later, clamped to the month's last day (Jan 31 + 1 -> Feb 28/29). */
+export function addMonthsToDateKey(key: string, delta: number): string {
+  const [y, m, d] = key.split('-').map(Number);
+  const first = new Date(y, m - 1 + delta, 1);
+  const day = Math.min(d, daysInMonth(first.getFullYear(), first.getMonth()));
+  return toDateKey(new Date(first.getFullYear(), first.getMonth(), day));
+}
+
+/** Day `day` of a YYYY-MM month, clamped to the month's last day. */
+export function dayOfMonthKey(monthKey: string, day: number): string {
+  const [y, m] = monthKey.split('-').map(Number);
+  return `${monthKey}-${String(Math.min(day, daysInMonth(y, m - 1))).padStart(2, '0')}`;
 }

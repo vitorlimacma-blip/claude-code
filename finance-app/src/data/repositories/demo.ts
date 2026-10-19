@@ -1,5 +1,6 @@
 import { like, or, sql } from 'drizzle-orm';
 import { DEMO_PREFIX, generateDemoData } from '../../domain/demoData';
+import { invoiceMonthFor } from '../../domain/ledger';
 import { normalizeMerchant } from '../../domain/merchant';
 import type { DateKey } from '../../domain/types';
 import { type RepositoryContext, timestamp } from '../context';
@@ -34,9 +35,11 @@ export function createDemoRepository(ctx: RepositoryContext) {
         await clearIn(tx);
         await tx.insert(accounts).values(data.accounts.map((a, i) => ({ ...a, ...sync, archived: false, sortOrder: i + 1 })));
         await tx.insert(budgets).values(data.budgets.map((b) => ({ ...b, ...sync, month: null })));
+        const accountById = new Map(data.accounts.map((a) => [a.id, a]));
         const rows = data.transactions.map((t) => ({
           ...t,
           ...sync,
+          invoiceMonth: t.type === 'expense' ? invoiceMonthFor(accountById.get(t.accountId), t.date) : null,
           merchant: normalizeMerchant(t.description) || null,
           categorySource: t.categoryId ? ('manual' as const) : null,
         }));

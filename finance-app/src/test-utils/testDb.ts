@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { DatabaseSync, type SQLInputValue } from 'node:sqlite';
+import { createSqliteSnapshotStore, type SnapshotStore } from '../data/backup';
 import { createRepositoryContext, type RepositoryContext, type SqlExecutor } from '../data/context';
 
 /**
  * Adapts Node's built-in SQLite (no native module to compile, so `npm install`
  * works on any machine) to the same executor interface the app uses with expo-sqlite.
  */
-function nodeSqliteExecutor(sqlite: DatabaseSync): SqlExecutor {
+export function nodeSqliteExecutor(sqlite: DatabaseSync): SqlExecutor {
   return async (sql, params, method) => {
     const statement = sqlite.prepare(sql);
     const args = params as SQLInputValue[];
@@ -26,4 +27,10 @@ export function createTestContext(options: { now?: Date } = {}): RepositoryConte
   const now = options.now ?? new Date('2026-03-10T12:00:00Z');
   const ctx = createRepositoryContext({ executor: nodeSqliteExecutor(sqlite), newId: randomUUID, now: () => now });
   return { ...ctx, sqlite };
+}
+
+/** A separate in-memory database for automatic backups, like `finance-backup.db` on device. */
+export function createTestSnapshotStore(): SnapshotStore & { sqlite: DatabaseSync } {
+  const sqlite = new DatabaseSync(':memory:');
+  return { ...createSqliteSnapshotStore(nodeSqliteExecutor(sqlite), randomUUID), sqlite };
 }

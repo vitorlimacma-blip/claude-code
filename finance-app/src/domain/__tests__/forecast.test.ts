@@ -1,8 +1,9 @@
 import { computeCategoryForecast, projectByRunRate, sumCents, transactionsInRange } from '../forecast';
 import type { TransactionAmount } from '../forecast';
+import { defaultNature } from '../ledger';
 
 function tx(partial: Partial<TransactionAmount> & Pick<TransactionAmount, 'date' | 'amount'>): TransactionAmount {
-  return { type: 'expense', ...partial };
+  return { type: 'expense', nature: defaultNature(partial.type ?? 'expense'), ...partial };
 }
 
 describe('projectByRunRate', () => {

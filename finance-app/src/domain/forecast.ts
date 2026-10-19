@@ -1,8 +1,9 @@
 import type { Cents, ForecastPoint, Transaction } from './types';
 import { daysInMonth, daysInYear, dayOfYear, startOfMonthKey, startOfYearKey, toDateKey } from './dates';
+import { netExpenses } from './ledger';
 
 /** The only transaction fields forecasts look at, so callers (and tests) can pass partial rows. */
-export type TransactionAmount = Pick<Transaction, 'type' | 'amount' | 'date'>;
+export type TransactionAmount = Pick<Transaction, 'type' | 'nature' | 'amount' | 'date'>;
 
 export function sumCents(transactions: TransactionAmount[]): Cents {
   return transactions.reduce((total, t) => total + t.amount, 0);
@@ -29,7 +30,7 @@ export function projectByRunRate(totalSoFar: Cents, daysElapsed: number, daysInP
 export interface CategoryForecastInput {
   categoryId: string;
   categoryName: string;
-  /** All expense transactions for this category (any date range is fine; will be filtered). */
+  /** Transactions of this category (any date range and nature; only spending net of refunds counts). */
   transactions: TransactionAmount[];
 }
 
@@ -41,8 +42,6 @@ export function computeCategoryForecast(
   input: CategoryForecastInput,
   referenceDate: Date
 ): ForecastPoint {
-  const expenses = input.transactions.filter((t) => t.type === 'expense');
-
   const todayKey = toDateKey(referenceDate);
   const monthKey = startOfMonthKey(referenceDate);
   const yearKey = startOfYearKey(referenceDate);
@@ -52,8 +51,8 @@ export function computeCategoryForecast(
   const daysElapsedInYear = dayOfYear(referenceDate);
   const totalDaysInYear = daysInYear(referenceDate.getFullYear());
 
-  const monthSpentSoFar = sumCents(transactionsInRange(expenses, monthKey, todayKey));
-  const yearSpentSoFar = sumCents(transactionsInRange(expenses, yearKey, todayKey));
+  const monthSpentSoFar = netExpenses(transactionsInRange(input.transactions, monthKey, todayKey));
+  const yearSpentSoFar = netExpenses(transactionsInRange(input.transactions, yearKey, todayKey));
 
   const dailyAverage = daysElapsedInMonth > 0 ? Math.round(monthSpentSoFar / daysElapsedInMonth) : 0;
   const projectedMonthTotal = projectByRunRate(monthSpentSoFar, daysElapsedInMonth, totalDaysInMonth);

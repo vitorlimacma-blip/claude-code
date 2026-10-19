@@ -4,7 +4,9 @@ import {
   ACCOUNT_TYPES,
   CATEGORY_KINDS,
   CATEGORY_SOURCES,
+  DEFAULT_CURRENCY,
   PAYMENT_METHODS,
+  TRANSACTION_NATURES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
 } from '../domain/types';
@@ -35,6 +37,8 @@ export const accounts = sqliteTable('accounts', {
   creditLimit: integer('credit_limit'),
   closingDay: integer('closing_day'),
   dueDay: integer('due_day'),
+  paymentAccountId: text('payment_account_id'),
+  currency: text('currency').notNull().default(DEFAULT_CURRENCY),
   archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
   sortOrder: integer('sort_order').notNull().default(0),
 });
@@ -72,8 +76,15 @@ export const transactions = sqliteTable(
     accountId: text('account_id').notNull(),
     categoryId: text('category_id'),
     type: text('type', { enum: TRANSACTION_TYPES }).notNull(),
+    // Existing rows get their real nature from `applyDataMigrations` in setup.ts.
+    nature: text('nature', { enum: TRANSACTION_NATURES }).notNull().default('expense'),
     amount: integer('amount').notNull(),
+    currency: text('currency').notNull().default(DEFAULT_CURRENCY),
     date: text('date').notNull(),
+    competenceMonth: text('competence_month'),
+    dueDate: text('due_date'),
+    settledDate: text('settled_date'),
+    refundOfId: text('refund_of_id'),
     description: text('description').notNull().default(''),
     merchant: text('merchant'),
     notes: text('notes').notNull().default(''),
@@ -95,6 +106,7 @@ export const transactions = sqliteTable(
     index('transactions_account_date_idx').on(t.accountId, t.date),
     index('transactions_category_idx').on(t.categoryId),
     index('transactions_fingerprint_idx').on(t.fingerprint),
+    index('transactions_refund_of_idx').on(t.refundOfId),
     index('transactions_live_idx').on(t.deletedAt).where(sql`${t.deletedAt} IS NULL`),
   ]
 );

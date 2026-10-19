@@ -24,3 +24,20 @@ describe('money', () => {
     expect(formatCents(123456).replace(/\s/g, ' ')).toBe('R$ 1.234,56');
   });
 });
+
+describe('parseAmountToCents without floating point', () => {
+  it.each([
+    ['0,1', 10],
+    ['0,07', 7],
+    ['1,005', 101], // half up on the third decimal
+    ['1,004', 100],
+    ['R$ 2.345,67', 234567],
+    ['19,99', 1999], // 19.99 * 100 is 1998.9999… in floating point
+    ['1.234.567,89', 123456789],
+    [',5', 50],
+    ['1,2,3', 0],
+    ['-5', 0], // signs are handled by parseSignedAmountToCents
+  ])('%s -> %i', (input, cents) => {
+    expect(parseAmountToCents(input)).toBe(cents);
+  });
+});

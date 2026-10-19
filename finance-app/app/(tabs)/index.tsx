@@ -5,6 +5,7 @@ import { formatMonthBR, startOfYearKey, fromDateKey } from '../../src/domain/dat
 import { ACCOUNT_TYPE_ICONS } from '../../src/domain/labels';
 import { findInstitution } from '../../src/domain/institutions';
 import { formatCents } from '../../src/domain/money';
+import { summarizeBalances } from '../../src/domain/ledger';
 import { buildMonthOverview } from '../../src/domain/overview';
 import { useQuery } from '../../src/state/useQuery';
 import { useToday } from '../../src/state/useToday';
@@ -45,7 +46,8 @@ export default function DashboardScreen() {
   if (!data || !overview) return <Screen>{null}</Screen>;
 
   const threats = overview.alerts.filter((a) => a.level !== 'ok');
-  const total = data.accounts.reduce((sum, a) => sum + (data.balances.get(a.id) ?? 0), 0);
+  // Same number as before (cards count as debt, limits never count); the split view comes in Fase 4.
+  const total = summarizeBalances(data.accounts, data.balances).netWorth;
 
   return (
     <Screen>

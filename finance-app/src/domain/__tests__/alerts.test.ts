@@ -7,7 +7,7 @@ function input(budget: number, transactions: TransactionAmount[]) {
 }
 
 function tx(date: string, amount: number): TransactionAmount {
-  return { type: 'expense', amount, date };
+  return { type: 'expense', nature: 'expense', amount, date };
 }
 
 // Reference date: March 10, 2026 -> 10 days elapsed, 31 days in March.
@@ -52,8 +52,8 @@ describe('computeMonthlyAlert', () => {
 
   it('ignores income and transfers', () => {
     const transactions: TransactionAmount[] = [
-      { type: 'income', amount: 50000, date: '2026-03-01' },
-      { type: 'transfer_out', amount: 50000, date: '2026-03-02' },
+      { type: 'income', nature: 'income', amount: 50000, date: '2026-03-01' },
+      { type: 'transfer_out', nature: 'transfer', amount: 50000, date: '2026-03-02' },
     ];
     expect(computeMonthlyAlert(input(10000, transactions), referenceDate).spentSoFar).toBe(0);
   });

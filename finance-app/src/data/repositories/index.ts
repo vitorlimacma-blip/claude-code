@@ -1,5 +1,7 @@
+import type { SnapshotStore } from '../backup';
 import type { RepositoryContext } from '../context';
 import { createAccountsRepository } from './accounts';
+import { createBackupRepository } from './backup';
 import { createBudgetsRepository } from './budgets';
 import { createCategoriesRepository } from './categories';
 import { createDemoRepository } from './demo';
@@ -11,13 +13,15 @@ import { createTransactionsRepository } from './transactions';
  * these repositories, never to SQL, so the storage (local SQLite today, a
  * synced or server-backed store later) can change behind them.
  */
-export function createRepositories(ctx: RepositoryContext) {
+export function createRepositories(ctx: RepositoryContext, options: { backups?: SnapshotStore } = {}) {
   return {
     accounts: createAccountsRepository(ctx),
     categories: createCategoriesRepository(ctx),
     budgets: createBudgetsRepository(ctx),
     transactions: createTransactionsRepository(ctx),
     settings: createSettingsRepository(ctx),
+    /** Export/import and automatic backups (kept in a separate database). */
+    backup: createBackupRepository(ctx, options.backups),
     /** Fictitious data for testing the app (Ajustes › Dados de teste). */
     demo: createDemoRepository(ctx),
     /** Subscribe to data changes (used by the `useQuery` hook to refresh screens). */
@@ -29,4 +33,11 @@ export type Repositories = ReturnType<typeof createRepositories>;
 
 export type { NewAccountInput, AccountPatch } from './accounts';
 export type { NewCategoryInput, CategoryPatch } from './categories';
-export type { NewTransactionInput, NewTransferInput, TransactionFilter, TransactionPatch } from './transactions';
+export type {
+  NewInstallmentsInput,
+  NewRefundInput,
+  NewTransactionInput,
+  NewTransferInput,
+  TransactionFilter,
+  TransactionPatch,
+} from './transactions';

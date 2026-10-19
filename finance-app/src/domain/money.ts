@@ -12,9 +12,11 @@ export function formatCents(cents: Cents): string {
 /**
  * Parses a user-typed amount into integer cents. Accepts pt-BR formatting
  * ("1.234,56"), plain decimals ("1234.56"), and whole numbers ("1234").
+ * Works on the digit string, never through floating point; a third decimal
+ * digit rounds half up. Returns 0 for anything that isn't a number.
  */
 export function parseAmountToCents(input: string): Cents {
-  let s = input.trim();
+  let s = input.trim().replace(/^R\$\s*/i, '').replace(/\s/g, '');
   if (s === '') return 0;
 
   if (s.includes(',')) {
@@ -24,9 +26,13 @@ export function parseAmountToCents(input: string): Cents {
     s = s.replace(/\./g, '');
   }
 
-  const value = Number(s);
-  if (!Number.isFinite(value)) return 0;
-  return Math.round(value * 100);
+  const match = s.match(/^(\d*)(?:\.(\d*))?$/);
+  if (!match || (match[1] === '' && !match[2])) return 0;
+  const whole = match[1] || '0';
+  const fraction = (match[2] ?? '').padEnd(3, '0');
+  let cents = Number(whole) * 100 + Number(fraction.slice(0, 2));
+  if (Number(fraction[2]) >= 5) cents += 1;
+  return Number.isSafeInteger(cents) ? cents : 0;
 }
 
 /** Cents as an editable pt-BR amount without currency symbol: 123456 -> "1234,56". */

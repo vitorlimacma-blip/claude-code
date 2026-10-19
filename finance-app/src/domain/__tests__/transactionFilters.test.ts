@@ -7,6 +7,7 @@ import {
   UNCATEGORIZED,
   type TransactionFilters,
 } from '../transactionFilters';
+import { defaultNature } from '../ledger';
 import type { Category, Transaction } from '../types';
 
 const sync = { createdAt: '', updatedAt: '', deletedAt: null };
@@ -15,8 +16,8 @@ const cat = (id: string, parentId: string | null = null): Category => ({
 });
 const categories = [cat('food'), cat('food-market', 'food'), cat('food-delivery', 'food'), cat('transport')];
 
-type Row = Pick<Transaction, 'id' | 'type' | 'categoryId' | 'paymentMethod' | 'accountId' | 'amount'>;
-const rows: Row[] = [
+type Row = Pick<Transaction, 'id' | 'type' | 'nature' | 'categoryId' | 'paymentMethod' | 'accountId' | 'amount'>;
+const rows: Row[] = ([
   { id: 'market-credit', type: 'expense', categoryId: 'food-market', paymentMethod: 'credit', accountId: 'card', amount: 100 },
   { id: 'market-debit', type: 'expense', categoryId: 'food-market', paymentMethod: 'debit', accountId: 'itau', amount: 200 },
   { id: 'delivery-credit', type: 'expense', categoryId: 'food-delivery', paymentMethod: 'credit', accountId: 'card', amount: 300 },
@@ -25,7 +26,7 @@ const rows: Row[] = [
   { id: 'deleted-cat', type: 'expense', categoryId: 'gone', paymentMethod: 'debit', accountId: 'itau', amount: 600 },
   { id: 'salary', type: 'income', categoryId: null, paymentMethod: 'transfer', accountId: 'itau', amount: 10000 },
   { id: 'transfer-out', type: 'transfer_out', categoryId: null, paymentMethod: 'transfer', accountId: 'itau', amount: 700 },
-];
+] as Omit<Row, 'nature'>[]).map((r) => ({ ...r, nature: defaultNature(r.type) }));
 
 const filter = (f: Partial<TransactionFilters>) =>
   applyTransactionFilters(rows, { ...EMPTY_FILTERS, ...f }, categories).map((r) => r.id);

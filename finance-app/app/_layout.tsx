@@ -31,6 +31,7 @@ export default function RootLayout() {
             <Stack.Screen name="account/[id]" options={{ presentation: 'modal', title: 'Conta' }} />
             <Stack.Screen name="accounts" options={{ title: 'Contas e cartões' }} />
             <Stack.Screen name="ai-settings" options={{ title: 'Inteligência artificial' }} />
+            <Stack.Screen name="backup" options={{ title: 'Backup e restauração' }} />
           </Stack>
         </AIContextProvider>
       </DataProvider>

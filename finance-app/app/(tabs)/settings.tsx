@@ -3,7 +3,7 @@ import { router, type Href } from 'expo-router';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { PROVIDER_LABELS } from '../../src/ai/config';
-import { toDateKey } from '../../src/domain/dates';
+import { todayKey } from '../../src/domain/dates';
 import { confirm, notify } from '../../src/platform/dialogs';
 import { useAI } from '../../src/state/AIContext';
 import { useRepositories } from '../../src/state/DataProvider';
@@ -42,7 +42,7 @@ export default function SettingsScreen() {
     if (!ok) return;
     setBusy(true);
     try {
-      const result = await repos.demo.generate(toDateKey(new Date()));
+      const result = await repos.demo.generate(todayKey());
       notify('Dados de teste criados', `${result.transactions} lançamentos em ${result.accounts} contas.`);
     } finally {
       setBusy(false);
@@ -84,6 +84,13 @@ export default function SettingsScreen() {
           href="/accounts"
         />
         <Row icon="trending-up-outline" color="#0891B2" title="Previsões" subtitle="Projeção de gastos do mês e do ano" href="/forecasts" />
+        <Row
+          icon="shield-checkmark-outline"
+          color="#2563EB"
+          title="Backup e restauração"
+          subtitle="Exportar, restaurar e backups automáticos"
+          href="/backup"
+        />
       </Card>
 
       <SectionTitle>Dados de teste</SectionTitle>
@@ -110,7 +117,8 @@ export default function SettingsScreen() {
       </MutedText>
       {Platform.OS === 'web' && (
         <MutedText>
-          Atenção: limpar os dados de navegação deste site apaga os seus lançamentos. O backup chega na próxima etapa.
+          Atenção: limpar os dados de navegação deste site apaga os seus lançamentos e os backups automáticos.
+          Exporte seus dados em Backup e restauração e guarde o arquivo fora do navegador.
         </MutedText>
       )}
     </Screen>

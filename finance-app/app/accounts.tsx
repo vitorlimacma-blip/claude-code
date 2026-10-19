@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
-import { toDateKey } from '../src/domain/dates';
+import { todayKey } from '../src/domain/dates';
 import { findInstitution } from '../src/domain/institutions';
 import { ACCOUNT_TYPE_ICONS, ACCOUNT_TYPE_LABELS } from '../src/domain/labels';
 import { formatCents } from '../src/domain/money';
@@ -17,7 +17,7 @@ export default function AccountsScreen() {
     async (r) => {
       const [accounts, balances] = await Promise.all([
         r.accounts.list({ includeArchived: showArchived }),
-        r.accounts.balances(toDateKey(new Date())),
+        r.accounts.balances(todayKey()),
       ]);
       return { accounts, balances };
     },

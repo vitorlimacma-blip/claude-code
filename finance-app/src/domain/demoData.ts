@@ -1,5 +1,6 @@
 import { addMonths, daysInMonth, fromDateKey, monthRange, toDateKey } from './dates';
-import type { AccountType, Cents, DateKey, MonthKey, PaymentMethod, TransactionType } from './types';
+import { defaultNature, inferTransferNature } from './ledger';
+import type { AccountType, Cents, DateKey, MonthKey, PaymentMethod, TransactionNature, TransactionType } from './types';
 
 /**
  * Realistic but fictitious data for trying the app out: a Brazilian household
@@ -30,6 +31,7 @@ export interface DemoTransaction {
   accountId: string;
   categoryId: string | null;
   type: TransactionType;
+  nature: TransactionNature;
   amount: Cents;
   date: DateKey;
   description: string;
@@ -326,15 +328,18 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
     return `${month}-${String(Math.min(day, daysInMonth(y, m - 1))).padStart(2, '0')}`;
   };
 
-  function add(t: Omit<DemoTransaction, 'id' | 'transferPairId'>) {
+  function add(t: Omit<DemoTransaction, 'id' | 'transferPairId' | 'nature'>) {
     if (t.date > today) return; // never in the future
-    transactions.push({ ...t, id: id('tx'), transferPairId: null });
+    transactions.push({ ...t, id: id('tx'), nature: defaultNature(t.type), transferPairId: null });
   }
+
+  const accountType = new Map(ACCOUNTS.map((a) => [a.id, a.type]));
 
   function transfer(from: string, to: string, amount: Cents, date: DateKey, description: string) {
     if (date > today || amount <= 0) return;
     const pairId = id('pair');
-    const common = { categoryId: null, amount, date, description, paymentMethod: 'transfer' as const, transferPairId: pairId };
+    const nature = inferTransferNature(accountType.get(from), accountType.get(to));
+    const common = { categoryId: null, nature, amount, date, description, paymentMethod: 'transfer' as const, transferPairId: pairId };
     transactions.push({ ...common, id: id('tx'), accountId: from, type: 'transfer_out' });
     transactions.push({ ...common, id: id('tx'), accountId: to, type: 'transfer_in' });
   }

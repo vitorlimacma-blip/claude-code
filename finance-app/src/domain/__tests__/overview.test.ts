@@ -1,5 +1,6 @@
 import { buildMonthOverview } from '../overview';
-import type { Category, Transaction } from '../types';
+import { makeTransaction } from '../../test-utils/fixtures';
+import type { Category } from '../types';
 
 const sync = { createdAt: '', updatedAt: '', deletedAt: null };
 
@@ -7,31 +8,7 @@ function cat(id: string, parentId: string | null = null, kind: Category['kind'] 
   return { ...sync, id, parentId, name: id, kind, color: '#000', icon: 'x', isSystem: true, sortOrder: 0 };
 }
 
-let n = 0;
-function tx(partial: Partial<Transaction> & Pick<Transaction, 'type' | 'amount' | 'date'>): Transaction {
-  return {
-    ...sync,
-    id: String(n++),
-    accountId: 'acc',
-    categoryId: null,
-    description: '',
-    merchant: null,
-    notes: '',
-    paymentMethod: 'other',
-    status: 'cleared',
-    installmentGroupId: null,
-    installmentNumber: null,
-    installmentTotal: null,
-    transferPairId: null,
-    invoiceMonth: null,
-    importBatchId: null,
-    externalId: null,
-    fingerprint: null,
-    categorySource: null,
-    categoryConfidence: null,
-    ...partial,
-  };
-}
+const tx = makeTransaction;
 
 describe('buildMonthOverview', () => {
   const categories = [cat('food'), cat('food-market', 'food'), cat('fun'), cat('salary', null, 'income')];

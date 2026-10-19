@@ -1,5 +1,5 @@
 import { and, asc, eq, isNull, lte, sql } from 'drizzle-orm';
-import type { Account, AccountType, Cents, DateKey } from '../../domain/types';
+import { DEFAULT_CURRENCY, type Account, type AccountType, type Cents, type CurrencyCode, type DateKey } from '../../domain/types';
 import { type RepositoryContext, timestamp, ValidationError } from '../context';
 import { accounts, transactions } from '../schema';
 
@@ -13,6 +13,9 @@ export interface NewAccountInput {
   creditLimit?: Cents | null;
   closingDay?: number | null;
   dueDay?: number | null;
+  /** Credit cards only: account that usually pays the invoice. */
+  paymentAccountId?: string | null;
+  currency?: CurrencyCode;
   sortOrder?: number;
 }
 
@@ -67,6 +70,8 @@ export function createAccountsRepository(ctx: RepositoryContext) {
         creditLimit: isCard ? (input.creditLimit ?? null) : null,
         closingDay: isCard ? (input.closingDay ?? null) : null,
         dueDay: isCard ? (input.dueDay ?? null) : null,
+        paymentAccountId: isCard ? (input.paymentAccountId ?? null) : null,
+        currency: input.currency ?? DEFAULT_CURRENCY,
         archived: false,
         sortOrder: input.sortOrder ?? 0,
         createdAt: now,

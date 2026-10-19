@@ -1,7 +1,9 @@
 import { sql } from 'drizzle-orm';
 import { DEFAULT_CATEGORIES, DEFAULT_CATEGORIES_VERSION } from '../domain/defaultCategories';
 import { CATEGORY_KINDS } from '../domain/types';
+import { appliedMigrationCount, type SnapshotStore, snapshotHasData, takeSnapshot } from './backup';
 import type { AppDatabase, RepositoryContext } from './context';
+import { applyDataMigrations } from './dataMigrations';
 import bundledMigrations from './migrations.generated';
 import { createRepositories, type Repositories } from './repositories';
 import { accounts, budgets, categories, transactions } from './schema';
@@ -12,26 +14,43 @@ const SEED_VERSION_KEY = 'seed.categoriesVersion';
 /**
  * Brings any database (new, legacy or current) to the latest schema and makes
  * sure the default data exists. Storage-agnostic: the app calls it with
- * expo-sqlite, tests with better-sqlite3.
+ * expo-sqlite, tests with node:sqlite.
+ *
+ * When a schema migration is pending and there is data, a complete backup is
+ * saved in `backups` first; if that fails, nothing is migrated.
  */
-export async function prepareDatabase(ctx: RepositoryContext): Promise<Repositories> {
+export async function prepareDatabase(
+  ctx: RepositoryContext,
+  options: { backups?: SnapshotStore } = {}
+): Promise<Repositories> {
+  if (options.backups && (await pendingMigrationCount(ctx.db)) > 0) {
+    const snapshot = await takeSnapshot(ctx.db, 'pre-migration', ctx.now());
+    if (snapshotHasData(snapshot)) await options.backups.save(snapshot);
+  }
+
   const hadLegacySchema = await renameLegacyTables(ctx.db);
   await migrate(ctx.db);
 
-  const repos = createRepositories(ctx);
+  const repos = createRepositories(ctx, options);
   await seedDefaults(ctx, repos);
   if (hadLegacySchema) await importLegacyData(ctx);
+  await applyDataMigrations(ctx);
   return repos;
+}
+
+export async function pendingMigrationCount(db: AppDatabase): Promise<number> {
+  return bundledMigrations.journal.entries.length - (await appliedMigrationCount(db));
 }
 
 /**
  * Applies the migrations bundled in `migrations.generated.ts` that haven't run
  * yet, tracked in Drizzle's standard `__drizzle_migrations` table. Mirrors
  * Drizzle's own expo migrator, but for the async driver the app uses.
+ * `upTo` (tests only) stops after that many migrations, to build older schemas.
  */
-async function migrate(db: AppDatabase): Promise<void> {
+export async function migrate(db: AppDatabase, upTo?: number): Promise<void> {
   const { journal, migrations } = bundledMigrations;
-  const queries = journal.entries.map((entry) => {
+  const queries = journal.entries.slice(0, upTo).map((entry) => {
     const source = migrations[`m${String(entry.idx).padStart(4, '0')}`];
     if (!source) throw new Error(`Missing migration: ${entry.tag}`);
     return { sql: source.split('--> statement-breakpoint'), bps: entry.breakpoints, folderMillis: entry.when, hash: '' };

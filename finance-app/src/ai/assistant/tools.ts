@@ -1,8 +1,15 @@
 import type { Repositories } from '../../data/repositories';
 import { computeMonthlyAlert } from '../../domain/alerts';
 import { groupByCategoryTree } from '../../domain/categories';
-import { addMonths, fromDateKey, monthRange, toDateKey } from '../../domain/dates';
-import { ACCOUNT_TYPE_LABELS, PAYMENT_METHOD_LABELS } from '../../domain/labels';
+import { addMonths, DEFAULT_TIME_ZONE, fromDateKey, monthRange, todayKey } from '../../domain/dates';
+import { ACCOUNT_TYPE_LABELS, NATURE_LABELS, PAYMENT_METHOD_LABELS } from '../../domain/labels';
+import {
+  expensesByCategory,
+  isTransferNature,
+  resultEffect,
+  summarizeBalances,
+  summarizePeriod,
+} from '../../domain/ledger';
 import { formatCents } from '../../domain/money';
 import type { Category, Transaction } from '../../domain/types';
 import { categoryPath } from '../categorizer';
@@ -65,8 +72,13 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
       data: t.date,
       descricao: t.description || '(sem descrição)',
       tipo: t.type,
+      natureza: NATURE_LABELS[t.nature],
       ...money(t.amount),
-      categoria: category ? categoryPath(category, byId) : t.type.startsWith('transfer') ? 'Transferência' : 'Sem categoria',
+      categoria: category
+        ? categoryPath(category, byId)
+        : isTransferNature(t.nature)
+          ? NATURE_LABELS[t.nature]
+          : 'Sem categoria',
       conta: accountNames.get(t.accountId) ?? '?',
       forma_pagamento: PAYMENT_METHOD_LABELS[t.paymentMethod],
     };
@@ -76,7 +88,8 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
     name: 'resumo_periodo',
     description:
       'Totais de receitas, despesas e resultado num período, com os gastos agrupados por categoria principal. ' +
-      'Transferências entre contas próprias não contam.',
+      'Despesas já descontam estornos. Transferências entre contas próprias, pagamentos de fatura, aportes, ' +
+      'resgates, rendimentos e ajustes não contam como receita nem despesa e aparecem à parte.',
     parameters: objectSchema({ de: dateField('Data inicial'), ate: dateField('Data final, inclusive') }),
     async run(input) {
       const { de, ate } = input as { de: string; ate: string };
@@ -84,23 +97,26 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
         loadCategories(),
         repos.transactions.list({ from: checkDate(de, 'Data inicial'), to: checkDate(ate, 'Data final') }),
       ]);
-      const expenses = transactions.filter((t) => t.type === 'expense');
-      const incomes = transactions.filter((t) => t.type === 'income');
-      const sum = (list: Transaction[]) => list.reduce((s, t) => s + t.amount, 0);
+      const totals = summarizePeriod(transactions);
 
       const byRoot = new Map<string, number>();
-      for (const t of expenses) {
-        const category = t.categoryId ? byId.get(t.categoryId) : undefined;
+      for (const [categoryId, cents] of expensesByCategory(transactions)) {
+        const category = categoryId ? byId.get(categoryId) : undefined;
         const root = category?.parentId ? byId.get(category.parentId) : category;
         const key = root?.name ?? 'Sem categoria';
-        byRoot.set(key, (byRoot.get(key) ?? 0) + t.amount);
+        byRoot.set(key, (byRoot.get(key) ?? 0) + cents);
       }
       return {
         periodo: { de, ate },
-        receitas: money(sum(incomes)),
-        despesas: money(sum(expenses)),
-        resultado: money(sum(incomes) - sum(expenses)),
-        quantidade_lancamentos: expenses.length + incomes.length,
+        receitas: money(totals.income),
+        despesas: money(totals.expenses),
+        estornos_descontados: money(totals.refunds),
+        resultado: money(totals.result),
+        fora_do_resultado: Object.entries(totals.neutral).map(([nature, cents]) => ({
+          natureza: NATURE_LABELS[nature as Transaction['nature']],
+          ...money(cents ?? 0),
+        })),
+        quantidade_lancamentos: transactions.filter((t) => resultEffect(t) !== 'neutral').length,
         despesas_por_categoria: [...byRoot.entries()]
           .sort((a, b) => b[1] - a[1])
           .map(([categoria, cents]) => ({ categoria, ...money(cents) })),
@@ -119,7 +135,7 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
       ate: dateField('Data final, inclusive'),
       texto: { type: 'string', description: 'Trecho da descrição, ou "" para não filtrar.' },
       categoria: { type: 'string', description: 'Nome da categoria, ex. "Alimentação" ou "Mercado", ou "".' },
-      tipo: { type: 'string', enum: ['despesa', 'receita', 'transferencia', 'todos'] },
+      tipo: { type: 'string', enum: ['despesa', 'receita', 'transferencia', 'estorno', 'todos'] },
       limite: { type: 'integer', description: 'Máximo de linhas (1 a 50).' },
     }),
     async run(input) {
@@ -132,9 +148,10 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
       const ids = matchCategories(args.categoria, categories, byId);
       const text = plain(args.texto);
       const typeMatch: Record<string, (t: Transaction) => boolean> = {
-        despesa: (t) => t.type === 'expense',
-        receita: (t) => t.type === 'income',
-        transferencia: (t) => t.type === 'transfer_in' || t.type === 'transfer_out',
+        despesa: (t) => resultEffect(t) === 'expense',
+        receita: (t) => resultEffect(t) === 'income',
+        transferencia: (t) => isTransferNature(t.nature),
+        estorno: (t) => t.nature === 'refund',
         todos: () => true,
       };
       const matches = transactions.filter(
@@ -166,7 +183,7 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
     async run(input) {
       const args = input as { meses: number; categoria: string };
       const months = Math.min(24, Math.max(1, Math.floor(args.meses) || 1));
-      const today = toDateKey(now());
+      const today = todayKey(now());
       const current = today.slice(0, 7);
       const first = addMonths(current, -(months - 1));
       const [{ categories, byId }, transactions] = await Promise.all([
@@ -180,13 +197,12 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
         const inMonth = transactions.filter(
           (t) => t.date.startsWith(month) && (!ids || (t.categoryId !== null && ids.has(t.categoryId)))
         );
-        const total = (type: Transaction['type']) =>
-          inMonth.filter((t) => t.type === type).reduce((s, t) => s + t.amount, 0);
+        const totals = summarizePeriod(inMonth);
         rows.push({
           mes: month,
           parcial: month === current,
-          despesas: money(total('expense')),
-          receitas: money(total('income')),
+          despesas: money(totals.expenses),
+          receitas: money(totals.income),
         });
       }
       return { meses: rows };
@@ -195,17 +211,27 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
 
   const saldosContas: LocalTool = {
     name: 'saldos_contas',
-    description: 'Saldo atual de cada conta (cartões de crédito ficam negativos enquanto há fatura em aberto).',
+    description:
+      'Saldo atual de cada conta (cartões de crédito ficam negativos enquanto há fatura em aberto), com os totais ' +
+      'separados: disponível (contas e carteira), investimentos e cartões. Limite de cartão não é saldo.',
     parameters: objectSchema({}),
     async run() {
-      const today = toDateKey(now());
+      const today = todayKey(now());
       const [accounts, balances] = await Promise.all([repos.accounts.list(), repos.accounts.balances(today)]);
       const rows = accounts.map((a) => ({
         conta: a.name,
         tipo: ACCOUNT_TYPE_LABELS[a.type],
         ...money(balances.get(a.id) ?? 0),
       }));
-      return { data: today, contas: rows, total: money(rows.reduce((s, r) => s + r.centavos, 0)) };
+      const summary = summarizeBalances(accounts, balances);
+      return {
+        data: today,
+        contas: rows,
+        disponivel: money(summary.available),
+        investimentos: money(summary.investments),
+        cartoes: money(summary.creditCards),
+        total: money(summary.netWorth),
+      };
     },
   };
 
@@ -218,13 +244,13 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
     async run(input) {
       const { mes } = input as { mes: string };
       if (!/^\d{4}-\d{2}$/.test(mes)) throw new Error('Mês inválido: use AAAA-MM.');
-      const today = toDateKey(now());
+      const today = todayKey(now());
       const { from, to } = monthRange(mes);
       const reference = fromDateKey(to < today ? to : today < from ? from : today);
       const [{ categories, byId }, budgets, transactions] = await Promise.all([
         loadCategories(),
         repos.budgets.amountsForMonth(mes),
-        repos.transactions.list({ from, to, type: 'expense' }),
+        repos.transactions.list({ from, to }),
       ]);
       const grouped = groupByCategoryTree(categories, transactions);
       const levels = { ok: 'ok', warning: 'atenção', projected_overrun: 'ameaça de estouro', exceeded: 'estourado' };
@@ -267,10 +293,10 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
 
 /** System prompt for the assistant; `today` anchors relative dates ("mês passado"). */
 export function assistantSystemPrompt(today: Date, webSearch: boolean): string {
-  const weekday = today.toLocaleDateString('pt-BR', { weekday: 'long' });
+  const weekday = today.toLocaleDateString('pt-BR', { weekday: 'long', timeZone: DEFAULT_TIME_ZONE });
   return [
     'Você é o assistente financeiro pessoal deste app de controle de gastos, no Brasil (valores em R$).',
-    `Hoje é ${weekday}, ${toDateKey(today)}.`,
+    `Hoje é ${weekday}, ${todayKey(today)}.`,
     '',
     'Para qualquer número sobre as finanças da pessoa, consulte as ferramentas: nunca invente nem estime valores',
     'que podem ser buscados. Converta períodos relativos ("últimos 3 meses", "mês passado") em datas exatas.',

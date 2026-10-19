@@ -1,6 +1,10 @@
 // Monetary amounts are stored as integer cents to avoid floating point drift.
 export type Cents = number;
 
+/** ISO 4217 code. Amounts in different currencies are never summed without an explicit conversion. */
+export type CurrencyCode = string;
+export const DEFAULT_CURRENCY: CurrencyCode = 'BRL';
+
 /** Calendar date as YYYY-MM-DD (local, no time component). */
 export type DateKey = string;
 
@@ -36,6 +40,9 @@ export interface Account extends SyncFields {
   closingDay: number | null;
   /** Credit cards only: day of month the invoice is due (1-31). */
   dueDay: number | null;
+  /** Credit cards only: account that usually pays the invoice (informational, never moves money by itself). */
+  paymentAccountId: string | null;
+  currency: CurrencyCode;
   archived: boolean;
   sortOrder: number;
 }
@@ -72,6 +79,32 @@ export interface Budget extends SyncFields {
 export const TRANSACTION_TYPES = ['expense', 'income', 'transfer_out', 'transfer_in'] as const;
 export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
+/**
+ * What a transaction *is*, independent of which way the money moves (`type`)
+ * or how it was paid (`paymentMethod`). Only `income` and `expense` (net of
+ * `refund`) count as income or spending; every other nature only moves money
+ * between the user's own pockets or corrects a balance. See `ledger.ts`.
+ */
+export const TRANSACTION_NATURES = [
+  'expense',
+  'income',
+  /** Between two own accounts. */
+  'transfer',
+  /** Settles a credit card invoice; the purchases were already counted as expenses. */
+  'card_payment',
+  /** Money put into an investment account (aporte): not consumption. */
+  'investment_contribution',
+  /** Money taken out of an investment account (resgate): not income. */
+  'investment_withdrawal',
+  /** Investment yield or appreciation: tracked apart, not available income by default. */
+  'investment_return',
+  /** Reverses (part of) another transaction, linked by `refundOfId`. */
+  'refund',
+  /** Balance correction: never income or spending. */
+  'adjustment',
+] as const;
+export type TransactionNature = (typeof TRANSACTION_NATURES)[number];
+
 export const PAYMENT_METHODS = ['pix', 'boleto', 'debit', 'credit', 'cash', 'transfer', 'other'] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
@@ -86,9 +119,21 @@ export interface Transaction extends SyncFields {
   accountId: string;
   /** Null means "a classificar" (not categorized yet). */
   categoryId: string | null;
+  /** Direction of the money on `accountId`. */
   type: TransactionType;
+  nature: TransactionNature;
   amount: Cents; // always stored positive; sign is derived from `type`
+  currency: CurrencyCode;
+  /** When it happened: purchase date, or the date the money moved. */
   date: DateKey;
+  /** Month it refers to, when different from `date` (e.g. salary for March paid on April 5th). */
+  competenceMonth: MonthKey | null;
+  /** When it is due (bills, invoices), if known. */
+  dueDate: DateKey | null;
+  /** When it was actually settled, if different from `date`. */
+  settledDate: DateKey | null;
+  /** For refunds: the transaction being reversed. */
+  refundOfId: string | null;
   /** Description as typed by the user or as it came from the bank statement. */
   description: string;
   /** Normalized merchant name (e.g. "IFOOD" for "IFD*IFOOD SAO PAULO"), used for learning. */
@@ -101,7 +146,7 @@ export interface Transaction extends SyncFields {
   installmentNumber: number | null;
   installmentTotal: number | null;
   transferPairId: string | null;
-  /** Credit cards only: invoice month (YYYY-MM) this purchase belongs to. */
+  /** Credit cards only: invoice (YYYY-MM of its due date) this purchase belongs to. */
   invoiceMonth: MonthKey | null;
   importBatchId: string | null;
   /** Id assigned by the bank (e.g. OFX FITID), used to skip duplicates on re-import. */

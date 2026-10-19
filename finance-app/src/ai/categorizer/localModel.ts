@@ -21,7 +21,8 @@ interface Rule {
   total: number;
 }
 
-type Example = Pick<Transaction, 'description' | 'merchant' | 'categoryId' | 'categorySource' | 'type' | 'updatedAt'>;
+type Example = Pick<Transaction, 'description' | 'merchant' | 'categoryId' | 'categorySource' | 'type' | 'updatedAt'> &
+  Partial<Pick<Transaction, 'nature'>>;
 
 const MIN_MODEL_EXAMPLES = 5;
 
@@ -62,7 +63,11 @@ export class LocalCategorizer {
     const model = new LocalCategorizer(categories);
     const usable = history.filter(
       (t): t is Example & { categoryId: string } =>
-        t.categoryId !== null && model.kinds.has(t.categoryId) && (t.type === 'expense' || t.type === 'income')
+        t.categoryId !== null &&
+        model.kinds.has(t.categoryId) &&
+        (t.type === 'expense' || t.type === 'income') &&
+        // Refunds copy the original's category; they say nothing new about the merchant.
+        t.nature !== 'refund'
     );
 
     // Rules: the latest manual choice per merchant, plus how consistent the history is.

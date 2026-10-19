@@ -1,11 +1,14 @@
 import { randomUUID } from 'expo-crypto';
 import { openDatabaseAsync, type SQLiteBindValue, type SQLiteDatabase } from 'expo-sqlite';
+import { createSqliteSnapshotStore } from './backup';
 import { createRepositoryContext, type SqlExecutor } from './context';
 import type { Repositories } from './repositories';
 import { prepareDatabase } from './setup';
 
 // Same file name as the app's first version, so its data is migrated in place.
 const DB_NAME = 'finance.db';
+/** Automatic backups live in their own file, so a problem in the main database can't take them along. */
+const BACKUP_DB_NAME = 'finance-backup.db';
 
 /** Adapts expo-sqlite's async API to the executor Drizzle's sqlite-proxy driver expects. */
 function expoExecutor(sqlite: SQLiteDatabase): SqlExecutor {
@@ -30,6 +33,8 @@ function expoExecutor(sqlite: SQLiteDatabase): SqlExecutor {
 export async function openAppDatabase(): Promise<Repositories> {
   const sqlite = await openDatabaseAsync(DB_NAME);
   await sqlite.execAsync('PRAGMA journal_mode = WAL;');
+  const backupSqlite = await openDatabaseAsync(BACKUP_DB_NAME);
+  const backups = createSqliteSnapshotStore(expoExecutor(backupSqlite), randomUUID);
   const ctx = createRepositoryContext({ executor: expoExecutor(sqlite), newId: randomUUID });
-  return prepareDatabase(ctx);
+  return prepareDatabase(ctx, { backups });
 }
