@@ -58,6 +58,11 @@ separados dos do PC. A sincronização entre aparelhos é da Fase 2.
 
 ## O que já funciona
 
+- **Dados de teste:** em **Ajustes › Dados de teste**, um botão preenche o app com cerca
+  de 6 meses de uma rotina fictícia, com contas no Itaú, Santander, XP e Mercado Pago,
+  salário, contas fixas, assinaturas, cartão, investimentos, gastos fora do padrão e
+  lançamentos sem categoria. Outro botão apaga tudo sem mexer nos seus dados.
+
 - **Assistente com IA:** pergunte em português ("quanto gastei com alimentação nos
   últimos 3 meses?", "como estão meus orçamentos?"). A IA consulta os seus lançamentos
   por ferramentas que rodam no app e, se você permitir, pesquisa na internet (Selic,

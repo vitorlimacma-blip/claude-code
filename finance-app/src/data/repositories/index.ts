@@ -2,6 +2,7 @@ import type { RepositoryContext } from '../context';
 import { createAccountsRepository } from './accounts';
 import { createBudgetsRepository } from './budgets';
 import { createCategoriesRepository } from './categories';
+import { createDemoRepository } from './demo';
 import { createSettingsRepository } from './settings';
 import { createTransactionsRepository } from './transactions';
 
@@ -17,6 +18,8 @@ export function createRepositories(ctx: RepositoryContext) {
     budgets: createBudgetsRepository(ctx),
     transactions: createTransactionsRepository(ctx),
     settings: createSettingsRepository(ctx),
+    /** Fictitious data for testing the app (Ajustes › Dados de teste). */
+    demo: createDemoRepository(ctx),
     /** Subscribe to data changes (used by the `useQuery` hook to refresh screens). */
     subscribe: ctx.bus.subscribe,
   };
