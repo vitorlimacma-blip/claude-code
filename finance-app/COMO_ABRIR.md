@@ -14,6 +14,21 @@ Depois, abra **http://localhost:8081** no Chrome ou no Edge (se não abrir sozin
 - Para fechar: **Ctrl+C** no terminal.
 - O `node run.js` já baixa as atualizações (`git pull`) e instala o que faltar.
 
+## No iPhone (Expo Go)
+Com o app **Expo Go** instalado no iPhone:
+
+```
+cd C:\Users\higramg_tecnico01\claude-code\finance-app
+node run.js celular
+```
+
+Escaneie o QR code com a **Câmera** do iPhone. Esse modo cria um túnel pela internet, então
+funciona mesmo que o PC e o celular estejam em redes diferentes.
+
+- Se aparecer **"ngrok tunnel took too long"**: crie uma conta grátis em https://expo.dev,
+  rode `npx expo login` uma vez e repita `node run.js celular`.
+- Os dados do celular são separados dos dados do navegador do PC.
+
 ## Se o app mostrar erro de cache (ex.: "EBUSY: resource busy or locked")
 Feche o terminal (Ctrl+C) e abra de novo limpando o cache:
 ```

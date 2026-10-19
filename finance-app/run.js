@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Abre o app no navegador com um único comando:  node run.js
 // Se o app mostrar erro de cache (ex.: "EBUSY"), use:  node run.js limpar
+// Para abrir no celular (Expo Go) em qualquer rede, use:  node run.js celular
 //
 // 1. Baixa a versão mais recente do código (git pull), se possível.
 // 2. Instala/atualiza as dependências só quando mudaram.
@@ -58,7 +59,26 @@ if (clearCache) {
   fs.rmSync(path.join(root, '.metro-cache'), { recursive: true, force: true });
 }
 
-step('Abrindo o app no navegador (http://localhost:8081). Para fechar, aperte Ctrl+C aqui.');
-const expoArgs = ['expo', 'start', '--web', ...(clearCache ? ['--clear'] : [])];
+// Tunnel mode routes the phone through the internet, so it works even when the
+// PC and the phone can't see each other on the local network (corporate Wi-Fi,
+// different networks, firewall).
+// Expo's own tunnel needs a (free) Expo account login and copes better with corporate
+// networks; without a login, fall back to an anonymous ngrok tunnel.
+const phone = process.argv.includes('celular');
+let tunnelArgs = [];
+if (phone) {
+  const loggedIn = run('npx', ['expo', 'whoami'], { stdio: 'ignore' }).status === 0;
+  tunnelArgs = loggedIn ? ['--tunnel'] : ['--tunnel', 'ngrok'];
+  step(
+    `Modo celular: criando um túnel pela internet (${loggedIn ? 'conta Expo' : 'ngrok'}). ` +
+      'Aguarde o QR code e escaneie com a câmera do iPhone.'
+  );
+  if (!loggedIn) {
+    console.log('Se aparecer "ngrok tunnel took too long", crie uma conta grátis em expo.dev, rode "npx expo login" e tente de novo.');
+  }
+} else {
+  step('Abrindo o app no navegador (http://localhost:8081). Para fechar, aperte Ctrl+C aqui.');
+}
+const expoArgs = ['expo', 'start', '--web', ...tunnelArgs, ...(clearCache ? ['--clear'] : [])];
 const app = spawn('npx', expoArgs, { cwd: root, stdio: 'inherit', shell: isWindows });
 app.on('exit', (code) => process.exit(code ?? 0));
