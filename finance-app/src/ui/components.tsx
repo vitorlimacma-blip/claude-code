@@ -321,3 +321,34 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
 });
+
+/** Chip for an active filter: shows what is applied and removes it on press of the ×. */
+export function RemovableChip({
+  label,
+  onRemove,
+  color,
+  icon,
+}: {
+  label: string;
+  onRemove: () => void;
+  color?: string;
+  icon?: string;
+}) {
+  const theme = useTheme();
+  const accent = color ?? theme.colors.primary;
+  return (
+    <Pressable
+      onPress={onRemove}
+      accessibilityRole="button"
+      accessibilityLabel={`Remover filtro ${label}`}
+      style={({ pressed }) => [
+        styles.chip,
+        { borderColor: accent, backgroundColor: `${accent}26`, opacity: pressed ? 0.7 : 1 },
+      ]}
+    >
+      {icon && <Ionicons name={icon as IconName} size={14} color={accent} />}
+      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.colors.text }}>{label}</Text>
+      <Ionicons name="close" size={14} color={theme.colors.textMuted} />
+    </Pressable>
+  );
+}

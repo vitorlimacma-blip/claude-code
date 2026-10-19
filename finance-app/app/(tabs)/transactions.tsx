@@ -6,10 +6,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { addMonths, formatDateBR, formatMonthBR, monthRange } from '../../src/domain/dates';
 import { PAYMENT_METHOD_LABELS } from '../../src/domain/labels';
 import { formatCents } from '../../src/domain/money';
+import {
+  activeFilterCount,
+  applyTransactionFilters,
+  EMPTY_FILTERS,
+  summarizeTransactions,
+  type TransactionFilters,
+} from '../../src/domain/transactionFilters';
 import type { Transaction } from '../../src/domain/types';
 import { useQuery } from '../../src/state/useQuery';
 import { useToday } from '../../src/state/useToday';
-import { Fab, IconBubble, MutedText, Title } from '../../src/ui/components';
+import { Button, Card, Fab, IconBubble, MutedText, Title } from '../../src/ui/components';
+import { ActiveFilterChips, FilterButton, TransactionFiltersPanel } from '../../src/ui/filters/TransactionFiltersPanel';
 import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
 
@@ -20,6 +28,9 @@ export default function TransactionsScreen() {
   const today = useToday();
   const [month, setMonth] = useState(() => today.slice(0, 7));
   const range = monthRange(month);
+  // Kept across month changes on purpose: the same filter applies to whichever month is shown.
+  const [filters, setFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { data } = useQuery(
     async (r) => {
@@ -36,12 +47,26 @@ export default function TransactionsScreen() {
 
   const categoryById = useMemo(() => new Map(data?.categories.map((c) => [c.id, c])), [data]);
   const accountById = useMemo(() => new Map(data?.accounts.map((a) => [a.id, a])), [data]);
+  const filterOptions = useMemo(
+    () => ({
+      categories: data?.categories ?? [],
+      // Archived accounts are offered only if already selected, so an old filter can still be removed.
+      accounts: (data?.accounts ?? []).filter((a) => !a.archived || filters.accountIds.includes(a.id)),
+    }),
+    [data, filters.accountIds]
+  );
+  const visible = useMemo(
+    () => applyTransactionFilters(data?.transactions ?? [], filters, data?.categories ?? []),
+    [data, filters]
+  );
+  const summary = summarizeTransactions(visible);
+  const filtering = activeFilterCount(filters) > 0;
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <FlatList
         contentContainerStyle={styles.list}
-        data={data?.transactions ?? []}
+        data={visible}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <View style={{ gap: 8, marginBottom: 4 }}>
@@ -54,11 +79,37 @@ export default function TransactionsScreen() {
               <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={12} accessibilityLabel="Próximo mês">
                 <Ionicons name="chevron-forward" size={22} color={theme.colors.primary} />
               </Pressable>
+              <FilterButton count={activeFilterCount(filters)} onPress={() => setFiltersOpen(true)} />
             </View>
+            <ActiveFilterChips value={filters} onChange={setFilters} options={filterOptions} />
+            {data && summary.count > 0 && (
+              <View style={styles.summary}>
+                <MutedText>
+                  {summary.count} lançamento{summary.count === 1 ? '' : 's'}
+                  {filtering ? ` de ${data.transactions.length} no mês` : ''}
+                  {summary.transferCount > 0 ? ' · transferências não entram no total' : ''}
+                </MutedText>
+                <Text
+                  style={[styles.amount, { color: summary.total < 0 ? theme.colors.negative : theme.colors.positive }]}
+                >
+                  {summary.total < 0 ? '-' : '+'}
+                  {formatCents(Math.abs(summary.total))}
+                </Text>
+              </View>
+            )}
           </View>
         }
         ListEmptyComponent={
-          data ? <MutedText>Nenhum lançamento neste mês. Toque em + para adicionar.</MutedText> : undefined
+          !data ? undefined : filtering && data.transactions.length > 0 ? (
+            <Card style={{ gap: 10, alignItems: 'center' }}>
+              <Ionicons name="filter" size={28} color={theme.colors.textMuted} />
+              <Text style={[styles.rowTitle, { color: theme.colors.text }]}>Nenhum lançamento com esses filtros</Text>
+              <MutedText>Em {formatMonthBR(month)} há {data.transactions.length} lançamento(s), mas nenhum combina com todos os filtros.</MutedText>
+              <Button label="Limpar filtros" variant="secondary" onPress={() => setFilters(EMPTY_FILTERS)} />
+            </Card>
+          ) : (
+            <MutedText>Nenhum lançamento neste mês. Toque em + para adicionar.</MutedText>
+          )
         }
         renderItem={({ item }) => {
           const category = item.categoryId ? categoryById.get(item.categoryId) : undefined;
@@ -110,14 +161,23 @@ export default function TransactionsScreen() {
         accessibilityLabel="Novo lançamento"
         onPress={() => router.push({ pathname: '/transaction/[id]', params: { id: 'new' } })}
       />
+      <TransactionFiltersPanel
+        visible={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        value={filters}
+        onChange={setFilters}
+        options={filterOptions}
+        resultCount={visible.length}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   list: { padding: 16, gap: 8, paddingBottom: 96, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
-  monthNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  monthLabel: { fontSize: 16, fontWeight: '600' },
+  monthNav: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  monthLabel: { flex: 1, fontSize: 16, fontWeight: '600', textAlign: 'center' },
+  summary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   row: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12 },
   rowTitle: { fontSize: 15, fontWeight: '600' },
   amount: { fontSize: 15, fontWeight: '700' },
