@@ -1,6 +1,14 @@
+const path = require('path');
 const { getDefaultConfig } = require('expo/metro-config');
+const { FileStore } = require('metro-cache');
 
 const config = getDefaultConfig(__dirname);
+
+// Keep Metro's cache inside the project instead of the system temp folder. On
+// Windows, antivirus scans of %TEMP% lock cache files and Metro fails with
+// "EBUSY: resource busy or locked". Delete the folder (or run
+// `node run.js limpar`) to start from a clean cache.
+config.cacheStores = [new FileStore({ root: path.join(__dirname, '.metro-cache') })];
 
 // expo-sqlite's web implementation loads a WebAssembly binary (wa-sqlite);
 // Metro needs to know to treat .wasm as a bundled asset, not source code.

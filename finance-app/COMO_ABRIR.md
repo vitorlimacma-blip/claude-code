@@ -14,6 +14,13 @@ Depois, abra **http://localhost:8081** no Chrome ou no Edge (se não abrir sozin
 - Para fechar: **Ctrl+C** no terminal.
 - O `node run.js` já baixa as atualizações (`git pull`) e instala o que faltar.
 
+## Se o app mostrar erro de cache (ex.: "EBUSY: resource busy or locked")
+Feche o terminal (Ctrl+C) e abra de novo limpando o cache:
+```
+node run.js limpar
+```
+A primeira abertura depois disso demora um pouco mais.
+
 ## Se der erro na instalação
 ```
 cd C:\Users\higramg_tecnico01\claude-code\finance-app

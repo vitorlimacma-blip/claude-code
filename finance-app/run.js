@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Abre o app no navegador com um único comando:  node run.js
+// Se o app mostrar erro de cache (ex.: "EBUSY"), use:  node run.js limpar
 //
 // 1. Baixa a versão mais recente do código (git pull), se possível.
 // 2. Instala/atualiza as dependências só quando mudaram.
@@ -51,6 +52,13 @@ if (!installed) {
   fs.writeFileSync(stampFile, lockHash);
 }
 
+const clearCache = process.argv.includes('limpar');
+if (clearCache) {
+  step('Limpando o cache do app…');
+  fs.rmSync(path.join(root, '.metro-cache'), { recursive: true, force: true });
+}
+
 step('Abrindo o app no navegador (http://localhost:8081). Para fechar, aperte Ctrl+C aqui.');
-const app = spawn('npx', ['expo', 'start', '--web'], { cwd: root, stdio: 'inherit', shell: isWindows });
+const expoArgs = ['expo', 'start', '--web', ...(clearCache ? ['--clear'] : [])];
+const app = spawn('npx', expoArgs, { cwd: root, stdio: 'inherit', shell: isWindows });
 app.on('exit', (code) => process.exit(code ?? 0));
