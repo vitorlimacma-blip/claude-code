@@ -15,4 +15,17 @@ config.server.enhanceMiddleware = (middleware) => (req, res, next) => {
   return middleware(req, res, next);
 };
 
+// The AI SDKs' ES-module builds contain an import cycle that Metro's module
+// transform evaluates too early ("Cannot access ... before initialization").
+// Their CommonJS builds don't have the problem, so resolve those instead.
+const CJS_PACKAGES = ['@anthropic-ai/sdk', 'openai'];
+const defaultResolve = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  const fromCjsPackage = CJS_PACKAGES.some(
+    (pkg) => moduleName === pkg || moduleName.startsWith(`${pkg}/`) || context.originModulePath.includes(`/node_modules/${pkg}/`)
+  );
+  const ctx = fromCjsPackage ? { ...context, unstable_conditionNames: ['require', 'default'] } : context;
+  return defaultResolve ? defaultResolve(ctx, moduleName, platform) : ctx.resolveRequest(ctx, moduleName, platform);
+};
+
 module.exports = config;

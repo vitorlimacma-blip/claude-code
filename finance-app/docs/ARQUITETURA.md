@@ -199,7 +199,9 @@ interface AIProvider {
   - `OpenAIProvider`, que chama a API da OpenAI (ChatGPT), com modelos configuráveis
     do mesmo jeito.
 
-  As chaves são **suas** e ficam no Keychain do iPhone (SecureStore). Os dois
+  As chaves são **suas** e ficam no Keychain do iPhone (SecureStore). No navegador do
+  PC, que não tem um cofre equivalente, a chave fica no armazenamento local do site,
+  só naquele computador. Os dois
   adaptadores falam o mesmo "idioma" interno (mensagens, ferramentas e saída
   estruturada), então trocar de provedor não muda nada no resto do app. Dá também para
   usar um provedor para categorizar e outro para conversar.
@@ -265,23 +267,23 @@ interface AIProvider {
 
 ## 8. Plano de desenvolvimento
 
-Cada etapa termina com o app rodando no iPhone, testes passando e instruções de teste.
+> **Mudança de rota (decisão do usuário):** o desenvolvimento e o refinamento
+> acontecem **primeiro no computador** (versão web, no navegador). A base de código
+> é a mesma do celular, então o que for refinado no PC vai pronto para o iPhone e o
+> Android. As telas se adaptam sozinhas: menu lateral em telas largas e abas embaixo
+> no celular. A IA é a ferramenta principal e entra em todas as etapas.
 
-| Etapa | Entrega | Como testar no iPhone |
+| Etapa | Entrega | Onde testar |
 |---|---|---|
-| **0. Fundação** ✅ | Atualizar para Expo SDK 58. Reorganizar pastas (seção 3). Drizzle + migrações. Novo modelo de dados com migração dos dados atuais. Categorias brasileiras pré-cadastradas. Tema claro/escuro | Expo Go |
-| **1. Lançamento rápido + contas** | Cadastro de contas (corrente, carteira, cartão), com Itaú, Santander, XP e Mercado Pago pré-configurados. Lançamento em até 3 toques (valor no teclado numérico → categoria sugerida → salvar). Forma de pagamento (Pix, boleto, débito, crédito…). Transferências. Editar e excluir. Busca e filtros | Expo Go |
-| **2. IA v1: categorização que aprende** | `AIProvider` + `ClaudeProvider` + `OpenAIProvider`. Tela de configuração das chaves. Motor local (regras + Naive Bayes). Aprendizado a partir das correções. Indicador "sugerido pela IA" | Expo Go (com internet para a parte LLM) |
-| **3. Importação + backup** | Importar OFX e CSV (presets Itaú, Santander, XP e Mercado Pago + mapeador). Deduplicação. Categorização em lote com revisão. Backup e restauração em JSON. Exportar CSV | Expo Go (arquivos do app Arquivos/iCloud) |
-| **4. Cartão de crédito** | Fechamento e vencimento. Faturas calculadas. Parcelamentos ("3x de R$ 100"). Pagamento de fatura como transferência | Expo Go |
-| **5. Painel + orçamentos** | Resumo mensal, gráficos por categoria e por evolução, saldo por conta, faturas abertas. Orçamento por categoria com barras de progresso e alertas (aproveitando os `alerts.ts` atuais) | Expo Go |
-| **6. IA v2: análise e conversa** | Chat com perguntas em linguagem natural (*tool use*), com consulta opcional à internet. Detecção de recorrentes. Gastos fora do normal. Saldo projetado no fim do mês. Feed de insights | Expo Go |
-| **7. App independente** | Face ID para abrir o app. Build via EAS (preview/ad hoc). EAS Update. Notificações locais de alertas | **App instalado no iPhone** (requer Apple Developer) |
-| **8. Preparação para a Fase 2** *(futuro)* | Versão web/desktop. Backend Node (mesmo TS) com autenticação, sincronização e `ProxyProvider`. Multiusuário | — |
-
-Ordem pensada para: **usar o app de verdade o mais cedo possível** (Etapa 1),
-colocar a IA desde o começo (Etapa 2) e ter **backup antes de confiar dados reais
-ao app** (Etapa 3).
+| **0. Fundação** ✅ | Expo SDK 58. Camada de dados (Drizzle, migrações, UUID e exclusão lógica). Migração dos dados antigos. Categorias brasileiras. Tema claro/escuro | PC e Expo Go |
+| **1. PC primeiro + IA central** ✅ | Layout de desktop. Contas e cartões (Itaú, Santander, XP e Mercado Pago em destaque). Camada de IA com Claude e ChatGPT. Categorização que aprende com as suas correções. Assistente que responde consultando os seus dados, com busca opcional na internet | **PC (navegador)** |
+| **2. Dados reais com segurança** | **Backup e restauração** (arquivo JSON). Exportar CSV. Importar OFX e CSV (presets Itaú, Santander, XP e Mercado Pago). Deduplicação. Categorização em lote pela IA, com revisão | PC |
+| **3. Cartão de crédito** | Faturas calculadas pelo fechamento e vencimento. Parcelamentos ("3x de R$ 100"). Pagamento de fatura como transferência. Lançamento rápido em poucos toques | PC |
+| **4. Painel e orçamentos** | Gráficos (por categoria e evolução mensal), saldo por conta, faturas abertas, orçamentos com barras de progresso | PC |
+| **5. IA v2: proativa** | Detecção de recorrentes (assinaturas, contas fixas). Gastos fora do normal. Saldo projetado no fim do mês. Feed de alertas e dicas. Conversas salvas. Mais ferramentas para o assistente | PC |
+| **6. Instalável no PC + revisão mobile** | App instalável no computador (PWA ou app desktop com Tauri/Electron). Revisão de toque e teclado no iPhone pelo Expo Go | PC e iPhone |
+| **7. Lojas** | Apple Developer e Google Play. Build pelo EAS. Face ID. Notificações. Publicação na App Store e na Play Store | iPhone e Android |
+| **8. Fase 2 comercial** *(futuro)* | Servidor (o mesmo TypeScript): contas de usuário, sincronização entre aparelhos, proxy da IA (as chaves saem do app), assinatura | — |
 
 ---
 
@@ -318,3 +320,52 @@ ao app** (Etapa 3).
   iOS gerado. O fluxo completo também foi testado num navegador automatizado, nos
   temas claro e escuro: criar despesa e receita, editar, definir orçamento e
   recarregar para confirmar que os dados persistem.
+
+---
+
+## 10. Etapa 1 — o que foi feito (PC primeiro + IA central)
+
+- **Desktop:** em janelas largas (≥ 900 px) a navegação vira um **menu lateral** e o
+  conteúdo fica numa coluna centralizada. No celular continuam as abas embaixo. É a
+  mesma tela, sem código separado. As caixas de diálogo agora funcionam também no
+  navegador (`src/platform/dialogs.ts`).
+- **Contas e cartões:** cadastro com tipo, banco (Itaú, Santander, XP e Mercado Pago
+  primeiro), saldo inicial e, para cartões, limite e dias de fechamento e vencimento.
+  Também é possível arquivar.
+- **Camada de IA** (`src/ai/`):
+  - `types.ts` define o contrato (`AIProvider`). `providers/claude.ts` e
+    `providers/openai.ts` usam os **SDKs oficiais**.
+  - **Claude:** por padrão, Opus 5.5 nas duas funções, configurável para Sonnet 5.5 ou
+    Haiku 5.5 (mais baratos). As chamadas usam o *fallback* do lado do servidor,
+    `fallbacks: "default"`: se o modelo recusar, outro modelo atende.
+  - **ChatGPT:** Responses API, GPT-5.5 para o assistente e GPT-5.4 mini para
+    categorizar, também configuráveis.
+  - Chaves no Keychain (celular) ou no armazenamento local do navegador (PC).
+- **Categorização que aprende** (`src/ai/categorizer/`):
+  1. **Regras:** a última escolha manual para o mesmo estabelecimento vence. Nomes de
+     extrato são normalizados, então "IFD*IFOOD 12/03" e "Ifood" contam como o mesmo.
+  2. **Modelo local** (Naive Bayes) treinado no seu histórico, no próprio aparelho,
+     offline e de graça.
+  3. **IA na nuvem** só quando o modelo local não tem certeza. Ela recebe a lista
+     fechada de categorias (não pode inventar uma) e exemplos de como **você**
+     classifica.
+
+  No formulário, a sugestão aparece sozinha enquanto você digita. Corrigir ensina o
+  app. Cada lançamento guarda **quem** escolheu a categoria (`category_source`).
+- **Assistente** (aba Assistente):
+  - A IA responde em português usando **ferramentas que rodam no aparelho**:
+    `resumo_periodo`, `buscar_lancamentos`, `gastos_por_mes`, `saldos_contas`,
+    `orcamentos_do_mes` e `listar_categorias`.
+  - O provedor recebe só os resultados agregados de cada consulta, nunca o banco
+    inteiro.
+  - Com a busca na internet ligada, usa a busca nativa do provedor e mostra as fontes.
+- **Correção de compatibilidade:** os SDKs de IA têm um ciclo de importação que quebra
+  no bundler do Expo. O `metro.config.js` resolve o build CommonJS deles. Isso foi
+  validado no navegador e no bundle de iOS.
+- **Verificação:**
+  - 95 testes automatizados, com os provedores testados contra respostas HTTP
+    simuladas.
+  - Teste de ponta a ponta no navegador, com a API do Claude e a da OpenAI simuladas:
+    configurar a chave, testar a conexão, criar contas e cartão, receber a sugestão da
+    IA, corrigir (na vez seguinte a regra aprendida resolve **sem chamar a IA**) e
+    perguntar ao assistente, que respondeu com os dados reais do banco local.

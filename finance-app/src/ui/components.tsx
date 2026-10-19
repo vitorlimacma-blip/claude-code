@@ -14,21 +14,25 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { AlertLevel } from '../domain/types';
+import { CONTENT_MAX_WIDTH } from './layout';
 import { useTheme } from './theme';
 
 export type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Full-screen container that respects the notch and uses the theme background. */
+/**
+ * Full-screen container that respects the notch, uses the theme background and,
+ * on wide screens, keeps the content in a centered, readable column.
+ */
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   const theme = useTheme();
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.background }}>
       {scroll ? (
-        <ScrollView contentContainerStyle={styles.screenContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[styles.screenContent, styles.column]} keyboardShouldPersistTaps="handled">
           {children}
         </ScrollView>
       ) : (
-        children
+        <View style={[{ flex: 1 }, styles.column]}>{children}</View>
       )}
     </SafeAreaView>
   );
@@ -266,6 +270,7 @@ export function Fab({ onPress, accessibilityLabel }: { onPress: () => void; acce
 
 const styles = StyleSheet.create({
   screenContent: { padding: 16, gap: 12, paddingBottom: 96 },
+  column: { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   title: { fontSize: 26, fontWeight: '800' },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginTop: 8 },

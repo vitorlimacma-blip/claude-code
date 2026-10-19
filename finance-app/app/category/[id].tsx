@@ -1,12 +1,14 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { ValidationError } from '../../src/data/context';
 import { centsToInput, parseAmountToCents } from '../../src/domain/money';
+import { confirm, notify } from '../../src/platform/dialogs';
 import type { Category, CategoryKind } from '../../src/domain/types';
 import { useRepositories } from '../../src/state/DataProvider';
 import { useQuery } from '../../src/state/useQuery';
 import { Button, IconBubble, MutedText, SectionTitle, TextField } from '../../src/ui/components';
+import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
 
 const PALETTE = ['#EA580C', '#2563EB', '#0891B2', '#DC2626', '#7C3AED', '#DB2777', '#4F46E5', '#CA8A04', '#16A34A', '#475569'];
@@ -75,28 +77,21 @@ function CategoryForm({
       }
       router.back();
     } catch (err) {
-      if (err instanceof ValidationError) Alert.alert('Verifique os dados', err.message);
+      if (err instanceof ValidationError) notify('Verifique os dados', err.message);
       else throw err;
     }
   }
 
-  function remove() {
+  async function remove() {
     if (!category) return;
-    Alert.alert(
+    const ok = await confirm(
       'Excluir categoria',
       `Excluir "${category.name}"${isSub ? '' : ' e suas subcategorias'}? Os lançamentos serão mantidos, mas ficarão sem categoria.`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            await repos.categories.remove(category.id);
-            router.back();
-          },
-        },
-      ]
+      { confirmLabel: 'Excluir', destructive: true }
     );
+    if (!ok) return;
+    await repos.categories.remove(category.id);
+    router.back();
   }
 
   return (
@@ -157,7 +152,7 @@ function CategoryForm({
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12, paddingBottom: 48 },
+  content: { padding: 16, gap: 12, paddingBottom: 48, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   swatch: { width: 32, height: 32, borderRadius: 16 },
   iconCell: { borderWidth: 2, borderColor: 'transparent', borderRadius: 22, padding: 2 },

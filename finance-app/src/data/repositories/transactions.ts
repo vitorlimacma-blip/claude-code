@@ -8,6 +8,7 @@ import type {
   TransactionStatus,
   TransactionType,
 } from '../../domain/types';
+import { normalizeMerchant } from '../../domain/merchant';
 import { type AppDatabase, type RepositoryContext, timestamp, ValidationError } from '../context';
 import { transactions } from '../schema';
 
@@ -161,7 +162,7 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
         date: input.date,
         categoryId,
         description: input.description?.trim() ?? '',
-        merchant: input.merchant ?? null,
+        merchant: input.merchant ?? (normalizeMerchant(input.description ?? '') || null),
         notes: input.notes?.trim() ?? '',
         paymentMethod: input.paymentMethod ?? 'other',
         status: input.status ?? 'cleared',
@@ -195,6 +196,8 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
         const values: Partial<Transaction> = {
           ...patch,
           ...(patch.description !== undefined && { description: patch.description.trim() }),
+          ...(patch.description !== undefined &&
+            patch.merchant === undefined && { merchant: normalizeMerchant(patch.description) || null }),
           ...(patch.notes !== undefined && { notes: patch.notes.trim() }),
           ...(categoryChanged &&
             patch.categorySource === undefined && {

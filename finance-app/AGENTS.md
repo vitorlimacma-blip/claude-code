@@ -11,5 +11,7 @@ This project uses Expo SDK 58. Read the exact versioned docs at https://docs.exp
 - Money is integer cents; dates are `YYYY-MM-DD` strings; all rows have UUID ids, timestamps and soft deletes.
 - Schema changes: edit `src/data/schema.ts`, then `npm run db:generate`; never edit generated migrations.
 - While the app is tested in Expo Go, only use libraries bundled in Expo Go (see `node_modules/expo/bundledNativeModules.json`).
+- AI goes through the `AIProvider` interface in `src/ai/types.ts`; features never import a provider SDK directly. Provider adapters use the official SDKs (`@anthropic-ai/sdk`, `openai`), resolved as CommonJS by `metro.config.js`.
+- The app is developed PC-first (web) but must keep working on phones: use `useIsWide()` / `CONTENT_MAX_WIDTH` for layout, `src/platform/dialogs.ts` instead of `Alert` (a no-op on web), and `src/platform/secrets` for keys.
 - UI text is Brazilian Portuguese; code and comments are English.
 - Before pushing: `npm test`, `npm run typecheck`, `npm run lint`.

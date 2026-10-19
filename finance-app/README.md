@@ -9,78 +9,95 @@ Os dados ficam **somente no aparelho**, num banco SQLite local, sem servidor.
 A arquitetura, as decisões e o plano de etapas estão em
 [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
-**Etapa atual:** 0 (Fundação) concluída. Próxima: Etapa 1, contas e lançamento rápido.
+**Etapa atual:** 1 (PC primeiro + IA central) concluída. Próxima: Etapa 2, com
+backup e importação de extratos.
 
-## Como testar no iPhone (grátis, sem Mac)
+## Como usar no computador (principal nesta fase)
 
-Você precisa de um computador (Windows, Mac ou Linux) e do iPhone **na mesma rede
-Wi-Fi**. O computador "serve" o app e o iPhone o executa dentro do **Expo Go**.
+O app roda no navegador do seu PC com o **mesmo código** da versão de celular. Tudo o
+que for refinado aqui vai pronto para o iPhone e o Android.
 
-1. **No computador, uma vez só:** instale o [Node.js LTS](https://nodejs.org) e o
+1. **Uma vez só:** instale o [Node.js LTS](https://nodejs.org) e o
    [Git](https://git-scm.com).
-2. **No iPhone, uma vez só:** instale o app **Expo Go** pela App Store.
-3. **No computador**, baixe o código e inicie o servidor:
+2. **Baixe o código e instale as dependências** (uma vez só):
    ```bash
    git clone https://github.com/vitorlimacma-blip/claude-code.git
    cd claude-code
    git checkout claude/finance-ai-app-e6keyb
    cd finance-app
    npm install
-   npx expo start
    ```
-4. Vai aparecer um **QR code** no terminal. Abra a **Câmera** do iPhone, aponte para
-   o QR code e toque na notificação "Abrir no Expo Go".
-5. Para atualizar depois: `git pull` e `npx expo start` de novo. Com o servidor
-   rodando, o app recarrega sozinho quando o código muda.
+3. **Para abrir o app**, na pasta `finance-app`:
+   ```bash
+   npm run web
+   ```
+   O app abre no navegador em **http://localhost:8081**. Use Chrome ou Edge.
+4. **Para atualizar** quando houver uma versão nova: `git pull`, depois `npm install`
+   e `npm run web`.
 
-**Problemas comuns**
-- *O iPhone não conecta* (rede corporativa, Wi-Fi diferente): use
-  `npx expo start --tunnel`. Funciona por qualquer rede.
-- *"Project is incompatible with this version of Expo Go"*: atualize o Expo Go na
-  App Store. O projeto usa o Expo SDK 58.
+**Ativando a IA:** vá em **Ajustes › Inteligência artificial**, escolha **Claude** ou
+**ChatGPT** e cole a sua chave de API:
+- Claude: crie em console.anthropic.com › API Keys.
+- ChatGPT: crie em platform.openai.com › API keys.
 
-**Limitações desta fase**
-- O computador precisa estar com o servidor rodando para **abrir** o app. Depois de
-  carregado, o app funciona offline. Para um app independente, instalado de vez no
-  iPhone, será preciso o Apple Developer Program (Etapa 7).
-- Os dados ficam dentro do Expo Go. **Se você apagar o Expo Go, eles se perdem.**
-  Por isso, não confie dados importantes ao app antes da Etapa 3, que traz o backup.
+Toque em **Testar conexão**. O uso é cobrado pelo provedor, na sua conta. Sem chave, o
+app funciona normalmente com a inteligência local, que aprende com as suas correções.
 
-## Rodar no navegador (opcional)
+**Onde ficam os dados no PC:** dentro do navegador, só neste computador. **Não limpe
+os dados de navegação de `localhost`** e use sempre o mesmo navegador. O backup em
+arquivo chega na Etapa 2. Até lá, evite colocar algo que você não possa recriar.
 
-```bash
-npm run web
-```
+## Testar no iPhone (opcional nesta fase)
 
-O banco SQLite também funciona no navegador. O servidor de desenvolvimento já envia os
-cabeçalhos de segurança necessários (veja `metro.config.js`).
+Com o computador e o iPhone na mesma rede Wi-Fi:
+
+1. Instale o app **Expo Go** pela App Store.
+2. No computador, na pasta `finance-app`, rode `npx expo start`.
+3. Aponte a **Câmera** do iPhone para o QR code que aparece no terminal.
+
+Se o iPhone não conectar (rede corporativa), use `npx expo start --tunnel`. Nesse modo,
+o computador precisa estar ligado para abrir o app, e os dados do celular ficam
+separados dos do PC. A sincronização entre aparelhos é da Fase 2.
 
 ## O que já funciona
 
+- **Assistente com IA:** pergunte em português ("quanto gastei com alimentação nos
+  últimos 3 meses?", "como estão meus orçamentos?"). A IA consulta os seus lançamentos
+  por ferramentas que rodam no app e, se você permitir, pesquisa na internet (Selic,
+  CDI, IPCA…), citando as fontes.
+- **Categorização que aprende:** ao digitar a descrição, o app sugere a categoria.
+  Primeiro usa as suas escolhas anteriores, depois um modelo local e, se ainda tiver
+  dúvida, a IA. Quando você corrige, ele aprende e não precisa perguntar de novo.
+- **Contas e cartões:** Itaú, Santander, XP, Mercado Pago e outros. Cartões guardam
+  limite e os dias de fechamento e vencimento.
+- **Lançamentos:** despesas, receitas e transferências, com categoria, subcategoria,
+  forma de pagamento (Pix, boleto, débito, crédito…), data e descrição. Navegação por
+  mês.
 - **Resumo do mês:** gastos, receitas, resultado, saldo por conta e "ameaças ao
-  orçamento". Uma categoria recebe alerta quando o ritmo de gastos projeta estouro
-  antes do fim do mês.
-- **Lançamentos:** despesas, receitas e transferências entre contas, com categoria,
-  subcategoria, forma de pagamento (Pix, boleto, débito, crédito…), data e descrição.
-  É possível editar, excluir e navegar por mês.
-- **Categorias:** cerca de 70 categorias e subcategorias brasileiras já cadastradas
-  (Alimentação › Mercado, Moradia › Condomínio, Transporte › Uber, 99 e táxi…). Dá
-  para criar as suas e definir orçamento mensal.
+  orçamento", com alerta quando o ritmo de gastos projeta estouro.
+- **Categorias:** cerca de 70 categorias brasileiras já cadastradas, com orçamento
+  mensal.
 - **Previsões:** média diária e projeção do mês e do ano por categoria.
-- **Tema claro/escuro**, acompanhando a configuração do iPhone.
+- **Layout adaptável:** menu lateral no computador e abas no celular. Tema claro e
+  escuro.
 
 ## Estrutura do projeto
 
 ```
 app/                    Telas e navegação (expo-router)
-  (tabs)/                 Resumo, Lançamentos, Categorias, Previsões
-  transaction/[id].tsx    Formulário de lançamento (modal)
-  category/[id].tsx       Formulário de categoria (modal)
+  (tabs)/                 Resumo, Lançamentos, Assistente, Categorias, Ajustes (+ Previsões)
+  transaction/[id].tsx    Formulário de lançamento, com sugestão de categoria
+  category/[id].tsx       Formulário de categoria
+  account/[id].tsx        Formulário de conta/cartão
+  accounts.tsx            Lista de contas
+  ai-settings.tsx         Configuração da IA
 src/
   domain/                 Regras de negócio em TypeScript puro (sem React/SQLite), testadas
   data/                   Banco de dados: schema, migrações, repositórios
-  state/                  Ponte entre dados e telas (DataProvider, useQuery)
-  ui/                     Tema e componentes visuais
+  ai/                     IA: contrato, provedores (Claude, OpenAI), categorizador, assistente
+  platform/               Diferenças entre plataformas (chaves seguras, diálogos)
+  state/                  Ponte entre dados e telas (DataProvider, AIContext, useQuery)
+  ui/                     Tema, layout e componentes visuais
 drizzle/                Migrações SQL geradas (não editar à mão)
 docs/                   Arquitetura e plano
 ```

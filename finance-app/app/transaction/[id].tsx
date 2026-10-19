@@ -1,17 +1,28 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { CategorySuggestion } from '../../src/ai/categorizer';
 import { ValidationError } from '../../src/data/context';
 import type { Repositories } from '../../src/data/repositories';
 import { buildCategoryTree } from '../../src/domain/categories';
 import { formatDateBR, parseDateInput } from '../../src/domain/dates';
 import { PAYMENT_METHOD_LABELS } from '../../src/domain/labels';
 import { centsToInput, parseAmountToCents } from '../../src/domain/money';
-import { PAYMENT_METHODS, type Account, type Category, type PaymentMethod, type Transaction } from '../../src/domain/types';
+import {
+  PAYMENT_METHODS,
+  type Account,
+  type Category,
+  type CategorySource,
+  type PaymentMethod,
+  type Transaction,
+} from '../../src/domain/types';
+import { confirm, notify } from '../../src/platform/dialogs';
 import { useRepositories } from '../../src/state/DataProvider';
+import { useCategorizer } from '../../src/state/useCategorizer';
 import { useQuery } from '../../src/state/useQuery';
 import { useToday } from '../../src/state/useToday';
 import { Button, Chip, ChipRow, MutedText, SectionTitle, SegmentedControl, TextField } from '../../src/ui/components';
+import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
 
 type FormType = 'expense' | 'income' | 'transfer';
@@ -74,6 +85,10 @@ function TransactionForm({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(transaction?.paymentMethod ?? 'pix');
   const [date, setDate] = useState(formatDateBR(transaction?.date ?? today));
   const [description, setDescription] = useState(transaction?.description ?? '');
+  // The category the AI/learner proposed, until the user picks one themselves.
+  const [suggestion, setSuggestion] = useState<CategorySuggestion | null>(null);
+  const [categoryTouched, setCategoryTouched] = useState(!!transaction?.categoryId);
+  const { suggest } = useCategorizer();
 
   const kind = type === 'income' ? 'income' : 'expense';
   const tree = useMemo(() => buildCategoryTree(categories.filter((c) => c.kind === kind)), [categories, kind]);
@@ -86,13 +101,39 @@ function TransactionForm({
     if (selected && selected.kind !== (next === 'income' ? 'income' : 'expense')) setCategoryId(null);
   }
 
+  function pickCategory(id: string | null) {
+    setCategoryTouched(true);
+    setSuggestion(null);
+    setCategoryId(id);
+  }
+
+  // Suggest a category from the description while the user hasn't chosen one.
+  useEffect(() => {
+    if (categoryTouched || type === 'transfer' || description.trim().length < 3) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      suggest(description, kind).then((result) => {
+        if (cancelled || !result) return;
+        setSuggestion(result);
+        setCategoryId(result.categoryId);
+      });
+    }, 500);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [description, kind, type, categoryTouched, suggest]);
+
   async function save() {
     const cents = parseAmountToCents(amount);
     const dateKey = parseDateInput(date);
     if (!dateKey) {
-      Alert.alert('Data inválida', 'Use o formato dd/mm/aaaa.');
+      notify('Data inválida', 'Use o formato dd/mm/aaaa.');
       return;
     }
+    // Keep track of who chose the category: accepted suggestions keep their
+    // source, anything the user picked counts as a manual choice to learn from.
+    const accepted = suggestion && !categoryTouched && suggestion.categoryId === categoryId ? suggestion : null;
     try {
       await persist(repos, {
         transaction,
@@ -102,29 +143,28 @@ function TransactionForm({
         accountId,
         toAccountId,
         categoryId,
+        categorySource: accepted ? accepted.source : categoryId ? 'manual' : null,
+        categoryConfidence: accepted ? accepted.confidence : null,
         paymentMethod,
         description,
       });
       router.back();
     } catch (err) {
-      if (err instanceof ValidationError) Alert.alert('Verifique os dados', err.message);
+      if (err instanceof ValidationError) notify('Verifique os dados', err.message);
       else throw err;
     }
   }
 
-  function remove() {
+  async function remove() {
     if (!transaction) return;
-    Alert.alert('Excluir lançamento', isTransfer ? 'As duas pontas da transferência serão excluídas.' : 'Deseja excluir este lançamento?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          await repos.transactions.remove(transaction.id);
-          router.back();
-        },
-      },
-    ]);
+    const ok = await confirm(
+      'Excluir lançamento',
+      isTransfer ? 'As duas pontas da transferência serão excluídas.' : 'Deseja excluir este lançamento?',
+      { confirmLabel: 'Excluir', destructive: true }
+    );
+    if (!ok) return;
+    await repos.transactions.remove(transaction.id);
+    router.back();
   }
 
   return (
@@ -160,6 +200,11 @@ function TransactionForm({
         {type !== 'transfer' && (
           <>
             <SectionTitle>Categoria</SectionTitle>
+            {suggestion && suggestion.categoryId === categoryId && (
+              <Text style={{ color: theme.colors.primary, fontSize: 13 }}>
+                ✨ {suggestion.reason} Toque em outra categoria para corrigir — o app aprende com isso.
+              </Text>
+            )}
             <ChipRow>
               {tree.map(({ category }) => (
                 <Chip
@@ -168,7 +213,7 @@ function TransactionForm({
                   icon={category.icon}
                   color={category.color}
                   selected={category.id === selectedRootId}
-                  onPress={() => setCategoryId(category.id === categoryId ? null : category.id)}
+                  onPress={() => pickCategory(category.id === categoryId ? null : category.id)}
                 />
               ))}
             </ChipRow>
@@ -182,7 +227,7 @@ function TransactionForm({
                       label={child.name}
                       color={child.color}
                       selected={child.id === categoryId}
-                      onPress={() => setCategoryId(child.id === categoryId ? selectedRoot.category.id : child.id)}
+                      onPress={() => pickCategory(child.id === categoryId ? selectedRoot.category.id : child.id)}
                     />
                   ))}
                 </ChipRow>
@@ -269,6 +314,8 @@ async function persist(
     accountId: string;
     toAccountId: string;
     categoryId: string | null;
+    categorySource: CategorySource | null;
+    categoryConfidence: number | null;
     paymentMethod: PaymentMethod;
     description: string;
   }
@@ -293,9 +340,12 @@ async function persist(
     return;
   }
 
+  // Only a changed category says who chose it; editing other fields keeps the original source.
+  const categoryChanged = !transaction || transaction.categoryId !== form.categoryId;
   const values = {
     accountId: form.accountId,
     categoryId: form.categoryId,
+    ...(categoryChanged && { categorySource: form.categorySource, categoryConfidence: form.categoryConfidence }),
     type: form.type,
     amount: form.amount,
     date: form.date,
@@ -307,5 +357,5 @@ async function persist(
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12, paddingBottom: 48 },
+  content: { padding: 16, gap: 12, paddingBottom: 48, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
 });

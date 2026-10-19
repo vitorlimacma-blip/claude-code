@@ -10,6 +10,7 @@ import type { Transaction } from '../../src/domain/types';
 import { useQuery } from '../../src/state/useQuery';
 import { useToday } from '../../src/state/useToday';
 import { Fab, IconBubble, MutedText, Title } from '../../src/ui/components';
+import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
 
 const SIGN: Record<Transaction['type'], string> = { expense: '-', income: '+', transfer_out: '-', transfer_in: '+' };
@@ -114,7 +115,7 @@ export default function TransactionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: 16, gap: 8, paddingBottom: 96 },
+  list: { padding: 16, gap: 8, paddingBottom: 96, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   monthNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   monthLabel: { fontSize: 16, fontWeight: '600' },
   row: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12 },

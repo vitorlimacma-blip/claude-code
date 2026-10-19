@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatMonthBR, startOfYearKey, fromDateKey } from '../../src/domain/dates';
@@ -10,6 +10,7 @@ import { useQuery } from '../../src/state/useQuery';
 import { useToday } from '../../src/state/useToday';
 import {
   AlertBadge,
+  Button,
   Card,
   IconBubble,
   MutedText,
@@ -115,6 +116,15 @@ icon={ACCOUNT_TYPE_ICONS[account.type]} color={account.color}
           <MutedText>Projeção para o fim do mês: {formatCents(alert.projectedMonthTotal)}</MutedText>
         </Card>
       ))}
+
+      <View style={styles.row}>
+        <View style={{ flex: 1 }}>
+          <Button label="Perguntar à IA" icon="sparkles-outline" variant="secondary" onPress={() => router.push('/assistant')} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Button label="Ver previsões" icon="trending-up-outline" variant="secondary" onPress={() => router.push('/forecasts')} />
+        </View>
+      </View>
     </Screen>
   );
 }

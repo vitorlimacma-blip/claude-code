@@ -24,9 +24,16 @@ describe('transactions', () => {
       description: '  Padaria  ',
       paymentMethod: 'pix',
     });
-    expect(tx).toMatchObject({ description: 'Padaria', status: 'cleared', categorySource: 'manual', deletedAt: null });
-    expect(await repos.transactions.get(tx.id)).toEqual(tx);
-    expect(changes).toEqual([['transactions']]);
+    expect(tx).toMatchObject({
+      description: 'Padaria',
+      merchant: 'PADARIA',
+      status: 'cleared',
+      categorySource: 'manual',
+      deletedAt: null,
+    });
+    await repos.transactions.update(tx.id, { description: 'IFD*IFOOD 12/03' });
+    expect((await repos.transactions.get(tx.id))?.merchant).toBe('IFOOD');
+    expect(changes).toEqual([['transactions'], ['transactions']]);
   });
 
   it('serializes concurrent writes instead of nesting transactions', async () => {

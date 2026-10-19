@@ -33,3 +33,11 @@ export function parseAmountToCents(input: string): Cents {
 export function centsToInput(cents: Cents): string {
   return (cents / 100).toFixed(2).replace('.', ',');
 }
+
+/** Like `parseAmountToCents`, but keeps a leading minus sign: "-1.234,56" -> -123456. */
+export function parseSignedAmountToCents(input: string): Cents {
+  const trimmed = input.trim();
+  const negative = /^-/.test(trimmed);
+  const cents = parseAmountToCents(trimmed.replace(/^[-+]\s*/, ''));
+  return negative ? -cents : cents;
+}
