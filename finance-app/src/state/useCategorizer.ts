@@ -24,15 +24,23 @@ export function useCategorizer() {
     ['transactions', 'categories']
   );
 
-  const local = useMemo(() => (data ? LocalCategorizer.train(data.categories, data.history) : null), [data]);
+  const learn = settings.learnFromCorrections;
+  const model = useMemo(() => {
+    if (!data) return null;
+    // Without learning, the user's own choices don't train the model; archived categories are never suggested.
+    const history = learn ? data.history : data.history.filter((t) => t.categorySource !== 'manual');
+    const categories = data.categories.filter((c) => !c.archived);
+    return { categories, history, local: LocalCategorizer.train(categories, history) };
+  }, [data, learn]);
+  const local = model?.local ?? null;
   const ai = settings.aiCategorization ? provider : null;
 
   const suggest = useCallback(
     async (description: string, kind: CategoryKind): Promise<CategorySuggestion | null> => {
-      if (!data || !local) return null;
-      return suggestCategory({ local, ai, categories: data.categories, history: data.history }, { description, kind });
+      if (!model) return null;
+      return suggestCategory({ local: model.local, ai, categories: model.categories, history: model.history }, { description, kind });
     },
-    [data, local, ai]
+    [model, ai]
   );
 
   return { suggest, ready: !!local, ruleCount: local?.ruleCount ?? 0 };

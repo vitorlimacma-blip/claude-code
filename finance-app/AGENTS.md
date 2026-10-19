@@ -10,6 +10,7 @@ This project uses Expo SDK 58. Read the exact versioned docs at https://docs.exp
 - Every repository write goes through `ctx.write(...)` and emits the changed tables on the bus.
 - Money is integer cents; dates are `YYYY-MM-DD` strings; all rows have UUID ids, timestamps and soft deletes. "Today" is `todayKey()` (America/Sao_Paulo), never `toDateKey(new Date())`.
 - What counts as income, spending or neither is decided only in `src/domain/ledger.ts` (by `nature`, not `type`). Never sum `amount` by `type` elsewhere.
+- Lists show transactions through `src/domain/transactionDisplay.ts` (one row per transfer, day groups, badges) and `presentTransaction`; user actions that change data end with a toast offering "Desfazer" when it is safe.
 - Transfers, refunds and installments are created with `createTransfer` / `createRefund` / `createInstallments`; writes accept a client-generated `id` and are idempotent.
 - Never log or show raw errors: use `logError` / `userFacingError` from `src/platform/errors.ts` (no financial data in logs).
 - New data columns that need values for existing rows get a step in `src/data/dataMigrations.ts`.

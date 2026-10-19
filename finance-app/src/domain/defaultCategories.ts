@@ -10,10 +10,14 @@ export interface DefaultCategory {
 }
 
 /**
- * Categories shipped with the app, tuned for Brazilian personal finances.
- * Subcategories inherit the parent's color (and icon when not given).
- * Bump `DEFAULT_CATEGORIES_VERSION` when adding entries, so existing installs
- * receive the new ones (seeding never overwrites or re-creates user edits).
+ * Categories shipped with the app, tuned for Brazilian personal finances: a
+ * lean set of 12 expense categories (briefing §7), with optional
+ * subcategories. Subcategories inherit the parent's color (and icon when not given).
+ *
+ * Installs seeded before this set (version 1 had 14, with separate "Pets" and
+ * "Doações") keep their categories: seeding never changes existing data
+ * (decision D-010). Bump `DEFAULT_CATEGORIES_VERSION` only to add entries,
+ * keeping in mind that old installs would receive every id they don't have.
  */
 export const DEFAULT_CATEGORIES_VERSION = 1;
 
@@ -128,15 +132,10 @@ export const DEFAULT_EXPENSE_CATEGORIES: DefaultCategory[] = [
   },
   {
     id: 'sys-familia',
-    name: 'Família e filhos',
+    name: 'Família e pets',
     icon: 'people-outline',
     color: '#0D9488',
-  },
-  {
-    id: 'sys-pets',
-    name: 'Pets',
-    icon: 'paw-outline',
-    color: '#92400E',
+    children: [{ id: 'sys-familia-pets', name: 'Pets', icon: 'paw-outline' }],
   },
   {
     id: 'sys-financeiro',
@@ -150,16 +149,11 @@ export const DEFAULT_EXPENSE_CATEGORIES: DefaultCategory[] = [
     ],
   },
   {
-    id: 'sys-doacoes',
-    name: 'Doações',
-    icon: 'heart-outline',
-    color: '#E11D48',
-  },
-  {
     id: 'sys-outros',
     name: 'Outras despesas',
     icon: 'ellipsis-horizontal-circle-outline',
     color: '#6B7280',
+    children: [{ id: 'sys-outros-doacoes', name: 'Doações', icon: 'heart-outline' }],
   },
 ];
 

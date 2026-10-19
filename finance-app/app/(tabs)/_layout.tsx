@@ -24,7 +24,7 @@ export default function TabsLayout() {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
         // Explicit line height: Inter's descenders (ç, g, j) were clipped by the default label box.
-        // With five tabs, phones up to ~400 wide truncate "Lançamentos"; fixed by the navigation review of Fase 3 (D-034).
+        // Four tabs, by frequency of use; Categorias lives in Ajustes (briefing §7, D-035).
         tabBarLabelStyle: { ...theme.type.label, fontSize: 12, lineHeight: 16 },
         // Tall enough for a 24 icon plus the 16-high label (the default 49 squeezed the label).
         tabBarStyle: {
@@ -46,7 +46,6 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: 'Resumo', tabBarIcon: tabIcon('speedometer-outline') }} />
       <Tabs.Screen name="transactions" options={{ title: 'Lançamentos', tabBarIcon: tabIcon('list-outline') }} />
       <Tabs.Screen name="assistant" options={{ title: 'Assistente', tabBarIcon: tabIcon('sparkles-outline') }} />
-      <Tabs.Screen name="categories" options={{ title: 'Categorias', tabBarIcon: tabIcon('pricetags-outline') }} />
       <Tabs.Screen name="settings" options={{ title: 'Ajustes', tabBarIcon: tabIcon('settings-outline') }} />
     </Tabs>
   );

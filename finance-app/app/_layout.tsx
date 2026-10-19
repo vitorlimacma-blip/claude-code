@@ -65,6 +65,7 @@ function AppNavigation() {
             {/* Outside the tabs: hidden tabs (href: null) can't be navigated to with js-tabs. */}
             <Stack.Screen name="forecasts" options={{ title: 'Previsões' }} />
             <Stack.Screen name="catalogo" options={{ title: 'Catálogo de componentes' }} />
+            <Stack.Screen name="categories" options={{ title: 'Categorias' }} />
           </Stack>
           </ToastProvider>
         </AIContextProvider>

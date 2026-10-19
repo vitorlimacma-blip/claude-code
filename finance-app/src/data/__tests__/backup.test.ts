@@ -32,12 +32,14 @@ async function legacyDatabase() {
 const rowsOf = (ctx: ReturnType<typeof createTestContext>, table: string) =>
   ctx.sqlite.prepare(`SELECT * FROM ${table} ORDER BY 1`).all();
 
-describe('migration 0001 with automatic backup', () => {
+describe('migrations from the previous schema, with automatic backup', () => {
   it('backs up first, preserves every record (deleted ones too) and infers natures', async () => {
     const ctx = await legacyDatabase();
     const store = createTestSnapshotStore();
     const before = ctx.sqlite.prepare('SELECT id, amount, date, type, deleted_at FROM transactions ORDER BY id').all();
-    expect(await pendingMigrationCount(ctx.db)).toBe(1);
+    // Every migration after 0000 is pending (0001 natures, 0002 archived categories...).
+    const pending = await pendingMigrationCount(ctx.db);
+    expect(pending).toBeGreaterThanOrEqual(1);
 
     const repos = await prepareDatabase(ctx, { backups: store });
 
@@ -84,8 +86,9 @@ describe('migration 0001 with automatic backup', () => {
       list: async () => [],
       load: async () => undefined,
     };
+    const pending = await pendingMigrationCount(ctx.db);
     await expect(prepareDatabase(ctx, { backups: failing })).rejects.toThrow('no space left');
-    expect(await pendingMigrationCount(ctx.db)).toBe(1);
+    expect(await pendingMigrationCount(ctx.db)).toBe(pending);
     expect(rowsOf(ctx, 'transactions')).toHaveLength(8);
   });
 

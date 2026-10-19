@@ -7,7 +7,7 @@ const sync = { createdAt: '', updatedAt: '', deletedAt: null };
 const categories: Category[] = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES].flatMap((p) => {
   const kind = DEFAULT_INCOME_CATEGORIES.includes(p) ? ('income' as const) : ('expense' as const);
   return [
-    { ...sync, id: p.id, parentId: null, name: p.name, kind, color: p.color, icon: p.icon, isSystem: true, sortOrder: 0 },
+    { ...sync, id: p.id, parentId: null, name: p.name, kind, color: p.color, icon: p.icon, isSystem: true, archived: false, sortOrder: 0 },
     ...(p.children ?? []).map((c) => ({
       ...sync,
       id: c.id,
@@ -17,6 +17,7 @@ const categories: Category[] = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME
       color: p.color,
       icon: p.icon,
       isSystem: true,
+      archived: false,
       sortOrder: 0,
     })),
   ];

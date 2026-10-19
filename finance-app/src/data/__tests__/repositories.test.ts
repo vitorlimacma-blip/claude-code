@@ -1,3 +1,4 @@
+import { summarizePeriod } from '../../domain/ledger';
 import { sql } from 'drizzle-orm';
 import type { TableName } from '../changes';
 import { ValidationError } from '../context';
@@ -178,9 +179,15 @@ describe('categories', () => {
     await expect(repos.categories.create({ name: 'Sem tipo' })).rejects.toThrow(ValidationError);
   });
 
-  it('removing a category removes its subcategories and budgets and uncategorizes its transactions', async () => {
+  it('deletes only unused categories (with subcategories and budgets); used ones must be archived or merged', async () => {
     const { repos } = await setup();
-    await repos.budgets.set('sys-alimentacao', 80000);
+    await repos.budgets.set('sys-educacao', 80000);
+    await repos.categories.remove('sys-educacao');
+    const ids = (await repos.categories.list()).map((c) => c.id);
+    expect(ids).not.toContain('sys-educacao');
+    expect(ids).not.toContain('sys-educacao-cursos');
+    expect(await repos.budgets.list()).toEqual([]);
+
     const tx = await repos.transactions.create({
       accountId: DEFAULT_ACCOUNT_ID,
       type: 'expense',
@@ -188,14 +195,53 @@ describe('categories', () => {
       date: '2026-03-01',
       categoryId: 'sys-alimentacao-mercado',
     });
+    await expect(repos.categories.remove('sys-alimentacao')).rejects.toThrow(ValidationError);
+    expect(await repos.transactions.get(tx.id)).toMatchObject({ categoryId: 'sys-alimentacao-mercado' });
+    expect(await repos.categories.usage('sys-alimentacao')).toEqual({ transactions: 1, subcategories: 4, budgets: 0 });
+  });
 
-    await repos.categories.remove('sys-alimentacao');
+  it('archives a parent with its subcategories, keeps history, and brings a subcategory back with its parent', async () => {
+    const { repos } = await setup();
+    await repos.categories.setArchived('sys-lazer', true);
+    const archived = (await repos.categories.list()).filter((c) => c.archived).map((c) => c.id);
+    expect(archived.sort()).toEqual(['sys-lazer', 'sys-lazer-bares', 'sys-lazer-eventos', 'sys-lazer-hobbies', 'sys-lazer-viagens']);
+    await repos.categories.setArchived('sys-lazer-viagens', false);
+    const after = new Map((await repos.categories.list()).map((c) => [c.id, c.archived]));
+    expect(after.get('sys-lazer-viagens')).toBe(false);
+    expect(after.get('sys-lazer')).toBe(false);
+    expect(after.get('sys-lazer-bares')).toBe(true);
+  });
 
-    const ids = (await repos.categories.list()).map((c) => c.id);
-    expect(ids).not.toContain('sys-alimentacao');
-    expect(ids).not.toContain('sys-alimentacao-mercado');
-    expect(await repos.budgets.list()).toEqual([]);
-    expect(await repos.transactions.get(tx.id)).toMatchObject({ categoryId: null, categorySource: null });
+  it('reorders among siblings', async () => {
+    const { repos } = await setup();
+    const roots = async () =>
+      (await repos.categories.list({ kind: 'expense' })).filter((c) => !c.parentId).map((c) => c.id);
+    const before = await roots();
+    await repos.categories.move(before[1], 'up');
+    const after = await roots();
+    expect(after.slice(0, 2)).toEqual([before[1], before[0]]);
+    await repos.categories.move(after[0], 'up'); // already first: no change
+    expect(await roots()).toEqual(after);
+  });
+
+  it('merges a category into another: transactions move, totals stay, its budget goes, it is deleted', async () => {
+    const { repos } = await setup();
+    await repos.budgets.set('sys-cuidados', 20000);
+    const a = await repos.transactions.create({ accountId: DEFAULT_ACCOUNT_ID, type: 'expense', amount: 3000, date: '2026-03-01', categoryId: 'sys-cuidados' });
+    const b = await repos.transactions.create({ accountId: DEFAULT_ACCOUNT_ID, type: 'expense', amount: 1000, date: '2026-03-02', categoryId: 'sys-compras-roupas' });
+    const before = summarizePeriod(await repos.transactions.list()).expenses;
+
+    const moved = await repos.categories.consolidate('sys-cuidados', 'sys-compras');
+    expect(moved).toEqual({ transactions: 1, subcategories: 0, budgets: 1 });
+    expect((await repos.transactions.get(a.id))?.categoryId).toBe('sys-compras');
+    expect((await repos.transactions.get(b.id))?.categoryId).toBe('sys-compras-roupas');
+    expect(summarizePeriod(await repos.transactions.list()).expenses).toBe(before);
+    expect((await repos.categories.list()).some((c) => c.id === 'sys-cuidados')).toBe(false);
+    expect((await repos.budgets.amountsForMonth('2026-03')).has('sys-cuidados')).toBe(false);
+
+    await expect(repos.categories.consolidate('sys-lazer', 'sys-receita-salario')).rejects.toThrow(ValidationError);
+    await expect(repos.categories.consolidate('sys-lazer', 'sys-lazer-viagens')).rejects.toThrow(ValidationError);
+    await expect(repos.categories.consolidate('sys-lazer', 'sys-lazer')).rejects.toThrow(ValidationError);
   });
 });
 

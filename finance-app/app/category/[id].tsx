@@ -2,12 +2,14 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { ValidationError } from '../../src/data/context';
-import { centsToInput, parseAmountToCents } from '../../src/domain/money';
 import { confirm, notify } from '../../src/platform/dialogs';
 import type { Category, CategoryKind } from '../../src/domain/types';
 import { useRepositories } from '../../src/state/DataProvider';
 import { useQuery } from '../../src/state/useQuery';
 import { Button, IconBubble, MutedText, SectionTitle, TextField } from '../../src/ui/components';
+import { contrastRatio } from '../../src/ui/contrast';
+import { Icon } from '../../src/ui/icons';
+import { MoneyInput } from '../../src/ui/MoneyInput';
 import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
 
@@ -60,7 +62,7 @@ function CategoryForm({
   const [name, setName] = useState(category?.name ?? '');
   const [color, setColor] = useState(category?.color ?? parent?.color ?? PALETTE[0]);
   const [icon, setIcon] = useState(category?.icon ?? parent?.icon ?? ICONS[0]);
-  const [budgetInput, setBudgetInput] = useState(budget !== null ? centsToInput(budget) : '');
+  const [budgetCents, setBudgetCents] = useState(budget ?? 0);
 
   async function save() {
     try {
@@ -72,8 +74,7 @@ function CategoryForm({
         id = (await repos.categories.create({ name, kind, parentId: parent?.id ?? null, ...style })).id;
       }
       if (kind === 'expense' && id) {
-        const amount = budgetInput.trim() === '' ? null : parseAmountToCents(budgetInput);
-        await repos.budgets.set(id, amount);
+        await repos.budgets.set(id, budgetCents > 0 ? budgetCents : null);
       }
       router.back();
     } catch (err) {
@@ -84,9 +85,23 @@ function CategoryForm({
 
   async function remove() {
     if (!category) return;
+    const usage = await repos.categories.usage(category.id);
+    if (usage.transactions > 0) {
+      // Deleting would leave history without a category: offer archiving instead (merging is in Categorias).
+      const archive = await confirm(
+        'Categoria em uso',
+        `"${category.name}" tem ${usage.transactions} lançamento(s). Para manter o histórico, ela pode ser arquivada: some das ` +
+          'opções de novos lançamentos, mas os lançamentos e totais continuam. Para juntar com outra, use Categorias › Juntar.',
+        { confirmLabel: 'Arquivar' }
+      );
+      if (!archive) return;
+      await repos.categories.setArchived(category.id, true);
+      router.back();
+      return;
+    }
     const ok = await confirm(
       'Excluir categoria',
-      `Excluir "${category.name}"${isSub ? '' : ' e suas subcategorias'}? Os lançamentos serão mantidos, mas ficarão sem categoria.`,
+      `Excluir "${category.name}"${isSub || usage.subcategories === 0 ? '' : ` e suas ${usage.subcategories} subcategorias`}? Ela não tem lançamentos.`,
       { confirmLabel: 'Excluir', destructive: true }
     );
     if (!ok) return;
@@ -104,13 +119,7 @@ function CategoryForm({
 
       {kind === 'expense' && (
         <>
-          <TextField
-            label="Orçamento mensal (opcional)"
-            placeholder="Ex.: 800,00"
-            keyboardType="decimal-pad"
-            value={budgetInput}
-            onChangeText={setBudgetInput}
-          />
+          <MoneyInput label="Orçamento mensal (opcional, deixe zerado para não ter)" value={budgetCents} onChange={setBudgetCents} size="regular" />
           <MutedText>
             {isSub
               ? 'O orçamento de uma subcategoria é acompanhado separadamente; os gastos dela também contam para a categoria-mãe.'
@@ -127,15 +136,26 @@ function CategoryForm({
               <Pressable
                 key={c}
                 onPress={() => setColor(c)}
-                accessibilityLabel={`Cor ${c}`}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: c === color }}
+                accessibilityLabel={`Cor ${PALETTE.indexOf(c) + 1}`}
                 style={[styles.swatch, { backgroundColor: c }, c === color && { borderColor: theme.colors.textPrimary, borderWidth: 3 }]}
-              />
+              >
+                {c === color && <Icon name="checkmark" size={18} color={contrastRatio('#FFFFFF', c) >= 3 ? '#FFFFFF' : '#132A26'} />}
+              </Pressable>
             ))}
           </View>
           <SectionTitle>Ícone</SectionTitle>
           <View style={styles.grid}>
             {ICONS.map((i) => (
-              <Pressable key={i} onPress={() => setIcon(i)} style={[styles.iconCell, i === icon && { borderColor: color }]}>
+              <Pressable
+                key={i}
+                onPress={() => setIcon(i)}
+                accessibilityRole="radio"
+                accessibilityState={{ checked: i === icon }}
+                accessibilityLabel={`Ícone ${ICONS.indexOf(i) + 1}`}
+                style={[styles.iconCell, i === icon && { borderColor: theme.colors.textPrimary }]}
+              >
                 <IconBubble icon={i} color={color} size={36} />
               </Pressable>
             ))}
@@ -152,8 +172,8 @@ function CategoryForm({
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12, paddingBottom: 48, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
+  content: { padding: 20, gap: 14, paddingBottom: 48, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  swatch: { width: 32, height: 32, borderRadius: 16 },
-  iconCell: { borderWidth: 2, borderColor: 'transparent', borderRadius: 22, padding: 2 },
+  swatch: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  iconCell: { borderWidth: 2, borderColor: 'transparent', borderRadius: 26, padding: 4 },
 });

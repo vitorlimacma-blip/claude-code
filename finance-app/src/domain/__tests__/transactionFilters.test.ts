@@ -12,7 +12,7 @@ import type { Category, Transaction } from '../types';
 
 const sync = { createdAt: '', updatedAt: '', deletedAt: null };
 const cat = (id: string, parentId: string | null = null): Category => ({
-  ...sync, id, parentId, name: id, kind: 'expense', color: '#000', icon: 'x', isSystem: true, sortOrder: 0,
+  ...sync, id, parentId, name: id, kind: 'expense', color: '#000', icon: 'x', isSystem: true, archived: false, sortOrder: 0,
 });
 const categories = [cat('food'), cat('food-market', 'food'), cat('food-delivery', 'food'), cat('transport')];
 
@@ -65,6 +65,6 @@ describe('helpers', () => {
   it('toggles values and counts active filters', () => {
     expect(toggleValue(['a'], 'b')).toEqual(['a', 'b']);
     expect(toggleValue(['a', 'b'], 'a')).toEqual(['b']);
-    expect(activeFilterCount({ categoryIds: ['a'], paymentMethods: ['pix', 'debit'], accountIds: [] })).toBe(3);
+    expect(activeFilterCount({ ...EMPTY_FILTERS, categoryIds: ['a'], paymentMethods: ['pix', 'debit'], query: 'x' })).toBe(3);
   });
 });

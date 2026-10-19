@@ -27,12 +27,22 @@ import { SCREEN_PADDING, SECTION_GAP, TOUCH_TARGET } from './tokens';
 
 export type { IconName } from './icons';
 
-/** Keyboard focus ring (web and hardware keyboards): visible only while focused. */
+// Like CSS :focus-visible: the ring shows when focus came from the keyboard,
+// not after a tap or a mouse click (browsers also focus on click).
+let keyboardInput = false;
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' || e.key.startsWith('Arrow')) keyboardInput = true;
+  }, true);
+  document.addEventListener('pointerdown', () => (keyboardInput = false), true);
+}
+
+/** Keyboard focus ring: visible only while focused from the keyboard. */
 function useFocusRing() {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
   return {
-    handlers: { onFocus: () => setFocused(true), onBlur: () => setFocused(false) },
+    handlers: { onFocus: () => setFocused(Platform.OS !== 'web' || keyboardInput), onBlur: () => setFocused(false) },
     style: focused ? ({ outlineColor: theme.colors.focus, outlineWidth: 2, outlineStyle: 'solid', outlineOffset: 2 } as ViewStyle) : null,
   };
 }

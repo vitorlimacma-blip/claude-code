@@ -124,3 +124,20 @@ export function dayOfMonthKey(monthKey: string, day: number): string {
   const [y, m] = monthKey.split('-').map(Number);
   return `${monthKey}-${String(Math.min(day, daysInMonth(y, m - 1))).padStart(2, '0')}`;
 }
+
+const WEEKDAYS_PT = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+
+/** Heading of a day in a list: "Hoje", "Ontem", "sexta-feira, 17 de outubro" (with the year when not the current one). */
+export function formatDayHeading(key: string, today: string): string {
+  if (key === today) return 'Hoje';
+  const date = fromDateKey(key);
+  if (key === addDaysToDateKey(today, -1)) return 'Ontem';
+  const base = `${WEEKDAYS_PT[date.getDay()]}, ${date.getDate()} de ${MONTHS_PT[date.getMonth()]}`;
+  return key.slice(0, 4) === today.slice(0, 4) ? base : `${base} de ${key.slice(0, 4)}`;
+}
+
+/** Day `delta` days after `key` (negative for before). */
+export function addDaysToDateKey(key: string, delta: number): string {
+  const d = fromDateKey(key);
+  return toDateKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() + delta));
+}

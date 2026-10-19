@@ -10,6 +10,12 @@ export interface AISettings {
   webSearch: boolean;
   /** Ask the AI for a category when local rules aren't confident. */
   aiCategorization: boolean;
+  /**
+   * Learn from the categories the user picks or corrects. Off: suggestions
+   * come only from the built-in rules and from categories set by imports or
+   * accepted suggestions, not from manual choices.
+   */
+  learnFromCorrections: boolean;
 }
 
 export const AI_SETTINGS_KEY = 'ai.settings';
@@ -22,6 +28,7 @@ export const DEFAULT_AI_SETTINGS: AISettings = {
   },
   webSearch: false,
   aiCategorization: true,
+  learnFromCorrections: true,
 };
 
 export const PROVIDER_LABELS: Record<ProviderId, string> = {

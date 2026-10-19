@@ -53,6 +53,8 @@ export const categories = sqliteTable(
     color: text('color').notNull(),
     icon: text('icon').notNull(),
     isSystem: integer('is_system', { mode: 'boolean' }).notNull().default(false),
+    /** Hidden from pickers; its history and totals stay. */
+    archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
     sortOrder: integer('sort_order').notNull().default(0),
   },
   (t) => [index('categories_parent_idx').on(t.parentId)]

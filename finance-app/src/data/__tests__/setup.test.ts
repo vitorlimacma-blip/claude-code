@@ -36,12 +36,12 @@ describe('prepareDatabase', () => {
   it('is idempotent and never resurrects a default category the user deleted', async () => {
     const ctx = createTestContext();
     const repos = await prepareDatabase(ctx);
-    await repos.categories.remove('sys-pets');
+    await repos.categories.remove('sys-cuidados');
 
     const again = await prepareDatabase(ctx);
     const categories = await again.categories.list();
     expect(categories).toHaveLength(seededCount - 1);
-    expect(categories.some((c) => c.id === 'sys-pets')).toBe(false);
+    expect(categories.some((c) => c.id === 'sys-cuidados')).toBe(false);
     expect(await again.accounts.list()).toHaveLength(1);
   });
 

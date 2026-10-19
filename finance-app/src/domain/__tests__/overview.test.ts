@@ -5,7 +5,7 @@ import type { Category } from '../types';
 const sync = { createdAt: '', updatedAt: '', deletedAt: null };
 
 function cat(id: string, parentId: string | null = null, kind: Category['kind'] = 'expense'): Category {
-  return { ...sync, id, parentId, name: id, kind, color: '#000', icon: 'x', isSystem: true, sortOrder: 0 };
+  return { ...sync, id, parentId, name: id, kind, color: '#000', icon: 'x', isSystem: true, archived: false, sortOrder: 0 };
 }
 
 const tx = makeTransaction;

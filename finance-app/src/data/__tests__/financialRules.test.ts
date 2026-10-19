@@ -222,3 +222,28 @@ describe('financial rules end to end', () => {
     expect(await countInconsistentNatures(ctx)).toBe(0);
   });
 });
+
+describe('undo', () => {
+  it('restores a deleted transaction, and both legs of a transfer', async () => {
+    const { repos } = await setup();
+    const t = await repos.transactions.create({ accountId: 'itau', type: 'expense', amount: 500, date: '2026-03-01' });
+    const { out } = await repos.transactions.createTransfer({ fromAccountId: 'itau', toAccountId: 'xp', amount: 100, date: '2026-03-01' });
+    await repos.transactions.remove(t.id);
+    await repos.transactions.remove(out.id);
+    expect(await repos.transactions.list()).toHaveLength(0);
+    await repos.transactions.restore(t.id);
+    await repos.transactions.restore(out.id);
+    expect(await repos.transactions.list()).toHaveLength(3);
+    expect(summarizePeriod(await repos.transactions.list()).expenses).toBe(500);
+  });
+
+  it('removes and restores a whole installment purchase', async () => {
+    const { repos } = await setup();
+    await repos.transactions.createInstallments({ id: 'g', accountId: 'card', total: 9000, count: 3, firstDate: '2026-03-01' });
+    const ids = await repos.transactions.removeInstallmentGroup('g');
+    expect(ids).toHaveLength(3);
+    expect(await repos.transactions.list()).toHaveLength(0);
+    await repos.transactions.restoreMany(ids);
+    expect((await repos.transactions.listInstallments('g')).map((r) => r.amount)).toEqual([3000, 3000, 3000]);
+  });
+});

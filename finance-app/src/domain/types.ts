@@ -60,6 +60,8 @@ export interface Category extends SyncFields {
   icon: string;
   /** True for categories shipped with the app (seeded), false for user-created ones. */
   isSystem: boolean;
+  /** Archived categories are no longer offered for new entries; their history and totals stay. */
+  archived: boolean;
   sortOrder: number;
 }
 

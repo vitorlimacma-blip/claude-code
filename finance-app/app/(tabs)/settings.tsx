@@ -1,7 +1,6 @@
-import { Icon } from '../../src/ui/icons';
 import { router, type Href } from 'expo-router';
-import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { PROVIDER_LABELS } from '../../src/ai/config';
 import { todayKey } from '../../src/domain/dates';
 import { confirm, notify } from '../../src/platform/dialogs';
@@ -9,28 +8,66 @@ import { useAI } from '../../src/state/AIContext';
 import { useRepositories } from '../../src/state/DataProvider';
 import { useQuery } from '../../src/state/useQuery';
 import { useThemePreference } from '../../src/state/useThemePreference';
-import { Button, Card, IconBubble, MutedText, Screen, SectionTitle, SegmentedControl, Title } from '../../src/ui/components';
+import { Button, Card, IconBubble, MutedText, Screen, Section, SegmentedControl, Title } from '../../src/ui/components';
+import { Icon } from '../../src/ui/icons';
 import { useTheme, type ThemePreference } from '../../src/ui/theme';
 
 function Row({ icon, color, title, subtitle, href }: { icon: string; color: string; title: string; subtitle: string; href: Href }) {
   const theme = useTheme();
   return (
-    <Pressable onPress={() => router.push(href)} style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]}>
+    <Pressable
+      onPress={() => router.push(href)}
+      accessibilityRole="button"
+      accessibilityHint={subtitle}
+      style={({ pressed }) => [styles.row, { backgroundColor: pressed ? theme.colors.pressed : 'transparent', borderRadius: theme.radius.md }]}
+    >
       <IconBubble icon={icon} color={color} />
       <View style={{ flex: 1 }}>
-        <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]}>{title}</Text>
-        <MutedText style={{ fontSize: 12 }}>{subtitle}</MutedText>
+        <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
+        <Text style={[theme.type.label, { color: theme.colors.textSecondary }]}>{subtitle}</Text>
       </View>
-      <Icon name="chevron-forward" size={18} color={theme.colors.textSecondary} />
+      <Icon name="chevron-forward" size={20} color={theme.colors.textSecondary} />
     </Pressable>
   );
 }
 
+function SwitchRow({ title, subtitle, value, onChange }: { title: string; subtitle: string; value: boolean; onChange: (v: boolean) => void }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.row}>
+      <View style={{ flex: 1 }}>
+        <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{title}</Text>
+        <Text style={[theme.type.label, { color: theme.colors.textSecondary }]}>{subtitle}</Text>
+      </View>
+      <Switch value={value} onValueChange={onChange} accessibilityLabel={title} />
+    </View>
+  );
+}
+
+function Group({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <Section title={title}>
+      <Card style={{ gap: 4, paddingVertical: 8 }}>{children}</Card>
+    </Section>
+  );
+}
+
+/** Ajustes, by the sections of briefing §7. */
 export default function SettingsScreen() {
-  const { settings, provider } = useAI();
+  const { settings, provider, saveSettings } = useAI();
   const repos = useRepositories();
-  const { data: accounts } = useQuery((r) => r.accounts.list(), ['accounts']);
-  const { data: hasDemo } = useQuery((r) => r.demo.exists(), ['accounts']);
+  const { data } = useQuery(
+    async (r) => {
+      const [accounts, categories, hasDemo, backups] = await Promise.all([
+        r.accounts.list(),
+        r.categories.list(),
+        r.demo.exists(),
+        r.backup.listBackups(),
+      ]);
+      return { accounts, categories, hasDemo, backups };
+    },
+    ['accounts', 'categories', 'settings']
+  );
   const [busy, setBusy] = useState(false);
   const [themePreference, setThemePreference] = useThemePreference();
 
@@ -68,86 +105,107 @@ export default function SettingsScreen() {
 
   const aiStatus =
     settings.provider === 'none'
-      ? 'Desligada — usando só a inteligência local'
+      ? 'Desligada: só a inteligência local, no aparelho'
       : provider
         ? `${PROVIDER_LABELS[settings.provider]} · ativa`
         : `${PROVIDER_LABELS[settings.provider]} · falta a chave de API`;
+  const activeCategories = data?.categories.filter((c) => !c.archived && !c.parentId).length;
+  const lastBackup = data?.backups[0];
 
   return (
     <Screen>
       <Title>Ajustes</Title>
-      <Card style={{ gap: 14 }}>
-        <Row icon="sparkles-outline" color="#7C3AED" title="Inteligência artificial" subtitle={aiStatus} href="/ai-settings" />
-        <Row
-          icon="wallet-outline"
-          color="#16A34A"
-          title="Contas e cartões"
-          subtitle={accounts ? `${accounts.length} conta(s) ativa(s)` : ' '}
-          href="/accounts"
-        />
+
+      <Group title="Contas e categorias">
+        <Row icon="wallet-outline" color="#176B5B" title="Contas e cartões" subtitle={data ? `${data.accounts.length} conta(s) ativa(s)` : ' '} href="/accounts" />
+        <Row icon="pricetags-outline" color="#365BB5" title="Categorias" subtitle={activeCategories !== undefined ? `${activeCategories} principais · reordenar, arquivar, juntar` : ' '} href="/categories" />
         <Row icon="trending-up-outline" color="#0891B2" title="Previsões" subtitle="Projeção de gastos do mês e do ano" href="/forecasts" />
+      </Group>
+
+      <Section title="Aparência e acessibilidade">
+        <SegmentedControl<ThemePreference>
+          value={themePreference}
+          onChange={setThemePreference}
+          options={[
+            { value: 'system', label: 'Sistema' },
+            { value: 'light', label: 'Claro' },
+            { value: 'dark', label: 'Escuro' },
+          ]}
+        />
+        <MutedText>
+          O tamanho do texto e a redução de movimento seguem os ajustes de acessibilidade do aparelho. Valores e totais nunca
+          dependem só da cor: sempre levam sinal ou texto.
+        </MutedText>
+      </Section>
+
+      <Group title="Privacidade e inteligência artificial">
+        <Row icon="sparkles-outline" color="#7C3AED" title="Inteligência artificial" subtitle={aiStatus} href="/ai-settings" />
+        <SwitchRow
+          title="Aprender com minhas correções"
+          subtitle="Quando você escolhe ou corrige uma categoria, as próximas sugestões passam a seguir essa escolha. Desligado, valem só as regras do app."
+          value={settings.learnFromCorrections}
+          onChange={(learnFromCorrections) => void saveSettings({ ...settings, learnFromCorrections })}
+        />
+        <View style={styles.note}>
+          <MutedText style={{ fontSize: 13 }}>
+            Seus dados ficam só {Platform.OS === 'web' ? 'neste navegador' : 'neste aparelho'}. Com a IA ligada, cada pergunta envia ao
+            provedor escolhido apenas os números necessários para respondê-la; a chave de API fica guardada à parte.
+          </MutedText>
+        </View>
+      </Group>
+
+      <Group title="Seus dados">
         <Row
           icon="shield-checkmark-outline"
           color="#2563EB"
           title="Backup e restauração"
-          subtitle="Exportar, restaurar e backups automáticos"
+          subtitle={lastBackup ? `Último backup: ${new Date(lastBackup.createdAt).toLocaleDateString('pt-BR')}` : 'Exportar, restaurar e backups automáticos'}
           href="/backup"
         />
-      </Card>
+        {Platform.OS === 'web' && (
+          <View style={styles.note}>
+            <MutedText style={{ fontSize: 13 }}>
+              Atenção: limpar os dados de navegação deste site apaga os seus lançamentos e os backups automáticos. Exporte seus dados
+              em Backup e restauração e guarde o arquivo fora do navegador.
+            </MutedText>
+          </View>
+        )}
+      </Group>
 
-      <SectionTitle>Aparência</SectionTitle>
-      <SegmentedControl<ThemePreference>
-        value={themePreference}
-        onChange={setThemePreference}
-        options={[
-          { value: 'system', label: 'Sistema' },
-          { value: 'light', label: 'Claro' },
-          { value: 'dark', label: 'Escuro' },
-        ]}
-      />
-      <Card>
-        <Row
-          icon="color-palette-outline"
-          color="#176B5B"
-          title="Catálogo de componentes"
-          subtitle="Tela interna para revisar o visual nos dois temas"
-          href="/catalogo"
-        />
-      </Card>
+      <Group title="Notificações">
+        <View style={styles.note}>
+          <MutedText>
+            O app ainda não envia notificações. Quando houver avisos de vencimento e de risco de caixa, eles serão opcionais e o
+            app só vai pedir permissão no momento em que forem úteis.
+          </MutedText>
+        </View>
+      </Group>
 
-      <SectionTitle>Dados de teste</SectionTitle>
-      <Card style={{ gap: 10 }}>
-        <MutedText>
-          Preenche o app com uma rotina financeira fictícia — salário, contas fixas, assinaturas, cartão de crédito,
-          investimentos, gastos fora do padrão e lançamentos sem categoria — para experimentar o assistente, a
-          categorização com IA, os orçamentos e as previsões.
-        </MutedText>
-        <Button
-          label={busy ? 'Aguarde…' : hasDemo ? 'Gerar de novo (substitui os de teste)' : 'Gerar dados de teste'}
-          icon="flask-outline"
-          variant="secondary"
-          onPress={generateDemo}
-          disabled={busy}
-        />
-        {hasDemo && <Button label="Apagar dados de teste" icon="trash-outline" variant="secondary" onPress={clearDemo} disabled={busy} />}
-      </Card>
+      <Group title="Dados de teste">
+        <View style={[styles.note, { gap: 10 }]}>
+          <MutedText>
+            Preenche o app com uma rotina financeira fictícia, identificada como teste, para experimentar o assistente, a
+            categorização, os orçamentos e as previsões. Seus dados não são alterados.
+          </MutedText>
+          <Button
+            label={busy ? 'Aguarde…' : data?.hasDemo ? 'Gerar de novo (substitui os de teste)' : 'Gerar dados de teste'}
+            icon="flask-outline"
+            variant="secondary"
+            onPress={generateDemo}
+            disabled={busy}
+          />
+          {data?.hasDemo && <Button label="Apagar dados de teste" icon="trash-outline" variant="ghost" onPress={clearDemo} disabled={busy} />}
+        </View>
+      </Group>
 
-      <SectionTitle>Seus dados</SectionTitle>
-      <MutedText>
-        Tudo fica guardado só {Platform.OS === 'web' ? 'neste navegador, neste computador' : 'neste aparelho'}, sem
-        servidor. Quando a IA está ativa, apenas o necessário para cada pergunta é enviado ao provedor escolhido.
-      </MutedText>
-      {Platform.OS === 'web' && (
-        <MutedText>
-          Atenção: limpar os dados de navegação deste site apaga os seus lançamentos e os backups automáticos.
-          Exporte seus dados em Backup e restauração e guarde o arquivo fora do navegador.
-        </MutedText>
-      )}
+      <Group title="Sobre o app">
+        <Row icon="color-palette-outline" color="#176B5B" title="Catálogo de componentes" subtitle="Tela interna para revisar o visual nos dois temas" href="/catalogo" />
+      </Group>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  rowTitle: { fontSize: 15, fontWeight: '600' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 64, paddingHorizontal: 8, paddingVertical: 8 },
+  note: { paddingHorizontal: 8, paddingVertical: 8 },
 });

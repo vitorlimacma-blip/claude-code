@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, isNull, lte, type SQL } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, isNull, lte, type SQL } from 'drizzle-orm';
 import {
   DEFAULT_CURRENCY,
   type Cents,
@@ -373,6 +373,51 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
         return true;
       });
       if (removed) bus.emit('transactions');
+    },
+
+    /**
+     * Undoes `remove`: brings back a deleted transaction (both legs, for a
+     * transfer). Used by the "Desfazer" of the deletion toast.
+     */
+    async restore(id: string): Promise<void> {
+      const restored = await ctx.write(async (tx) => {
+        const row = await tx.select().from(transactions).where(eq(transactions.id, id)).get();
+        if (!row || !row.deletedAt) return false;
+        await tx
+          .update(transactions)
+          .set({ deletedAt: null, updatedAt: timestamp(ctx) })
+          .where(row.transferPairId ? eq(transactions.transferPairId, row.transferPairId) : eq(transactions.id, id));
+        return true;
+      });
+      if (restored) bus.emit('transactions');
+    },
+
+    /** Soft-deletes every installment of a purchase; returns the ids, for undo. */
+    async removeInstallmentGroup(installmentGroupId: string): Promise<string[]> {
+      const now = timestamp(ctx);
+      const ids = await ctx.write(async (tx) => {
+        const rows = await tx
+          .select({ id: transactions.id })
+          .from(transactions)
+          .where(and(eq(transactions.installmentGroupId, installmentGroupId), isNull(transactions.deletedAt)));
+        if (rows.length === 0) return [];
+        await tx
+          .update(transactions)
+          .set({ deletedAt: now, updatedAt: now })
+          .where(and(eq(transactions.installmentGroupId, installmentGroupId), isNull(transactions.deletedAt)));
+        return rows.map((r) => r.id);
+      });
+      if (ids.length > 0) bus.emit('transactions');
+      return ids;
+    },
+
+    /** Undoes `removeInstallmentGroup` for the given ids. */
+    async restoreMany(ids: string[]): Promise<void> {
+      if (ids.length === 0) return;
+      await ctx.write((tx) =>
+        tx.update(transactions).set({ deletedAt: null, updatedAt: timestamp(ctx) }).where(inArray(transactions.id, ids))
+      );
+      bus.emit('transactions');
     },
 
     /**
