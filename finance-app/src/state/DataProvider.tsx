@@ -23,8 +23,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   if (error) {
     return (
       <View style={[styles.center, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.title, { color: theme.colors.text }]}>Não foi possível abrir o banco de dados</Text>
-        <Text style={{ color: theme.colors.textMuted }}>
+        <Text style={[styles.title, { color: theme.colors.textPrimary }]}>Não foi possível abrir o banco de dados</Text>
+        <Text style={{ color: theme.colors.textSecondary }}>
           {userFacingError(
             error,
             'Seus dados não foram alterados. Feche e abra o app de novo.'

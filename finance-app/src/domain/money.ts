@@ -47,3 +47,41 @@ export function parseSignedAmountToCents(input: string): Cents {
   const cents = parseAmountToCents(trimmed.replace(/^[-+]\s*/, ''));
   return negative ? -cents : cents;
 }
+
+/** Most digits the money field accepts: R$ 9.999.999.999,99. */
+export const MAX_AMOUNT_DIGITS = 12;
+
+/**
+ * Cents from what is typed in a money field that fills from the right, like
+ * banking apps: typing 1, 2, 3, 4 shows 0,01 → 0,12 → 1,23 → 12,34. Anything
+ * but digits (separators, "R$", spaces) is ignored, so it works with any
+ * keyboard or locale.
+ */
+export function centsFromDigits(text: string): Cents {
+  const digits = text.replace(/\D/g, '').replace(/^0+/, '').slice(0, MAX_AMOUNT_DIGITS);
+  return digits === '' ? 0 : Number(digits);
+}
+
+const plainFormatter = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** "1.234,56" (no currency symbol), for the money field. */
+export function formatCentsPlain(cents: Cents): string {
+  return plainFormatter.format(cents / 100);
+}
+
+/**
+ * Amount with an explicit sign, so direction never depends on color alone:
+ * "+R$ 10,00", "−R$ 10,00" (true minus sign) or "R$ 10,00".
+ */
+export function formatSignedCents(cents: Cents, sign: 'auto' | 'plus' | 'minus' | 'none' = 'auto'): string {
+  const abs = formatCents(Math.abs(cents));
+  const resolved = sign === 'auto' ? (cents > 0 ? 'plus' : cents < 0 ? 'minus' : 'none') : sign;
+  return resolved === 'plus' ? `+${abs}` : resolved === 'minus' ? `−${abs}` : abs;
+}
+
+/** What a screen reader should say for an amount: "menos R$ 10,00". */
+export function spokenAmount(cents: Cents, sign: 'auto' | 'plus' | 'minus' | 'none' = 'auto'): string {
+  const resolved = sign === 'auto' ? (cents > 0 ? 'plus' : cents < 0 ? 'minus' : 'none') : sign;
+  const abs = formatCents(Math.abs(cents));
+  return resolved === 'plus' ? `mais ${abs}` : resolved === 'minus' ? `menos ${abs}` : abs;
+}

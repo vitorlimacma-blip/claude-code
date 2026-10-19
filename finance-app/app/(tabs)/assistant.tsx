@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../src/ui/icons';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
@@ -92,7 +92,7 @@ export default function AssistantScreen() {
       <Screen>
         <Title>Assistente</Title>
         <Card style={{ gap: 10 }}>
-          <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Converse com suas finanças</Text>
+          <Text style={[styles.cardTitle, { color: theme.colors.textPrimary }]}>Converse com suas finanças</Text>
           <MutedText>
             Pergunte em linguagem natural — &quot;quanto gastei com mercado este ano?&quot;, &quot;estou gastando mais
             que no mês passado?&quot; — e a IA responde consultando os seus lançamentos, que continuam no aparelho.
@@ -120,7 +120,7 @@ export default function AssistantScreen() {
                 right={
                   turns.length > 0 ? (
                     <Pressable onPress={() => setTurns([])} hitSlop={8} accessibilityLabel="Nova conversa">
-                      <Ionicons name="create-outline" size={22} color={theme.colors.primary} />
+                      <Icon name="create-outline" size={22} color={theme.colors.primary} />
                     </Pressable>
                   ) : undefined
                 }
@@ -157,9 +157,9 @@ export default function AssistantScreen() {
         />
         <View style={[styles.inputBar, { borderTopColor: theme.colors.border, backgroundColor: theme.colors.surface }]}>
           <TextInput
-            style={[styles.input, { color: theme.colors.text, backgroundColor: theme.colors.surfaceMuted }]}
+            style={[styles.input, { color: theme.colors.textPrimary, backgroundColor: theme.colors.surfaceMuted }]}
             placeholder="Pergunte sobre suas finanças…"
-            placeholderTextColor={theme.colors.textMuted}
+            placeholderTextColor={theme.colors.textSecondary}
             value={input}
             onChangeText={setInput}
             multiline
@@ -179,7 +179,7 @@ export default function AssistantScreen() {
             accessibilityLabel="Enviar"
             style={[styles.send, { backgroundColor: theme.colors.primary, opacity: busy || !input.trim() ? 0.4 : 1 }]}
           >
-            <Ionicons name="arrow-up" size={20} color={theme.colors.onPrimary} />
+            <Icon name="arrow-up" size={20} color={theme.colors.onPrimary} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>

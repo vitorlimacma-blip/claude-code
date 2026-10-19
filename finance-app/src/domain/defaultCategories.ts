@@ -4,7 +4,7 @@ export interface DefaultCategory {
   /** Stable id, identical on every install, so seeded categories line up across devices once sync exists. */
   id: string;
   name: string;
-  icon: string; // Ionicons glyph
+  icon: string; // key of ICONS in src/ui/icons.tsx
   color: string;
   children?: { id: string; name: string; icon?: string }[];
 }

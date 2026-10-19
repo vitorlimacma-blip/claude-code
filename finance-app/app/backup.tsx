@@ -132,7 +132,7 @@ export default function BackupScreen() {
         {backups.map((info) => (
           <View key={info.id} style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.title, { color: theme.colors.text }]}>{formatTimestamp(info.createdAt)}</Text>
+              <Text style={[styles.title, { color: theme.colors.textPrimary }]}>{formatTimestamp(info.createdAt)}</Text>
               <MutedText style={{ fontSize: 12 }}>
                 {REASON_LABELS[info.reason]} · {describe(info)}
               </MutedText>

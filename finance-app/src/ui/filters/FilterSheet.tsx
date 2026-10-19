@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../icons';
 import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,9 +40,9 @@ export function FilterSheet({
         >
           {!wide && <View style={[styles.handle, { backgroundColor: theme.colors.border }]} />}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
+            <Text style={[styles.title, { color: theme.colors.textPrimary }]}>{title}</Text>
             <Pressable onPress={onClose} hitSlop={10} accessibilityLabel="Fechar">
-              <Ionicons name="close" size={22} color={theme.colors.textMuted} />
+              <Icon name="close" size={22} color={theme.colors.textSecondary} />
             </Pressable>
           </View>
           <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">

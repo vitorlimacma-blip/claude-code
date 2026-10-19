@@ -179,8 +179,8 @@ function TransactionForm({
             value={type}
             onChange={changeType}
             options={[
-              { value: 'expense', label: 'Despesa', color: theme.colors.danger },
-              { value: 'income', label: 'Receita', color: theme.colors.positive },
+              { value: 'expense', label: 'Despesa' },
+              { value: 'income', label: 'Receita' },
               // An existing expense/income can't become a transfer (it would need a second account).
               ...(transaction ? [] : [{ value: 'transfer' as const, label: 'Transferência' }]),
             ]}

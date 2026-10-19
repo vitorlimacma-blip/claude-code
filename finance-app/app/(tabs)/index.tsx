@@ -85,12 +85,12 @@ export default function DashboardScreen() {
 icon={ACCOUNT_TYPE_ICONS[account.type]} color={account.color}
               />
               <View style={{ flex: 1 }}>
-                <Text style={[styles.rowTitle, { color: theme.colors.text }]}>{account.name}</Text>
+                <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]}>{account.name}</Text>
                 {findInstitution(account.institution) && (
                   <MutedText>{findInstitution(account.institution)?.name}</MutedText>
                 )}
               </View>
-              <Text style={[styles.amount, { color: balance < 0 ? theme.colors.negative : theme.colors.text }]}>
+              <Text style={[styles.amount, { color: balance < 0 ? theme.colors.amountNegative : theme.colors.textPrimary }]}>
                 {formatCents(balance)}
               </Text>
             </View>
@@ -109,7 +109,7 @@ icon={ACCOUNT_TYPE_ICONS[account.type]} color={account.color}
       {threats.map((alert) => (
         <Card key={alert.categoryId} style={{ gap: 6 }}>
           <View style={styles.alertHeader}>
-            <Text style={[styles.rowTitle, { color: theme.colors.text }]}>{alert.categoryName}</Text>
+            <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]}>{alert.categoryName}</Text>
             <AlertBadge level={alert.level} />
           </View>
           <MutedText>

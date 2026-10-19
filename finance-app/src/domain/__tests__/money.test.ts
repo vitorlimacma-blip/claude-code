@@ -1,4 +1,13 @@
-import { centsToInput, formatCents, parseAmountToCents, parseSignedAmountToCents } from '../money';
+import {
+  centsFromDigits,
+  centsToInput,
+  formatCents,
+  formatCentsPlain,
+  formatSignedCents,
+  parseAmountToCents,
+  parseSignedAmountToCents,
+  spokenAmount,
+} from '../money';
 
 describe('money', () => {
   it.each([
@@ -39,5 +48,27 @@ describe('parseAmountToCents without floating point', () => {
     ['-5', 0], // signs are handled by parseSignedAmountToCents
   ])('%s -> %i', (input, cents) => {
     expect(parseAmountToCents(input)).toBe(cents);
+  });
+});
+
+describe('money field helpers', () => {
+  it('fills from the right, ignoring anything but digits', () => {
+    expect(centsFromDigits('')).toBe(0);
+    expect(centsFromDigits('1')).toBe(1);
+    expect(centsFromDigits('1234')).toBe(1234);
+    expect(centsFromDigits('R$ 12,34')).toBe(1234);
+    expect(centsFromDigits('0001')).toBe(1);
+    expect(centsFromDigits('9'.repeat(20))).toBe(999999999999);
+  });
+
+  it('formats without the currency, and with an explicit sign', () => {
+    const nbsp = (s: string) => s.replace(/ /g, ' ');
+    expect(formatCentsPlain(123456)).toBe('1.234,56');
+    expect(formatCentsPlain(5)).toBe('0,05');
+    expect(nbsp(formatSignedCents(1000))).toBe('+R$ 10,00');
+    expect(nbsp(formatSignedCents(-1000))).toBe('−R$ 10,00');
+    expect(nbsp(formatSignedCents(0))).toBe('R$ 0,00');
+    expect(nbsp(formatSignedCents(1000, 'minus'))).toBe('−R$ 10,00');
+    expect(nbsp(spokenAmount(-1050))).toBe('menos R$ 10,50');
   });
 });

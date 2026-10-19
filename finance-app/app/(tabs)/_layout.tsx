@@ -1,16 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router/js-tabs';
-import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Icon, type IconName } from '../../src/ui/icons';
 import { useIsWide } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
-
-type IconName = ComponentProps<typeof Ionicons>['name'];
 
 function tabIcon(name: IconName) {
   // eslint-disable-next-line react/display-name
   return ({ color, size }: { color: ColorValue; size: number }) => (
-    <Ionicons name={name} size={size} color={color as string} />
+    <Icon name={name} size={Math.min(size, 24)} color={color} />
   );
 }
 
@@ -18,16 +16,30 @@ function tabIcon(name: IconName) {
 export default function TabsLayout() {
   const wide = useIsWide();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
+        // Explicit line height: Inter's descenders (ç, g, j) were clipped by the default label box.
+        // With five tabs, phones up to ~400 wide truncate "Lançamentos"; fixed by the navigation review of Fase 3 (D-034).
+        tabBarLabelStyle: { ...theme.type.label, fontSize: 12, lineHeight: 16 },
+        // Tall enough for a 24 icon plus the 16-high label (the default 49 squeezed the label).
+        tabBarStyle: {
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
+          height: 64 + insets.bottom,
+          paddingTop: 6,
+          paddingBottom: insets.bottom + 6,
+        },
         ...(wide && {
           tabBarPosition: 'left',
           tabBarVariant: 'material',
           tabBarLabelPosition: 'beside-icon',
-          tabBarStyle: { width: 220, paddingTop: 16 },
+          tabBarLabelStyle: { ...theme.type.label },
+          tabBarStyle: { width: 220, height: undefined, paddingTop: 16, paddingBottom: 0, backgroundColor: theme.colors.surface, borderRightColor: theme.colors.border },
         }),
       }}
     >

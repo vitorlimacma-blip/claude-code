@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../src/ui/icons';
 import { router, type Href } from 'expo-router';
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -8,8 +8,9 @@ import { confirm, notify } from '../../src/platform/dialogs';
 import { useAI } from '../../src/state/AIContext';
 import { useRepositories } from '../../src/state/DataProvider';
 import { useQuery } from '../../src/state/useQuery';
-import { Button, Card, IconBubble, MutedText, Screen, SectionTitle, Title } from '../../src/ui/components';
-import { useTheme } from '../../src/ui/theme';
+import { useThemePreference } from '../../src/state/useThemePreference';
+import { Button, Card, IconBubble, MutedText, Screen, SectionTitle, SegmentedControl, Title } from '../../src/ui/components';
+import { useTheme, type ThemePreference } from '../../src/ui/theme';
 
 function Row({ icon, color, title, subtitle, href }: { icon: string; color: string; title: string; subtitle: string; href: Href }) {
   const theme = useTheme();
@@ -17,10 +18,10 @@ function Row({ icon, color, title, subtitle, href }: { icon: string; color: stri
     <Pressable onPress={() => router.push(href)} style={({ pressed }) => [styles.row, { opacity: pressed ? 0.6 : 1 }]}>
       <IconBubble icon={icon} color={color} />
       <View style={{ flex: 1 }}>
-        <Text style={[styles.rowTitle, { color: theme.colors.text }]}>{title}</Text>
+        <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]}>{title}</Text>
         <MutedText style={{ fontSize: 12 }}>{subtitle}</MutedText>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={theme.colors.textMuted} />
+      <Icon name="chevron-forward" size={18} color={theme.colors.textSecondary} />
     </Pressable>
   );
 }
@@ -31,6 +32,7 @@ export default function SettingsScreen() {
   const { data: accounts } = useQuery((r) => r.accounts.list(), ['accounts']);
   const { data: hasDemo } = useQuery((r) => r.demo.exists(), ['accounts']);
   const [busy, setBusy] = useState(false);
+  const [themePreference, setThemePreference] = useThemePreference();
 
   async function generateDemo() {
     const ok = await confirm(
@@ -90,6 +92,26 @@ export default function SettingsScreen() {
           title="Backup e restauração"
           subtitle="Exportar, restaurar e backups automáticos"
           href="/backup"
+        />
+      </Card>
+
+      <SectionTitle>Aparência</SectionTitle>
+      <SegmentedControl<ThemePreference>
+        value={themePreference}
+        onChange={setThemePreference}
+        options={[
+          { value: 'system', label: 'Sistema' },
+          { value: 'light', label: 'Claro' },
+          { value: 'dark', label: 'Escuro' },
+        ]}
+      />
+      <Card>
+        <Row
+          icon="color-palette-outline"
+          color="#176B5B"
+          title="Catálogo de componentes"
+          subtitle="Tela interna para revisar o visual nos dois temas"
+          href="/catalogo"
         />
       </Card>
 

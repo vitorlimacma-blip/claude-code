@@ -41,17 +41,10 @@ describe('groupByCategoryTree', () => {
 });
 
 describe('default categories', () => {
-   
-  const glyphs: Record<string, number> = require('@expo/vector-icons/build/vendor/react-native-vector-icons/glyphmaps/Ionicons.json');
   const all = [...DEFAULT_EXPENSE_CATEGORIES, ...DEFAULT_INCOME_CATEGORIES];
 
   it('have unique ids', () => {
     const ids = all.flatMap((c) => [c.id, ...(c.children ?? []).map((ch) => ch.id)]);
     expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it('only use icons that exist in Ionicons', () => {
-    const icons = all.flatMap((c) => [c.icon, ...(c.children ?? []).flatMap((ch) => (ch.icon ? [ch.icon] : []))]);
-    expect(icons.filter((icon) => !(icon in glyphs))).toEqual([]);
   });
 });

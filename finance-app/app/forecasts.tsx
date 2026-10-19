@@ -40,11 +40,11 @@ export default function ForecastsScreen() {
       </MutedText>
 
       <View style={styles.totalsRow}>
-        <View style={[styles.totalCard, { backgroundColor: theme.colors.text }]}>
+        <View style={[styles.totalCard, { backgroundColor: theme.colors.textPrimary }]}>
           <Text style={[styles.totalLabel, { color: theme.colors.background }]}>Projetado no mês</Text>
           <Text style={[styles.totalValue, { color: theme.colors.background }]}>{formatCents(totalMonth)}</Text>
         </View>
-        <View style={[styles.totalCard, { backgroundColor: theme.colors.text }]}>
+        <View style={[styles.totalCard, { backgroundColor: theme.colors.textPrimary }]}>
           <Text style={[styles.totalLabel, { color: theme.colors.background }]}>Projetado no ano</Text>
           <Text style={[styles.totalValue, { color: theme.colors.background }]}>{formatCents(totalYear)}</Text>
         </View>
@@ -55,8 +55,8 @@ export default function ForecastsScreen() {
       {forecasts.map((f) => (
         <Card key={f.categoryId} style={{ gap: 10 }}>
           <View style={styles.cardHeader}>
-            <View style={[styles.swatch, { backgroundColor: colorById.get(f.categoryId) ?? theme.colors.textMuted }]} />
-            <Text style={[styles.cardTitle, { color: theme.colors.text }]}>{f.categoryName}</Text>
+            <View style={[styles.swatch, { backgroundColor: colorById.get(f.categoryId) ?? theme.colors.textSecondary }]} />
+            <Text style={[styles.cardTitle, { color: theme.colors.textPrimary }]}>{f.categoryName}</Text>
           </View>
           <View style={styles.metricsRow}>
             <Metric label="Média diária" value={formatCents(f.dailyAverage)} />
@@ -73,8 +73,8 @@ function Metric({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
     <View style={{ gap: 2 }}>
-      <Text style={{ fontSize: 11, color: theme.colors.textMuted }}>{label}</Text>
-      <Text style={{ fontSize: 14, fontWeight: '700', color: theme.colors.text }}>{value}</Text>
+      <Text style={{ fontSize: 11, color: theme.colors.textSecondary }}>{label}</Text>
+      <Text style={{ fontSize: 14, fontWeight: '700', color: theme.colors.textPrimary }}>{value}</Text>
     </View>
   );
 }

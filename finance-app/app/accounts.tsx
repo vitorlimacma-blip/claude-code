@@ -43,7 +43,7 @@ export default function AccountsScreen() {
             >
               <IconBubble icon={ACCOUNT_TYPE_ICONS[account.type]} color={account.color} />
               <View style={{ flex: 1 }}>
-                <Text style={[styles.name, { color: theme.colors.text }]}>
+                <Text style={[styles.name, { color: theme.colors.textPrimary }]}>
                   {account.name}
                   {account.archived ? ' (arquivada)' : ''}
                 </Text>
@@ -54,7 +54,7 @@ export default function AccountsScreen() {
                     : ''}
                 </MutedText>
               </View>
-              <Text style={[styles.amount, { color: balance < 0 ? theme.colors.negative : theme.colors.text }]}>
+              <Text style={[styles.amount, { color: balance < 0 ? theme.colors.amountNegative : theme.colors.textPrimary }]}>
                 {formatCents(balance)}
               </Text>
             </Pressable>

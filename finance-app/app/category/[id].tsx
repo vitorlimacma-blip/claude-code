@@ -128,7 +128,7 @@ function CategoryForm({
                 key={c}
                 onPress={() => setColor(c)}
                 accessibilityLabel={`Cor ${c}`}
-                style={[styles.swatch, { backgroundColor: c }, c === color && { borderColor: theme.colors.text, borderWidth: 3 }]}
+                style={[styles.swatch, { backgroundColor: c }, c === color && { borderColor: theme.colors.textPrimary, borderWidth: 3 }]}
               />
             ))}
           </View>

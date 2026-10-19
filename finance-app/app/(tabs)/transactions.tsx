@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../../src/ui/icons';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -73,11 +73,11 @@ export default function TransactionsScreen() {
             <Title>Lançamentos</Title>
             <View style={styles.monthNav}>
               <Pressable onPress={() => setMonth(addMonths(month, -1))} hitSlop={12} accessibilityLabel="Mês anterior">
-                <Ionicons name="chevron-back" size={22} color={theme.colors.primary} />
+                <Icon name="chevron-back" size={22} color={theme.colors.primary} />
               </Pressable>
-              <Text style={[styles.monthLabel, { color: theme.colors.text }]}>{formatMonthBR(month)}</Text>
+              <Text style={[styles.monthLabel, { color: theme.colors.textPrimary }]}>{formatMonthBR(month)}</Text>
               <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={12} accessibilityLabel="Próximo mês">
-                <Ionicons name="chevron-forward" size={22} color={theme.colors.primary} />
+                <Icon name="chevron-forward" size={22} color={theme.colors.primary} />
               </Pressable>
               <FilterButton count={activeFilterCount(filters)} onPress={() => setFiltersOpen(true)} />
             </View>
@@ -90,7 +90,7 @@ export default function TransactionsScreen() {
                   {summary.transferCount > 0 ? ' · transferências não entram no total' : ''}
                 </MutedText>
                 <Text
-                  style={[styles.amount, { color: summary.total < 0 ? theme.colors.negative : theme.colors.positive }]}
+                  style={[styles.amount, { color: summary.total < 0 ? theme.colors.amountNegative : theme.colors.amountPositive }]}
                 >
                   {summary.total < 0 ? '-' : '+'}
                   {formatCents(Math.abs(summary.total))}
@@ -102,8 +102,8 @@ export default function TransactionsScreen() {
         ListEmptyComponent={
           !data ? undefined : filtering && data.transactions.length > 0 ? (
             <Card style={{ gap: 10, alignItems: 'center' }}>
-              <Ionicons name="filter" size={28} color={theme.colors.textMuted} />
-              <Text style={[styles.rowTitle, { color: theme.colors.text }]}>Nenhum lançamento com esses filtros</Text>
+              <Icon name="filter" size={28} color={theme.colors.textSecondary} />
+              <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]}>Nenhum lançamento com esses filtros</Text>
               <MutedText>Em {formatMonthBR(month)} há {data.transactions.length} lançamento(s), mas nenhum combina com todos os filtros.</MutedText>
               <Button label="Limpar filtros" variant="secondary" onPress={() => setFilters(EMPTY_FILTERS)} />
             </Card>
@@ -136,10 +136,10 @@ export default function TransactionsScreen() {
             >
               <IconBubble
                 icon={isTransfer ? 'swap-horizontal-outline' : (category?.icon ?? 'help-circle-outline')}
-                color={isTransfer ? theme.colors.textMuted : (category?.color ?? theme.colors.textMuted)}
+                color={isTransfer ? theme.colors.textSecondary : (category?.color ?? theme.colors.textSecondary)}
               />
               <View style={{ flex: 1 }}>
-                <Text style={[styles.rowTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                <Text style={[styles.rowTitle, { color: theme.colors.textPrimary }]} numberOfLines={1}>
                   {title}
                 </Text>
                 <MutedText style={{ fontSize: 12 }}>{subtitle}</MutedText>
@@ -147,7 +147,7 @@ export default function TransactionsScreen() {
               <Text
                 style={[
                   styles.amount,
-                  { color: isTransfer ? theme.colors.textMuted : positive ? theme.colors.positive : theme.colors.negative },
+                  { color: isTransfer ? theme.colors.textSecondary : positive ? theme.colors.amountPositive : theme.colors.amountNegative },
                 ]}
               >
                 {SIGN[item.type]}

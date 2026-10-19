@@ -56,7 +56,7 @@ export interface Category extends SyncFields {
   name: string;
   kind: CategoryKind;
   color: string;
-  /** Ionicons glyph name. */
+  /** Icon key (see `ICONS` in src/ui/icons.tsx; Ionicons-style names, drawn with Lucide). */
   icon: string;
   /** True for categories shipped with the app (seeded), false for user-created ones. */
   isSystem: boolean;

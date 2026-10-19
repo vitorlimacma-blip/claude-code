@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '../icons';
 import { Pressable, Text, View } from 'react-native';
 import { ACCOUNT_TYPE_ICONS, PAYMENT_METHOD_LABELS } from '../../domain/labels';
 import {
@@ -49,7 +49,7 @@ export function FilterButton({ count, onPress }: { count: number; onPress: () =>
         },
       ]}
     >
-      <Ionicons name="filter" size={16} color={active ? theme.colors.onPrimary : theme.colors.primary} />
+      <Icon name="filter" size={16} color={active ? theme.colors.onPrimary : theme.colors.primary} />
       <Text style={{ fontSize: 13, fontWeight: '600', color: active ? theme.colors.onPrimary : theme.colors.primary }}>
         {active ? `Filtros · ${count}` : 'Filtros'}
       </Text>

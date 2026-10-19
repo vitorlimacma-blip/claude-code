@@ -68,7 +68,7 @@ export default function AISettingsScreen() {
         própria chave.
       </MutedText>
       <Card style={{ gap: 6 }}>
-        <Text style={[styles.strong, { color: theme.colors.text }]}>Inteligência local</Text>
+        <Text style={[styles.strong, { color: theme.colors.textPrimary }]}>Inteligência local</Text>
         <MutedText>
           {ruleCount > 0
             ? `Já aprendeu a categoria de ${ruleCount} estabelecimento(s) com as suas escolhas.`
@@ -90,11 +90,11 @@ export default function AISettingsScreen() {
       {active && (
         <>
           <Card style={{ gap: 10 }}>
-            <Text style={[styles.strong, { color: theme.colors.text }]}>Chave de API — {PROVIDER_LABELS[active]}</Text>
+            <Text style={[styles.strong, { color: theme.colors.textPrimary }]}>Chave de API — {PROVIDER_LABELS[active]}</Text>
             <MutedText>{PROVIDER_KEY_HINTS[active]}</MutedText>
             {hasKey[active] ? (
               <View style={{ gap: 10 }}>
-                <Text style={{ color: theme.colors.positive, fontWeight: '600' }}>Chave salva ✓</Text>
+                <Text style={{ color: theme.colors.success, fontWeight: '600' }}>Chave salva ✓</Text>
                 <View style={styles.buttons}>
                   <View style={{ flex: 1 }}>
                     <Button label={testing ? 'Testando…' : 'Testar conexão'} variant="secondary" onPress={runTest} disabled={testing} />
@@ -117,7 +117,7 @@ export default function AISettingsScreen() {
                 <Button label="Salvar chave" icon="key-outline" onPress={() => storeKey(active)} disabled={!keyInput.trim()} />
               </View>
             )}
-            {test && <Text style={{ color: test.ok ? theme.colors.positive : theme.colors.danger }}>{test.message}</Text>}
+            {test && <Text style={{ color: test.ok ? theme.colors.success : theme.colors.danger }}>{test.message}</Text>}
             <MutedText style={{ fontSize: 12 }}>
               {secrets.isSecure
                 ? 'A chave fica no cofre seguro do aparelho (Keychain), fora do banco de dados e dos backups.'
@@ -171,7 +171,7 @@ function ToggleRow({ title, subtitle, value, onChange }: { title: string; subtit
   return (
     <View style={styles.toggle}>
       <View style={{ flex: 1, gap: 2 }}>
-        <Text style={[styles.strong, { color: theme.colors.text }]}>{title}</Text>
+        <Text style={[styles.strong, { color: theme.colors.textPrimary }]}>{title}</Text>
         <MutedText style={{ fontSize: 12 }}>{subtitle}</MutedText>
       </View>
       <Switch value={value} onValueChange={onChange} accessibilityLabel={title} />

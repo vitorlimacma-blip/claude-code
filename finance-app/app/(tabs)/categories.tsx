@@ -50,14 +50,14 @@ export default function CategoriesScreen() {
           <Pressable style={styles.row} onPress={() => openCategory({ id: category.id })}>
             <IconBubble icon={category.icon} color={category.color} size={36} />
             <View style={{ flex: 1 }}>
-              <Text style={[styles.parentName, { color: theme.colors.text }]}>{category.name}</Text>
+              <Text style={[styles.parentName, { color: theme.colors.textPrimary }]}>{category.name}</Text>
               {budgetLabel(category) && <MutedText style={{ fontSize: 12 }}>{budgetLabel(category)}</MutedText>}
             </View>
           </Pressable>
           {children.map((child) => (
             <Pressable key={child.id} style={[styles.row, styles.child]} onPress={() => openCategory({ id: child.id })}>
               <View style={[styles.dot, { backgroundColor: child.color }]} />
-              <Text style={[styles.childName, { color: theme.colors.text }]}>{child.name}</Text>
+              <Text style={[styles.childName, { color: theme.colors.textPrimary }]}>{child.name}</Text>
               {budgetLabel(child) && <MutedText style={{ fontSize: 12 }}>{budgetLabel(child)}</MutedText>}
             </Pressable>
           ))}

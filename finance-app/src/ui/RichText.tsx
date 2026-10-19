@@ -26,7 +26,7 @@ function Inline({ text, style }: { text: string; style: TextStyle }) {
  */
 export function RichText({ text, color }: { text: string; color?: string }) {
   const theme = useTheme();
-  const base: TextStyle = { color: color ?? theme.colors.text, fontSize: 15, lineHeight: 21 };
+  const base: TextStyle = { color: color ?? theme.colors.textPrimary, fontSize: 15, lineHeight: 21 };
   const lines = text.split('\n');
 
   return (
