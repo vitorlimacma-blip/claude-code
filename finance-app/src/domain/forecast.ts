@@ -1,15 +1,18 @@
-import type { Cents, Transaction } from './types';
-import { daysInMonth, daysInYear, dayOfYear, startOfMonthKey, startOfYearKey, toDateKey } from '../utils/date';
+import type { Cents, ForecastPoint, Transaction } from './types';
+import { daysInMonth, daysInYear, dayOfYear, startOfMonthKey, startOfYearKey, toDateKey } from './dates';
 
-export function sumCents(transactions: Transaction[]): Cents {
+/** The only transaction fields forecasts look at, so callers (and tests) can pass partial rows. */
+export type TransactionAmount = Pick<Transaction, 'type' | 'amount' | 'date'>;
+
+export function sumCents(transactions: TransactionAmount[]): Cents {
   return transactions.reduce((total, t) => total + t.amount, 0);
 }
 
-export function transactionsInRange(
-  transactions: Transaction[],
+export function transactionsInRange<T extends TransactionAmount>(
+  transactions: T[],
   startKeyInclusive: string,
   endKeyInclusive: string
-): Transaction[] {
+): T[] {
   return transactions.filter((t) => t.date >= startKeyInclusive && t.date <= endKeyInclusive);
 }
 
@@ -27,7 +30,7 @@ export interface CategoryForecastInput {
   categoryId: string;
   categoryName: string;
   /** All expense transactions for this category (any date range is fine; will be filtered). */
-  transactions: Transaction[];
+  transactions: TransactionAmount[];
 }
 
 /**
@@ -37,15 +40,7 @@ export interface CategoryForecastInput {
 export function computeCategoryForecast(
   input: CategoryForecastInput,
   referenceDate: Date
-): {
-  categoryId: string;
-  categoryName: string;
-  dailyAverage: Cents;
-  monthSpentSoFar: Cents;
-  projectedMonthTotal: Cents;
-  yearSpentSoFar: Cents;
-  projectedYearTotal: Cents;
-} {
+): ForecastPoint {
   const expenses = input.transactions.filter((t) => t.type === 'expense');
 
   const todayKey = toDateKey(referenceDate);

@@ -1,15 +1,8 @@
 import { computeCategoryForecast, projectByRunRate, sumCents, transactionsInRange } from '../forecast';
-import type { Transaction } from '../types';
+import type { TransactionAmount } from '../forecast';
 
-function tx(partial: Partial<Transaction> & Pick<Transaction, 'date' | 'amount'>): Transaction {
-  return {
-    id: Math.random().toString(36),
-    categoryId: 'cat-1',
-    type: 'expense',
-    note: '',
-    createdAt: partial.date,
-    ...partial,
-  };
+function tx(partial: Partial<TransactionAmount> & Pick<TransactionAmount, 'date' | 'amount'>): TransactionAmount {
+  return { type: 'expense', ...partial };
 }
 
 describe('projectByRunRate', () => {

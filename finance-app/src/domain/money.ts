@@ -1,4 +1,4 @@
-import type { Cents } from '../domain/types';
+import type { Cents } from './types';
 
 const formatter = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -27,4 +27,9 @@ export function parseAmountToCents(input: string): Cents {
   const value = Number(s);
   if (!Number.isFinite(value)) return 0;
   return Math.round(value * 100);
+}
+
+/** Cents as an editable pt-BR amount without currency symbol: 123456 -> "1234,56". */
+export function centsToInput(cents: Cents): string {
+  return (cents / 100).toFixed(2).replace('.', ',');
 }

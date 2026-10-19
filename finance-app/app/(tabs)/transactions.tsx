@@ -1,187 +1,123 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFinance } from '../../src/state/FinanceContext';
-import type { TransactionType } from '../../src/domain/types';
-import { formatCents, parseAmountToCents } from '../../src/utils/currency';
-import { toDateKey } from '../../src/utils/date';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { addMonths, formatDateBR, formatMonthBR, monthRange } from '../../src/domain/dates';
+import { PAYMENT_METHOD_LABELS } from '../../src/domain/labels';
+import { formatCents } from '../../src/domain/money';
+import type { Transaction } from '../../src/domain/types';
+import { useQuery } from '../../src/state/useQuery';
+import { useToday } from '../../src/state/useToday';
+import { Fab, IconBubble, MutedText, Title } from '../../src/ui/components';
+import { useTheme } from '../../src/ui/theme';
+
+const SIGN: Record<Transaction['type'], string> = { expense: '-', income: '+', transfer_out: '-', transfer_in: '+' };
 
 export default function TransactionsScreen() {
-  const { categories, transactions, addTransaction, removeTransaction } = useFinance();
-  const [categoryId, setCategoryId] = useState<string | null>(categories[0]?.id ?? null);
-  const [type, setType] = useState<TransactionType>('expense');
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(() => toDateKey(new Date()));
+  const theme = useTheme();
+  const today = useToday();
+  const [month, setMonth] = useState(() => today.slice(0, 7));
+  const range = monthRange(month);
 
-  const activeCategoryId = categoryId ?? categories[0]?.id ?? null;
+  const { data } = useQuery(
+    async (r) => {
+      const [transactions, categories, accounts] = await Promise.all([
+        r.transactions.list(range),
+        r.categories.list(),
+        r.accounts.list({ includeArchived: true }),
+      ]);
+      return { transactions, categories, accounts };
+    },
+    ['transactions', 'categories', 'accounts'],
+    [month]
+  );
 
-  const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
-
-  async function handleAdd() {
-    if (!activeCategoryId) {
-      Alert.alert('Crie uma categoria primeiro', 'Vá até a aba Categorias para cadastrar ao menos uma categoria.');
-      return;
-    }
-    const cents = parseAmountToCents(amount);
-    if (cents <= 0) {
-      Alert.alert('Valor inválido', 'Informe um valor maior que zero.');
-      return;
-    }
-    await addTransaction({ categoryId: activeCategoryId, type, amount: cents, date, note: note.trim() });
-    setAmount('');
-    setNote('');
-  }
-
-  function handleDelete(id: string) {
-    Alert.alert('Remover lançamento', 'Deseja remover este lançamento?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Remover', style: 'destructive', onPress: () => removeTransaction(id) },
-    ]);
-  }
+  const categoryById = useMemo(() => new Map(data?.categories.map((c) => [c.id, c])), [data]);
+  const accountById = useMemo(() => new Map(data?.accounts.map((a) => [a.id, a])), [data]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <FlatList
         contentContainerStyle={styles.list}
-        data={transactions}
+        data={data?.transactions ?? []}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={<Text style={styles.title}>Lançamentos</Text>}
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum lançamento ainda.</Text>}
-        renderItem={({ item }) => {
-          const category = categoryById.get(item.categoryId);
-          const isExpense = item.type === 'expense';
-          return (
-            <View style={styles.row}>
-              <View style={[styles.swatch, { backgroundColor: category?.color ?? '#9ca3af' }]} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowTitle}>{category?.name ?? 'Categoria removida'}</Text>
-                <Text style={styles.rowSubtitle}>
-                  {item.date}
-                  {item.note ? ` · ${item.note}` : ''}
-                </Text>
-              </View>
-              <Text style={[styles.amount, isExpense ? styles.amountExpense : styles.amountIncome]}>
-                {isExpense ? '-' : '+'}
-                {formatCents(item.amount)}
-              </Text>
-              <Pressable onPress={() => handleDelete(item.id)} hitSlop={8} style={styles.deleteButton}>
-                <Text style={styles.deleteText}>✕</Text>
+        ListHeaderComponent={
+          <View style={{ gap: 8, marginBottom: 4 }}>
+            <Title>Lançamentos</Title>
+            <View style={styles.monthNav}>
+              <Pressable onPress={() => setMonth(addMonths(month, -1))} hitSlop={12} accessibilityLabel="Mês anterior">
+                <Ionicons name="chevron-back" size={22} color={theme.colors.primary} />
+              </Pressable>
+              <Text style={[styles.monthLabel, { color: theme.colors.text }]}>{formatMonthBR(month)}</Text>
+              <Pressable onPress={() => setMonth(addMonths(month, 1))} hitSlop={12} accessibilityLabel="Próximo mês">
+                <Ionicons name="chevron-forward" size={22} color={theme.colors.primary} />
               </Pressable>
             </View>
+          </View>
+        }
+        ListEmptyComponent={
+          data ? <MutedText>Nenhum lançamento neste mês. Toque em + para adicionar.</MutedText> : undefined
+        }
+        renderItem={({ item }) => {
+          const category = item.categoryId ? categoryById.get(item.categoryId) : undefined;
+          const account = accountById.get(item.accountId);
+          const isTransfer = item.type === 'transfer_in' || item.type === 'transfer_out';
+          const positive = item.type === 'income' || item.type === 'transfer_in';
+          const title =
+            item.description || (isTransfer ? 'Transferência' : (category?.name ?? 'Sem categoria'));
+          const subtitle = [
+            formatDateBR(item.date),
+            isTransfer ? null : (category?.name ?? 'Sem categoria'),
+            account?.name,
+            item.paymentMethod !== 'other' ? PAYMENT_METHOD_LABELS[item.paymentMethod] : null,
+          ]
+            .filter(Boolean)
+            .join(' · ');
+          return (
+            <Pressable
+              onPress={() => router.push({ pathname: '/transaction/[id]', params: { id: item.id } })}
+              style={({ pressed }) => [
+                styles.row,
+                { backgroundColor: theme.colors.surface, borderRadius: theme.radius.md, opacity: pressed ? 0.7 : 1 },
+              ]}
+            >
+              <IconBubble
+                icon={isTransfer ? 'swap-horizontal-outline' : (category?.icon ?? 'help-circle-outline')}
+                color={isTransfer ? theme.colors.textMuted : (category?.color ?? theme.colors.textMuted)}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.rowTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                  {title}
+                </Text>
+                <MutedText style={{ fontSize: 12 }}>{subtitle}</MutedText>
+              </View>
+              <Text
+                style={[
+                  styles.amount,
+                  { color: isTransfer ? theme.colors.textMuted : positive ? theme.colors.positive : theme.colors.negative },
+                ]}
+              >
+                {SIGN[item.type]}
+                {formatCents(item.amount)}
+              </Text>
+            </Pressable>
           );
         }}
       />
-
-      <View style={styles.form}>
-        <Text style={styles.formTitle}>Novo lançamento</Text>
-
-        <View style={styles.typeRow}>
-          <Pressable
-            style={[styles.typeButton, type === 'expense' && styles.typeButtonActiveExpense]}
-            onPress={() => setType('expense')}
-          >
-            <Text style={[styles.typeButtonText, type === 'expense' && styles.typeButtonTextActive]}>Despesa</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.typeButton, type === 'income' && styles.typeButtonActiveIncome]}
-            onPress={() => setType('income')}
-          >
-            <Text style={[styles.typeButtonText, type === 'income' && styles.typeButtonTextActive]}>Receita</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.categoryRow}>
-          {categories.length === 0 && <Text style={styles.emptyText}>Cadastre uma categoria na aba Categorias.</Text>}
-          {categories.map((c) => (
-            <Pressable
-              key={c.id}
-              style={[
-                styles.categoryChip,
-                { borderColor: c.color },
-                activeCategoryId === c.id && { backgroundColor: c.color },
-              ]}
-              onPress={() => setCategoryId(c.id)}
-            >
-              <Text style={[styles.categoryChipText, activeCategoryId === c.id && { color: '#fff' }]}>{c.name}</Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <TextInput style={styles.input} placeholder="Valor (ex: 45,90)" keyboardType="decimal-pad" value={amount} onChangeText={setAmount} />
-        <TextInput style={styles.input} placeholder="Data (AAAA-MM-DD)" value={date} onChangeText={setDate} />
-        <TextInput style={styles.input} placeholder="Observação (opcional)" value={note} onChangeText={setNote} />
-
-        <Pressable style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>Adicionar lançamento</Text>
-        </Pressable>
-      </View>
-    </View>
+      <Fab
+        accessibilityLabel="Novo lançamento"
+        onPress={() => router.push({ pathname: '/transaction/[id]', params: { id: 'new' } })}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  list: { padding: 16, gap: 10 },
-  title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 8 },
-  emptyText: { color: '#6b7280' },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    gap: 10,
-  },
-  swatch: { width: 10, height: 10, borderRadius: 5 },
-  rowTitle: { fontSize: 15, fontWeight: '600', color: '#111827' },
-  rowSubtitle: { fontSize: 12, color: '#6b7280' },
-  amount: { fontSize: 14, fontWeight: '700' },
-  amountExpense: { color: '#991b1b' },
-  amountIncome: { color: '#166534' },
-  deleteButton: { paddingHorizontal: 4 },
-  deleteText: { color: '#9ca3af', fontSize: 16 },
-  form: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#fff',
-    gap: 10,
-  },
-  formTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
-  typeRow: { flexDirection: 'row', gap: 8 },
-  typeButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  typeButtonActiveExpense: { backgroundColor: '#dc2626', borderColor: '#dc2626' },
-  typeButtonActiveIncome: { backgroundColor: '#16a34a', borderColor: '#16a34a' },
-  typeButtonText: { fontWeight: '600', color: '#374151' },
-  typeButtonTextActive: { color: '#fff' },
-  categoryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  categoryChip: {
-    borderWidth: 1.5,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  categoryChipText: { fontSize: 13, fontWeight: '600', color: '#111827' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-  },
-  addButton: {
-    backgroundColor: '#2563eb',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  addButtonText: { color: '#fff', fontWeight: '700' },
+  list: { padding: 16, gap: 8, paddingBottom: 96 },
+  monthNav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  monthLabel: { fontSize: 16, fontWeight: '600' },
+  row: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 12 },
+  rowTitle: { fontSize: 15, fontWeight: '600' },
+  amount: { fontSize: 15, fontWeight: '700' },
 });

@@ -1,121 +1,128 @@
+import { Link } from 'expo-router';
 import { useMemo } from 'react';
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
-import { AlertBadge } from '../../src/components/AlertBadge';
-import { SummaryCard } from '../../src/components/SummaryCard';
-import { transactionsInRange, sumCents } from '../../src/domain/forecast';
-import { useFinance } from '../../src/state/FinanceContext';
-import { formatCents } from '../../src/utils/currency';
-import { startOfMonthKey, toDateKey } from '../../src/utils/date';
+import { StyleSheet, Text, View } from 'react-native';
+import { formatMonthBR, startOfYearKey, fromDateKey } from '../../src/domain/dates';
+import { ACCOUNT_TYPE_ICONS } from '../../src/domain/labels';
+import { findInstitution } from '../../src/domain/institutions';
+import { formatCents } from '../../src/domain/money';
+import { buildMonthOverview } from '../../src/domain/overview';
+import { useQuery } from '../../src/state/useQuery';
+import { useToday } from '../../src/state/useToday';
+import {
+  AlertBadge,
+  Card,
+  IconBubble,
+  MutedText,
+  Screen,
+  SectionTitle,
+  SummaryCard,
+  Title,
+} from '../../src/ui/components';
+import { useTheme } from '../../src/ui/theme';
 
 export default function DashboardScreen() {
-  const { loading, transactions, alerts, refresh } = useFinance();
+  const theme = useTheme();
+  const today = useToday();
+  const month = today.slice(0, 7);
 
-  const now = useMemo(() => new Date(), []);
-  const monthKey = startOfMonthKey(now);
-  const todayKey = toDateKey(now);
-
-  const monthTransactions = useMemo(
-    () => transactionsInRange(transactions, monthKey, todayKey),
-    [transactions, monthKey, todayKey]
+  const { data } = useQuery(
+    async (r) => {
+      const [categories, budgets, transactions, accounts, balances] = await Promise.all([
+        r.categories.list(),
+        r.budgets.amountsForMonth(month),
+        r.transactions.list({ from: startOfYearKey(fromDateKey(today)), to: today }),
+        r.accounts.list(),
+        r.accounts.balances(today),
+      ]);
+      return { categories, budgets, transactions, accounts, balances };
+    },
+    ['categories', 'budgets', 'transactions', 'accounts'],
+    [today, month]
   );
 
-  const spent = sumCents(monthTransactions.filter((t) => t.type === 'expense'));
-  const income = sumCents(monthTransactions.filter((t) => t.type === 'income'));
-  const balance = income - spent;
+  const overview = useMemo(() => (data ? buildMonthOverview({ ...data, today }) : null), [data, today]);
+  if (!data || !overview) return <Screen>{null}</Screen>;
 
-  const threats = alerts.filter((a) => a.level !== 'ok');
+  const threats = overview.alerts.filter((a) => a.level !== 'ok');
+  const total = data.accounts.reduce((sum, a) => sum + (data.balances.get(a.id) ?? 0), 0);
 
   return (
-    <FlatList
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} />}
-      data={threats}
-      keyExtractor={(item) => item.categoryId}
-      ListHeaderComponent={
-        <View style={styles.header}>
-          <Text style={styles.title}>Resumo do mês</Text>
-          <View style={styles.summaryRow}>
-            <SummaryCard label="Gasto no mês" value={formatCents(spent)} tone="negative" />
-            <SummaryCard label="Receita no mês" value={formatCents(income)} tone="positive" />
-          </View>
-          <View style={styles.summaryRow}>
-            <SummaryCard label="Saldo do mês" value={formatCents(balance)} tone={balance >= 0 ? 'positive' : 'negative'} />
-          </View>
-          <Text style={styles.sectionTitle}>Ameaças ao orçamento</Text>
-          {threats.length === 0 && (
-            <Text style={styles.emptyText}>
-              Nenhuma categoria em alerta. Configure orçamentos mensais na aba Categorias para acompanhar aqui.
-            </Text>
-          )}
-        </View>
-      }
-      renderItem={({ item }) => (
-        <View style={styles.alertCard}>
-          <View style={styles.alertHeader}>
-            <Text style={styles.alertCategory}>{item.categoryName}</Text>
-            <AlertBadge level={item.level} />
-          </View>
-          <Text style={styles.alertLine}>
-            Gasto até hoje: {formatCents(item.spentSoFar)} de {formatCents(item.budget)}
-          </Text>
-          <Text style={styles.alertLine}>Projeção para o fim do mês: {formatCents(item.projectedMonthTotal)}</Text>
-        </View>
+    <Screen>
+      <Title>Resumo</Title>
+      <MutedText>{formatMonthBR(month)}</MutedText>
+
+      <View style={styles.row}>
+        <SummaryCard label="Gastos no mês" value={formatCents(overview.spent)} tone="negative" />
+        <SummaryCard label="Receitas no mês" value={formatCents(overview.income)} tone="positive" />
+      </View>
+      <View style={styles.row}>
+        <SummaryCard
+          label="Resultado do mês"
+          value={formatCents(overview.balance)}
+          tone={overview.balance >= 0 ? 'positive' : 'negative'}
+        />
+        <SummaryCard label="Saldo nas contas" value={formatCents(total)} tone={total >= 0 ? 'default' : 'negative'} />
+      </View>
+
+      {overview.uncategorizedCount > 0 && (
+        <Link href="/transactions">
+          <MutedText>
+            {overview.uncategorizedCount} lançamento(s) deste mês sem categoria. Toque para revisar.
+          </MutedText>
+        </Link>
       )}
-    />
+
+      <SectionTitle>Contas</SectionTitle>
+      <Card style={{ gap: 12 }}>
+        {data.accounts.map((account) => {
+          const balance = data.balances.get(account.id) ?? 0;
+          return (
+            <View key={account.id} style={styles.accountRow}>
+              <IconBubble
+icon={ACCOUNT_TYPE_ICONS[account.type]} color={account.color}
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.rowTitle, { color: theme.colors.text }]}>{account.name}</Text>
+                {findInstitution(account.institution) && (
+                  <MutedText>{findInstitution(account.institution)?.name}</MutedText>
+                )}
+              </View>
+              <Text style={[styles.amount, { color: balance < 0 ? theme.colors.negative : theme.colors.text }]}>
+                {formatCents(balance)}
+              </Text>
+            </View>
+          );
+        })}
+      </Card>
+
+      <SectionTitle>Ameaças ao orçamento</SectionTitle>
+      {threats.length === 0 && (
+        <MutedText>
+          {overview.alerts.length === 0
+            ? 'Defina orçamentos mensais na aba Categorias para acompanhar aqui.'
+            : 'Tudo sob controle por enquanto.'}
+        </MutedText>
+      )}
+      {threats.map((alert) => (
+        <Card key={alert.categoryId} style={{ gap: 6 }}>
+          <View style={styles.alertHeader}>
+            <Text style={[styles.rowTitle, { color: theme.colors.text }]}>{alert.categoryName}</Text>
+            <AlertBadge level={alert.level} />
+          </View>
+          <MutedText>
+            Gasto até hoje: {formatCents(alert.spentSoFar)} de {formatCents(alert.budget)}
+          </MutedText>
+          <MutedText>Projeção para o fim do mês: {formatCents(alert.projectedMonthTotal)}</MutedText>
+        </Card>
+      ))}
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-  },
-  content: {
-    padding: 16,
-    gap: 12,
-  },
-  header: {
-    gap: 12,
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-    marginTop: 8,
-  },
-  emptyText: {
-    color: '#6b7280',
-  },
-  alertCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    gap: 6,
-    marginBottom: 10,
-  },
-  alertHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  alertCategory: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  alertLine: {
-    color: '#374151',
-    fontSize: 13,
-  },
+  row: { flexDirection: 'row', gap: 12 },
+  accountRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  alertHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+  rowTitle: { fontSize: 15, fontWeight: '600' },
+  amount: { fontSize: 15, fontWeight: '700' },
 });

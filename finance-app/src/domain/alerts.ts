@@ -1,9 +1,16 @@
-import type { AlertLevel, Category, CategoryMonthlyAlert, Transaction } from './types';
-import { computeCategoryForecast } from './forecast';
+import type { AlertLevel, Cents, CategoryMonthlyAlert } from './types';
+import { computeCategoryForecast, type TransactionAmount } from './forecast';
+
+export interface MonthlyAlertInput {
+  categoryId: string;
+  categoryName: string;
+  budget: Cents;
+  /** Transactions of this category (and its subcategories); any date range, will be filtered. */
+  transactions: TransactionAmount[];
+}
 
 /**
  * Computes the monthly budget alert ("ameaça mensal") for one category.
- * Returns null when the category has no budget configured.
  *
  * Levels, from least to most severe:
  * - ok: on track, under 80% of budget used so far
@@ -12,16 +19,10 @@ import { computeCategoryForecast } from './forecast';
  *   month end, even though it hasn't been exceeded yet
  * - exceeded: budget already exceeded this month
  */
-export function computeMonthlyAlert(
-  category: Category,
-  categoryTransactions: Transaction[],
-  referenceDate: Date
-): CategoryMonthlyAlert | null {
-  if (category.monthlyBudget === null) return null;
-
-  const budget = category.monthlyBudget;
+export function computeMonthlyAlert(input: MonthlyAlertInput, referenceDate: Date): CategoryMonthlyAlert {
+  const { budget } = input;
   const forecast = computeCategoryForecast(
-    { categoryId: category.id, categoryName: category.name, transactions: categoryTransactions },
+    { categoryId: input.categoryId, categoryName: input.categoryName, transactions: input.transactions },
     referenceDate
   );
 
@@ -33,9 +34,9 @@ export function computeMonthlyAlert(
     budget > 0 ? projectedMonthTotal / budget : projectedMonthTotal > 0 ? Infinity : 0;
 
   let level: AlertLevel;
-  if (spentSoFar >= budget) {
+  if (spentSoFar >= budget && (budget > 0 || spentSoFar > 0)) {
     level = 'exceeded';
-  } else if (projectedMonthTotal >= budget) {
+  } else if (projectedMonthTotal >= budget && projectedMonthTotal > 0) {
     level = 'projected_overrun';
   } else if (percentOfBudgetUsed >= 0.8) {
     level = 'warning';
@@ -44,8 +45,8 @@ export function computeMonthlyAlert(
   }
 
   return {
-    categoryId: category.id,
-    categoryName: category.name,
+    categoryId: input.categoryId,
+    categoryName: input.categoryName,
     level,
     budget,
     spentSoFar,
@@ -53,16 +54,6 @@ export function computeMonthlyAlert(
     percentOfBudgetUsed,
     percentOfBudgetProjected,
   };
-}
-
-export function computeAllMonthlyAlerts(
-  categories: Category[],
-  transactionsByCategory: Map<string, Transaction[]>,
-  referenceDate: Date
-): CategoryMonthlyAlert[] {
-  return categories
-    .map((category) => computeMonthlyAlert(category, transactionsByCategory.get(category.id) ?? [], referenceDate))
-    .filter((alert): alert is CategoryMonthlyAlert => alert !== null);
 }
 
 const SEVERITY_ORDER: Record<AlertLevel, number> = {

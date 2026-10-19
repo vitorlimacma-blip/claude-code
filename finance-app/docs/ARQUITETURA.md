@@ -1,8 +1,14 @@
 # Arquitetura e plano — App de finanças pessoais com IA
 
-> Status: **proposta para aprovação** (nenhum código novo escrito ainda).
-> Base existente: `finance-app/` (Expo SDK 53, SQLite, categorias, lançamentos,
-> previsões run-rate e alertas de orçamento, com testes de domínio).
+> Status: **aprovada**. Etapa 0 (Fundação) concluída — ver seção 9.
+>
+> Decisões do usuário:
+> - Expo, evoluindo o `finance-app/` existente.
+> - Fase pessoal sem custo (Expo Go). O Apple Developer Program será assinado
+>   mais adiante.
+> - IA com chave própria. Provedores: **Claude** e **ChatGPT (OpenAI)**, com
+>   possibilidade de **consultar a internet**.
+> - Bancos usados: **Itaú, Santander, XP Investimentos e Mercado Pago**.
 
 ---
 
@@ -108,8 +114,8 @@ Eles recebem dados e devolvem dados. Isso permite:
 |---|---|---|---|
 | Framework | Expo SDK 58, expo-router | Roteamento por arquivo, web incluso | — |
 | Banco local | `expo-sqlite` | Nativo, rápido, funciona no Expo Go | No web, o SQLite é WASM (experimental) |
-| Acesso a dados | **Drizzle ORM** | Tipado, migrações geradas, `useLiveQuery` reativo, **o mesmo schema funciona em Postgres** no futuro | Mais uma dependência. A alternativa é SQL puro (como hoje) + migrações manuais via `PRAGMA user_version` |
-| Estado de UI | Zustand (leve) + live queries do Drizzle | Simples e sem boilerplate | Context (atual) fica verboso com o crescimento |
+| Acesso a dados | **Drizzle ORM (modo assíncrono, driver `sqlite-proxy`)** | Tipado, migrações geradas, **o mesmo código roda com expo-sqlite (iOS/Android/web), better-sqlite3 (testes) e, no futuro, num servidor** | Mais uma dependência. O expo-sqlite é ligado ao Drizzle por um adaptador de ~20 linhas (`src/data/database.ts`) |
+| Estado de UI | Hook `useQuery` + barramento de mudanças dos repositórios | Telas se atualizam sozinhas após qualquer gravação, sem biblioteca extra | Se o estado de UI crescer muito, entra Zustand |
 | Gráficos | `react-native-gifted-charts` (usa `react-native-svg`) | Roda no Expo Go e no web | Victory Native/Skia é mais bonito e rápido, mas é mais pesado |
 | Formulários | react-hook-form + zod | Validação compartilhável com o backend | — |
 | Arquivos | expo-document-picker, expo-file-system, expo-sharing | Importar extrato e exportar backup pelo app Arquivos/iCloud | — |
@@ -186,9 +192,24 @@ interface AIProvider {
 }
 ```
 
-- **Fase 1:** `ClaudeProvider` chama a API da Anthropic direto do app com a **sua**
-  chave, guardada no Keychain (SecureStore). O modelo é configurável: um modelo menor
-  e barato (Haiku) para categorizar e um maior (Sonnet) para análises e perguntas.
+- **Fase 1:** dois adaptadores, escolhidos nas configurações do app:
+  - `ClaudeProvider`, que chama a API da Anthropic. O modelo é configurável: um
+    menor e barato (Haiku) para categorizar e um maior (Sonnet) para análises e
+    perguntas.
+  - `OpenAIProvider`, que chama a API da OpenAI (ChatGPT), com modelos configuráveis
+    do mesmo jeito.
+
+  As chaves são **suas** e ficam no Keychain do iPhone (SecureStore). Os dois
+  adaptadores falam o mesmo "idioma" interno (mensagens, ferramentas e saída
+  estruturada), então trocar de provedor não muda nada no resto do app. Dá também para
+  usar um provedor para categorizar e outro para conversar.
+- **Consulta à internet:** quando a pergunta depende de informação externa (Selic,
+  CDI, IPCA, cotação do dólar, rendimento de um título, notícia de um banco), o
+  provedor usa a **busca na web nativa** dele: a ferramenta de web search da API do
+  Claude ou a da OpenAI. Regras:
+  - Fica **desligada por padrão** e é ativada nas configurações.
+  - Só os termos da busca saem do aparelho, nunca os seus lançamentos.
+  - A resposta mostra as fontes consultadas.
 - **Sem internet ou sem chave:** o app continua funcionando inteiro. O motor local
   categoriza, detecta e projeta, e só o chat fica indisponível.
 - **Futuro:** `LocalModelProvider` (modelo rodando no aparelho) ou `ProxyProvider`
@@ -203,9 +224,12 @@ interface AIProvider {
 - **OFX:** é o padrão que a maioria dos bancos brasileiros exporta (Itaú, Bradesco,
   BB, Santander, Caixa, Inter, Nubank…). Teremos um parser próprio, tolerante a OFX 1.x
   em SGML e codificação latin1, usando o `FITID` para não duplicar.
-- **CSV:** não há padrão entre bancos. Vamos ter **presets** (Nubank conta, Nubank
-  cartão, Inter, C6, Itaú…) e um **mapeador de colunas** genérico, que lembra a
-  configuração por banco. Suporta datas `dd/mm/aaaa`, valores `1.234,56` e sinal ou
+- **CSV:** não há padrão entre bancos. Os primeiros **presets** serão para os bancos
+  que você usa: **Itaú** (conta e cartão), **Santander** (conta e cartão), **Mercado
+  Pago** (relatório de movimentações da conta) e **XP** (conta digital e cartão).
+  Haverá também um **mapeador de colunas** genérico, que lembra a configuração por
+  banco. Os formatos serão validados com arquivos reais exportados por você, com
+  valores fictícios ou anonimizados. Suporta datas `dd/mm/aaaa`, valores `1.234,56` e sinal ou
   coluna de débito/crédito.
 - **Fluxo:** escolher o arquivo → pré-visualizar → remover duplicados
   (`fingerprint` = conta + data + valor + descrição normalizada) → categorizar em lote
@@ -228,7 +252,8 @@ interface AIProvider {
 | Decisão | Risco | Como mitigamos |
 |---|---|---|
 | **Chave da API dentro do app** | Aceitável só para uso pessoal. **Num produto comercial seria vazamento de chave** e custo descontrolado | A IA fica atrás do `AIProvider`. Na Fase 2 entra um `ProxyProvider` (backend próprio com autenticação, limites e cobrança) sem mudar as telas |
-| SQLite no **web/desktop** | `expo-sqlite` no web é experimental (WASM e exige cabeçalhos COOP/COEP) | Repositórios por interface: no desktop dá para usar outro adaptador (SQLite nativo via Tauri/Electron, ou o servidor) |
+| SQLite no **web/desktop** | `expo-sqlite` no web é experimental (WASM e exige cabeçalhos COOP/COEP). Na Etapa 0 vimos que as operações **síncronas** dele expiram no navegador | A camada de dados é **toda assíncrona**, e o app já roda no navegador (testado). Num desktop dá para trocar o adaptador (SQLite nativo via Tauri/Electron, ou o servidor) sem mexer nos repositórios |
+| **Chaves de dois provedores** (Claude e OpenAI) | O mesmo risco da linha acima, em dobro | Mesma mitigação: na Fase 2 as duas ficam no servidor, atrás do `ProxyProvider` |
 | Ficar preso ao **Expo Go** | Impede bibliotecas nativas que não vêm nele | Na Etapa 7 migramos para development build (EAS), e a restrição some |
 | IDs autoincrementais ou exclusão física | Quebrariam a sincronização | Já adotamos UUIDs, `updated_at` e exclusão lógica |
 | Lógica de negócio dentro das telas | Impede reaproveitar no servidor/desktop | Regras ficam em `domain/`, `ai/` e `import/` (TS puro, testado) |
@@ -244,16 +269,52 @@ Cada etapa termina com o app rodando no iPhone, testes passando e instruções d
 
 | Etapa | Entrega | Como testar no iPhone |
 |---|---|---|
-| **0. Fundação** | Atualizar para Expo SDK 58. Reorganizar pastas (seção 3). Drizzle + migrações. Novo modelo de dados com migração dos dados atuais. Categorias brasileiras pré-cadastradas. Tema claro/escuro | Expo Go |
-| **1. Lançamento rápido + contas** | Cadastro de contas (corrente, carteira, cartão). Lançamento em até 3 toques (valor no teclado numérico → categoria sugerida → salvar). Forma de pagamento (Pix, boleto, débito, crédito…). Transferências. Editar e excluir. Busca e filtros | Expo Go |
-| **2. IA v1: categorização que aprende** | `AIProvider` + `ClaudeProvider`. Tela de configuração da chave. Motor local (regras + Naive Bayes). Aprendizado a partir das correções. Indicador "sugerido pela IA" | Expo Go (com internet para a parte LLM) |
-| **3. Importação + backup** | Importar OFX e CSV (presets + mapeador). Deduplicação. Categorização em lote com revisão. Backup e restauração em JSON. Exportar CSV | Expo Go (arquivos do app Arquivos/iCloud) |
+| **0. Fundação** ✅ | Atualizar para Expo SDK 58. Reorganizar pastas (seção 3). Drizzle + migrações. Novo modelo de dados com migração dos dados atuais. Categorias brasileiras pré-cadastradas. Tema claro/escuro | Expo Go |
+| **1. Lançamento rápido + contas** | Cadastro de contas (corrente, carteira, cartão), com Itaú, Santander, XP e Mercado Pago pré-configurados. Lançamento em até 3 toques (valor no teclado numérico → categoria sugerida → salvar). Forma de pagamento (Pix, boleto, débito, crédito…). Transferências. Editar e excluir. Busca e filtros | Expo Go |
+| **2. IA v1: categorização que aprende** | `AIProvider` + `ClaudeProvider` + `OpenAIProvider`. Tela de configuração das chaves. Motor local (regras + Naive Bayes). Aprendizado a partir das correções. Indicador "sugerido pela IA" | Expo Go (com internet para a parte LLM) |
+| **3. Importação + backup** | Importar OFX e CSV (presets Itaú, Santander, XP e Mercado Pago + mapeador). Deduplicação. Categorização em lote com revisão. Backup e restauração em JSON. Exportar CSV | Expo Go (arquivos do app Arquivos/iCloud) |
 | **4. Cartão de crédito** | Fechamento e vencimento. Faturas calculadas. Parcelamentos ("3x de R$ 100"). Pagamento de fatura como transferência | Expo Go |
 | **5. Painel + orçamentos** | Resumo mensal, gráficos por categoria e por evolução, saldo por conta, faturas abertas. Orçamento por categoria com barras de progresso e alertas (aproveitando os `alerts.ts` atuais) | Expo Go |
-| **6. IA v2: análise e conversa** | Chat com perguntas em linguagem natural (*tool use*). Detecção de recorrentes. Gastos fora do normal. Saldo projetado no fim do mês. Feed de insights | Expo Go |
+| **6. IA v2: análise e conversa** | Chat com perguntas em linguagem natural (*tool use*), com consulta opcional à internet. Detecção de recorrentes. Gastos fora do normal. Saldo projetado no fim do mês. Feed de insights | Expo Go |
 | **7. App independente** | Face ID para abrir o app. Build via EAS (preview/ad hoc). EAS Update. Notificações locais de alertas | **App instalado no iPhone** (requer Apple Developer) |
 | **8. Preparação para a Fase 2** *(futuro)* | Versão web/desktop. Backend Node (mesmo TS) com autenticação, sincronização e `ProxyProvider`. Multiusuário | — |
 
 Ordem pensada para: **usar o app de verdade o mais cedo possível** (Etapa 1),
 colocar a IA desde o começo (Etapa 2) e ter **backup antes de confiar dados reais
 ao app** (Etapa 3).
+
+---
+
+## 9. Etapa 0 — o que foi feito
+
+- **Expo SDK 53 → 58** (React Native 0.88, React 19.3). O Expo Go atual da App Store
+  abre o projeto.
+- **Camada de dados nova** (`src/data/`):
+  - `schema.ts`: tabelas `accounts`, `categories`, `budgets`, `transactions` e
+    `settings`. Todas têm UUID, `created_at`/`updated_at` e exclusão lógica
+    (`deleted_at`), prontas para sincronização futura.
+  - Migrações geradas pelo `drizzle-kit` em `drizzle/` e embutidas no app por
+    `scripts/bundle-migrations.js`. Um teste falha se o arquivo embutido ficar
+    desatualizado.
+  - `setup.ts`: aplica as migrações, cria a conta "Carteira" e as categorias
+    brasileiras, e **migra os dados da primeira versão do app** (categorias,
+    orçamentos e lançamentos) sem perder nada.
+  - Repositórios (`repositories/`) são o único acesso aos dados. Toda gravação passa
+    por uma fila de transações (`ctx.write`), e as telas se atualizam sozinhas pelo
+    barramento de mudanças.
+  - Tudo é **assíncrono** e independe do driver: expo-sqlite no app, better-sqlite3
+    nos testes.
+- **Domínio** (`src/domain/`, TS puro e testado): tipos novos (Pix, boleto,
+  parcelas, transferências, fatura, origem da categorização para a IA), árvore de
+  categorias, resumo do mês (transferências não contam como gasto, e o orçamento da
+  categoria-mãe soma as subcategorias), datas no formato brasileiro, instituições.
+- **Telas** com tema claro/escuro automático:
+  - Resumo: gastos, receitas, resultado, saldo por conta e ameaças ao orçamento.
+  - Lançamentos: navegação por mês e formulário em modal para despesa, receita ou
+    transferência, com subcategoria e forma de pagamento.
+  - Categorias: árvore com orçamento, criação, edição e exclusão.
+  - Previsões.
+- **Verificação:** 56 testes automatizados, TypeScript e lint sem erros, bundle de
+  iOS gerado. O fluxo completo também foi testado num navegador automatizado, nos
+  temas claro e escuro: criar despesa e receita, editar, definir orçamento e
+  recarregar para confirmar que os dados persistem.

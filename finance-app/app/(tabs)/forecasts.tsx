@@ -1,98 +1,92 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useFinance } from '../../src/state/FinanceContext';
-import { formatCents } from '../../src/utils/currency';
+import { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { fromDateKey, startOfYearKey } from '../../src/domain/dates';
+import { formatCents } from '../../src/domain/money';
+import { buildMonthOverview } from '../../src/domain/overview';
+import { useQuery } from '../../src/state/useQuery';
+import { useToday } from '../../src/state/useToday';
+import { Card, MutedText, Screen, Title } from '../../src/ui/components';
+import { useTheme } from '../../src/ui/theme';
 
 export default function ForecastsScreen() {
-  const { forecasts, categories } = useFinance();
+  const theme = useTheme();
+  const today = useToday();
 
-  const totalProjectedMonth = forecasts.reduce((sum, f) => sum + f.projectedMonthTotal, 0);
-  const totalProjectedYear = forecasts.reduce((sum, f) => sum + f.projectedYearTotal, 0);
+  const { data } = useQuery(
+    async (r) => {
+      const [categories, transactions] = await Promise.all([
+        r.categories.list({ kind: 'expense' }),
+        r.transactions.list({ from: startOfYearKey(fromDateKey(today)), to: today, type: 'expense' }),
+      ]);
+      return { categories, transactions };
+    },
+    ['categories', 'transactions'],
+    [today]
+  );
+
+  const forecasts = useMemo(
+    () => (data ? buildMonthOverview({ ...data, budgets: new Map(), today }).forecasts : []),
+    [data, today]
+  );
+  const colorById = useMemo(() => new Map(data?.categories.map((c) => [c.id, c.color])), [data]);
+  const totalMonth = forecasts.reduce((sum, f) => sum + f.projectedMonthTotal, 0);
+  const totalYear = forecasts.reduce((sum, f) => sum + f.projectedYearTotal, 0);
 
   return (
-    <FlatList
-      style={styles.container}
-      contentContainerStyle={styles.list}
-      data={forecasts}
-      keyExtractor={(item) => item.categoryId}
-      ListHeaderComponent={
-        <View style={styles.header}>
-          <Text style={styles.title}>Previsões de despesas</Text>
-          <Text style={styles.subtitle}>
-            Baseadas no ritmo de gastos observado em cada categoria (projeção linear a partir do valor já gasto).
-          </Text>
-          <View style={styles.totalsRow}>
-            <View style={styles.totalCard}>
-              <Text style={styles.totalLabel}>Total projetado no mês</Text>
-              <Text style={styles.totalValue}>{formatCents(totalProjectedMonth)}</Text>
-            </View>
-            <View style={styles.totalCard}>
-              <Text style={styles.totalLabel}>Total projetado no ano</Text>
-              <Text style={styles.totalValue}>{formatCents(totalProjectedYear)}</Text>
-            </View>
-          </View>
-          {categories.length === 0 && (
-            <Text style={styles.emptyText}>Cadastre categorias e lançamentos para ver as previsões aqui.</Text>
-          )}
+    <Screen>
+      <Title>Previsões</Title>
+      <MutedText>
+        Projeção linear: supõe que o ritmo de gastos observado até hoje continua até o fim do período. Na Etapa 6, a IA
+        passa a considerar despesas recorrentes e faturas.
+      </MutedText>
+
+      <View style={styles.totalsRow}>
+        <View style={[styles.totalCard, { backgroundColor: theme.colors.text }]}>
+          <Text style={[styles.totalLabel, { color: theme.colors.background }]}>Projetado no mês</Text>
+          <Text style={[styles.totalValue, { color: theme.colors.background }]}>{formatCents(totalMonth)}</Text>
         </View>
-      }
-      renderItem={({ item }) => {
-        const category = categories.find((c) => c.id === item.categoryId);
-        return (
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <View style={[styles.swatch, { backgroundColor: category?.color ?? '#9ca3af' }]} />
-              <Text style={styles.cardTitle}>{item.categoryName}</Text>
-            </View>
-            <View style={styles.metricsRow}>
-              <Metric label="Média diária" value={formatCents(item.dailyAverage)} />
-              <Metric label="Previsão mensal" value={formatCents(item.projectedMonthTotal)} />
-              <Metric label="Previsão anual" value={formatCents(item.projectedYearTotal)} />
-            </View>
+        <View style={[styles.totalCard, { backgroundColor: theme.colors.text }]}>
+          <Text style={[styles.totalLabel, { color: theme.colors.background }]}>Projetado no ano</Text>
+          <Text style={[styles.totalValue, { color: theme.colors.background }]}>{formatCents(totalYear)}</Text>
+        </View>
+      </View>
+
+      {data && forecasts.length === 0 && <MutedText>Registre despesas para ver as previsões por categoria.</MutedText>}
+
+      {forecasts.map((f) => (
+        <Card key={f.categoryId} style={{ gap: 10 }}>
+          <View style={styles.cardHeader}>
+            <View style={[styles.swatch, { backgroundColor: colorById.get(f.categoryId) ?? theme.colors.textMuted }]} />
+            <Text style={[styles.cardTitle, { color: theme.colors.text }]}>{f.categoryName}</Text>
           </View>
-        );
-      }}
-    />
+          <View style={styles.metricsRow}>
+            <Metric label="Média diária" value={formatCents(f.dailyAverage)} />
+            <Metric label="Previsão do mês" value={formatCents(f.projectedMonthTotal)} />
+            <Metric label="Previsão do ano" value={formatCents(f.projectedYearTotal)} />
+          </View>
+        </Card>
+      ))}
+    </Screen>
   );
 }
 
 function Metric({ label, value }: { label: string; value: string }) {
+  const theme = useTheme();
   return (
-    <View style={styles.metric}>
-      <Text style={styles.metricLabel}>{label}</Text>
-      <Text style={styles.metricValue}>{value}</Text>
+    <View style={{ gap: 2 }}>
+      <Text style={{ fontSize: 11, color: theme.colors.textMuted }}>{label}</Text>
+      <Text style={{ fontSize: 14, fontWeight: '700', color: theme.colors.text }}>{value}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  list: { padding: 16, gap: 10 },
-  header: { gap: 8, marginBottom: 8 },
-  title: { fontSize: 24, fontWeight: '700', color: '#111827' },
-  subtitle: { fontSize: 13, color: '#6b7280' },
-  totalsRow: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  totalCard: {
-    flex: 1,
-    backgroundColor: '#111827',
-    borderRadius: 12,
-    padding: 14,
-    gap: 4,
-  },
-  totalLabel: { color: '#d1d5db', fontSize: 12 },
-  totalValue: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  emptyText: { color: '#6b7280', marginTop: 8 },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 14,
-    gap: 10,
-    marginBottom: 10,
-  },
+  totalsRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  totalCard: { flex: 1, borderRadius: 12, padding: 14, gap: 4 },
+  totalLabel: { fontSize: 12, opacity: 0.8 },
+  totalValue: { fontSize: 18, fontWeight: '700' },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   swatch: { width: 10, height: 10, borderRadius: 5 },
-  cardTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
+  cardTitle: { fontSize: 15, fontWeight: '700' },
   metricsRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  metric: { gap: 2 },
-  metricLabel: { fontSize: 11, color: '#6b7280' },
-  metricValue: { fontSize: 14, fontWeight: '700', color: '#111827' },
 });
