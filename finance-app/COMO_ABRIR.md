@@ -29,6 +29,20 @@ funciona mesmo que o PC e o celular estejam em redes diferentes.
   rode `npx expo login` uma vez e repita `node run.js celular`.
 - Os dados do celular são separados dos dados do navegador do PC.
 
+### Se o Expo Go mostrar "There was a problem running the requested project. The request timed out."
+O iPhone não conseguiu falar com o PC. Isso acontece quando o QR code veio do `node run.js` comum,
+que só funciona com PC e celular na mesma rede e sem bloqueio (redes de empresa costumam bloquear).
+
+1. No terminal, aperte **Ctrl+C** e abra no modo celular:
+   ```
+   node run.js celular
+   ```
+   Use o QR code que aparecer **depois** da mensagem "Tunnel ready". O endereço dele começa com
+   `exp://...exp.direct`, e não com `exp://192.168...`.
+2. No iPhone, confira em **Ajustes → Expo Go** se **Rede Local** está ativada.
+3. Se o túnel não abrir ("ngrok tunnel took too long"), crie uma conta grátis em https://expo.dev,
+   rode `npx expo login` uma vez e repita o passo 1.
+
 ## Se o app mostrar erro de cache (ex.: "EBUSY: resource busy or locked")
 Feche o terminal (Ctrl+C) e abra de novo limpando o cache:
 ```
