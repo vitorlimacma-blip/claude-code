@@ -43,7 +43,8 @@ if (pull.status !== 0) {
     .map((l) => l.slice(3).trim());
   if (changed.length > 0 && changed.every((f) => f.endsWith('package-lock.json'))) {
     console.log('O package-lock.json foi alterado neste PC; restaurando a versão do repositório e tentando de novo…');
-    git(['checkout', '--', ...changed]);
+    // "git status" lists paths from the repository root; ":/" makes checkout read them the same way.
+    git(['checkout', '--', ...changed.map((f) => `:/${f}`)]);
     pull = git(['pull', '--ff-only']);
   }
 }
@@ -59,7 +60,22 @@ if (pull.status === 0) {
 const lockHash = crypto.createHash('sha1').update(fs.readFileSync(path.join(root, 'package-lock.json'))).digest('hex');
 // The Expo command-line tool; if it is missing, node_modules is incomplete (e.g. an interrupted install).
 const expoCli = path.join(root, 'node_modules', 'expo', 'bin', 'cli');
-const installed = fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === lockHash && fs.existsSync(expoCli);
+const expoRuns = () => spawnSync(process.execPath, [expoCli, 'start', '--help'], { cwd: root, stdio: 'ignore' }).status === 0;
+const stampOk = fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === lockHash;
+let installed = stampOk && fs.existsSync(expoCli);
+if (installed && !expoRuns()) {
+  // Present but broken (e.g. a deletion or install interrupted halfway): start over from a clean folder.
+  console.log('A pasta de dependências está incompleta; apagando para instalar de novo…');
+  try {
+    fs.rmSync(path.join(root, 'node_modules'), { recursive: true, force: true, maxRetries: 3 });
+  } catch {
+    fail(
+      'Não foi possível apagar a pasta "node_modules": algum arquivo está em uso.\n' +
+        '  Feche os outros terminais (inclusive algum com o app aberto) e o VS Code, e rode "node run.js" de novo.'
+    );
+  }
+  installed = false;
+}
 if (!installed) {
   step('Instalando dependências (só na primeira vez ou quando houver novidades, pode levar alguns minutos)…');
   const install = run('npm', ['install', '--no-audit', '--no-fund']);
@@ -72,7 +88,7 @@ if (!installed) {
         '  Se continuar, copie a mensagem de erro acima e envie para o Claude.'
     );
   }
-  if (!fs.existsSync(expoCli)) {
+  if (!fs.existsSync(expoCli) || !expoRuns()) {
     fail(
       'A instalação terminou, mas o Expo não foi encontrado em node_modules.\n' +
         '  Apague a pasta "node_modules" dentro de finance-app e rode "node run.js" de novo.'

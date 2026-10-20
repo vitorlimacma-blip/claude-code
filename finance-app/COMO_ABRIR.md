@@ -81,7 +81,8 @@ A primeira abertura depois disso demora alguns minutos, porque tudo é instalado
 
 - **Seus dados não são apagados.** `git reset --hard` só desfaz alterações nos arquivos de código desta pasta. Os lançamentos ficam salvos no navegador (no PC) ou no Expo Go (no celular).
 - **Se o `git fetch` der erro** (sem internet ou sem login no GitHub), copie a mensagem e envie para o Claude.
-- **Se o `Remove-Item` disser que um arquivo está em uso**, feche o VS Code e os outros terminais abertos na pasta e tente de novo.
+- **Feche antes os outros terminais com o app aberto** (Ctrl+C neles) e o VS Code. No Windows, um arquivo em uso não é apagado, e a pasta `node_modules` fica pela metade. O sinal disso é um erro como **"Cannot find module"**.
+- O `node run.js` percebe quando a pasta `node_modules` está incompleta, apaga e instala de novo sozinho.
 - Quando o `node run.js` não consegue atualizar, ele mostra o motivo. Envie essa mensagem para o Claude.
 
 ## Primeira vez em outro computador
