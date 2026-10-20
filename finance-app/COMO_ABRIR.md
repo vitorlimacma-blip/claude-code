@@ -36,6 +36,19 @@ node run.js limpar
 ```
 A primeira abertura depois disso demora um pouco mais.
 
+## Se aparecer "'expo' não é reconhecido como um comando" ou "Não foi possível atualizar"
+O código do PC ficou desatualizado e a pasta de dependências incompleta. Rode, um por vez:
+```
+cd C:\Users\higramg_tecnico01\claude-code\finance-app
+git checkout -- package-lock.json
+git pull
+Remove-Item -Recurse -Force node_modules
+node run.js
+```
+Se o `git pull` mostrar erro, copie a mensagem e envie para o Claude.
+A partir dessa atualização, o `node run.js` corrige esses dois casos sozinho e mostra o motivo
+quando não consegue atualizar.
+
 ## Se der erro na instalação
 ```
 cd C:\Users\higramg_tecnico01\claude-code\finance-app

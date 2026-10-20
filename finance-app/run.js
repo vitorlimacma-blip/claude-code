@@ -32,12 +32,34 @@ const [major] = process.versions.node.split('.').map(Number);
 if (major < 20) fail(`Node.js ${process.versions.node} é antigo demais. Instale a versão LTS em https://nodejs.org`);
 
 step('Procurando atualizações do código…');
-const pull = run('git', ['pull', '--ff-only'], { stdio: 'pipe', encoding: 'utf8' });
-if (pull.status === 0) console.log(pull.stdout.trim() || 'Código já está atualizado.');
-else console.log('Não foi possível atualizar agora (sem internet ou alterações locais). Seguindo com a versão atual.');
+const git = (args) => run('git', args, { stdio: 'pipe', encoding: 'utf8' });
+let pull = git(['pull', '--ff-only']);
+if (pull.status !== 0) {
+  // The most common cause: "npm install" rewrote package-lock.json on this PC. That file is
+  // regenerated from the repository's version, so it is safe to restore it and try again.
+  const changed = (git(['status', '--porcelain']).stdout || '')
+    .split('\n')
+    .filter((l) => l.trim() && !l.startsWith('??'))
+    .map((l) => l.slice(3).trim());
+  if (changed.length > 0 && changed.every((f) => f.endsWith('package-lock.json'))) {
+    console.log('O package-lock.json foi alterado neste PC; restaurando a versão do repositório e tentando de novo…');
+    git(['checkout', '--', ...changed]);
+    pull = git(['pull', '--ff-only']);
+  }
+}
+if (pull.status === 0) {
+  console.log(pull.stdout.trim() || 'Código já está atualizado.');
+} else {
+  console.log('\x1b[33mNão foi possível atualizar o código agora. Seguindo com a versão que já está neste PC.\x1b[0m');
+  console.log('Motivo informado pelo git:');
+  console.log(`  ${(pull.stderr || pull.stdout || '').trim().split('\n').join('\n  ')}`);
+  console.log('Se o motivo for "alterações locais", envie esta mensagem para o Claude.');
+}
 
 const lockHash = crypto.createHash('sha1').update(fs.readFileSync(path.join(root, 'package-lock.json'))).digest('hex');
-const installed = fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === lockHash;
+// The Expo command-line tool; if it is missing, node_modules is incomplete (e.g. an interrupted install).
+const expoCli = path.join(root, 'node_modules', 'expo', 'bin', 'cli');
+const installed = fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8') === lockHash && fs.existsSync(expoCli);
 if (!installed) {
   step('Instalando dependências (só na primeira vez ou quando houver novidades, pode levar alguns minutos)…');
   const install = run('npm', ['install', '--no-audit', '--no-fund']);
@@ -48,6 +70,12 @@ if (!installed) {
         '  2. Apague a pasta "node_modules" dentro de finance-app.\n' +
         '  3. Rode "node run.js" de novo.\n' +
         '  Se continuar, copie a mensagem de erro acima e envie para o Claude.'
+    );
+  }
+  if (!fs.existsSync(expoCli)) {
+    fail(
+      'A instalação terminou, mas o Expo não foi encontrado em node_modules.\n' +
+        '  Apague a pasta "node_modules" dentro de finance-app e rode "node run.js" de novo.'
     );
   }
   fs.writeFileSync(stampFile, lockHash);
@@ -67,7 +95,7 @@ if (clearCache) {
 const phone = process.argv.includes('celular');
 let tunnelArgs = [];
 if (phone) {
-  const loggedIn = run('npx', ['expo', 'whoami'], { stdio: 'ignore' }).status === 0;
+  const loggedIn = spawnSync(process.execPath, [expoCli, 'whoami'], { cwd: root, stdio: 'ignore' }).status === 0;
   tunnelArgs = loggedIn ? ['--tunnel'] : ['--tunnel', 'ngrok'];
   step(
     `Modo celular: criando um túnel pela internet (${loggedIn ? 'conta Expo' : 'ngrok'}). ` +
@@ -79,6 +107,7 @@ if (phone) {
 } else {
   step('Abrindo o app no navegador (http://localhost:8081). Para fechar, aperte Ctrl+C aqui.');
 }
-const expoArgs = ['expo', 'start', '--web', ...tunnelArgs, ...(clearCache ? ['--clear'] : [])];
-const app = spawn('npx', expoArgs, { cwd: root, stdio: 'inherit', shell: isWindows });
+// Runs the project's own Expo CLI with this Node, so it doesn't depend on npx or on the PATH.
+const expoArgs = ['start', '--web', ...tunnelArgs, ...(clearCache ? ['--clear'] : [])];
+const app = spawn(process.execPath, [expoCli, ...expoArgs], { cwd: root, stdio: 'inherit' });
 app.on('exit', (code) => process.exit(code ?? 0));
