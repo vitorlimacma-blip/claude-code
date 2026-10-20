@@ -27,7 +27,7 @@ export interface Theme {
   alert: Record<AlertLevel, { bg: string; fg: string }>;
 }
 
-export function resolveDark(preference: ThemePreference, system: 'light' | 'dark' | null | undefined): boolean {
+export function resolveDark(preference: ThemePreference, system: string | null | undefined): boolean {
   return preference === 'dark' || (preference === 'system' && system === 'dark');
 }
 
