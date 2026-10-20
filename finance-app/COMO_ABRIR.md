@@ -36,26 +36,39 @@ node run.js limpar
 ```
 A primeira abertura depois disso demora um pouco mais.
 
-## Se aparecer "'expo' não é reconhecido como um comando" ou "Não foi possível atualizar"
-O código do PC ficou desatualizado e a pasta de dependências incompleta. Rode, um por vez:
-```
-cd C:\Users\higramg_tecnico01\claude-code\finance-app
-git checkout -- package-lock.json
-git pull
-Remove-Item -Recurse -Force node_modules
-node run.js
-```
-Se o `git pull` mostrar erro, copie a mensagem e envie para o Claude.
-A partir dessa atualização, o `node run.js` corrige esses dois casos sozinho e mostra o motivo
-quando não consegue atualizar.
+## Se o app não abrir ou não atualizar
+Sinais de que o código do PC ficou desatualizado:
 
-## Se der erro na instalação
+- aparece **"'expo' não é reconhecido como um comando"**;
+- ou aparece **"Não foi possível atualizar"**;
+- ou a instalação falha.
+
+Isso costuma acontecer quando a pasta de dependências fica incompleta.
+
+Rode no PowerShell, **um comando por vez**. Eles baixam a versão do GitHub e substituem o código deste PC:
+
 ```
-cd C:\Users\higramg_tecnico01\claude-code\finance-app
-git pull
+cd C:\Users\higramg_tecnico01\claude-code
+git reset --hard
+git fetch origin claude/finance-ai-app-e6keyb
+git checkout -B claude/finance-ai-app-e6keyb origin/claude/finance-ai-app-e6keyb
+git log --oneline -1
+```
+
+O último comando mostra a versão que ficou no PC. Confira se é a mais recente que o Claude informou e depois rode:
+
+```
+cd finance-app
 Remove-Item -Recurse -Force node_modules
 node run.js
 ```
+
+A primeira abertura depois disso demora alguns minutos, porque tudo é instalado de novo.
+
+- **Seus dados não são apagados.** `git reset --hard` só desfaz alterações nos arquivos de código desta pasta. Os lançamentos ficam salvos no navegador (no PC) ou no Expo Go (no celular).
+- **Se o `git fetch` der erro** (sem internet ou sem login no GitHub), copie a mensagem e envie para o Claude.
+- **Se o `Remove-Item` disser que um arquivo está em uso**, feche o VS Code e os outros terminais abertos na pasta e tente de novo.
+- Quando o `node run.js` não consegue atualizar, ele mostra o motivo. Envie essa mensagem para o Claude.
 
 ## Primeira vez em outro computador
 Instale o [Node.js LTS](https://nodejs.org) e o [Git](https://git-scm.com), depois:

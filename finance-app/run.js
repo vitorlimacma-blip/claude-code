@@ -53,7 +53,7 @@ if (pull.status === 0) {
   console.log('\x1b[33mNão foi possível atualizar o código agora. Seguindo com a versão que já está neste PC.\x1b[0m');
   console.log('Motivo informado pelo git:');
   console.log(`  ${(pull.stderr || pull.stdout || '').trim().split('\n').join('\n  ')}`);
-  console.log('Se o motivo for "alterações locais", envie esta mensagem para o Claude.');
+  console.log('Para corrigir, siga "Se o app não abrir ou não atualizar" no COMO_ABRIR.md.');
 }
 
 const lockHash = crypto.createHash('sha1').update(fs.readFileSync(path.join(root, 'package-lock.json'))).digest('hex');
