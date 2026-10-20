@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from 'expo-router';
 import { Icon } from './icons';
 import { useTheme } from './theme';
 import { motion } from './tokens';
@@ -20,14 +21,30 @@ interface ToastState extends ToastOptions {
 }
 
 const ToastContext = createContext<(options: ToastOptions) => void>(() => undefined);
+const ToastOffsetContext = createContext<(offset: number) => void>(() => undefined);
 
 /** Brief confirmation at the bottom of the screen, also announced to screen readers. */
 export function useToast() {
   return useContext(ToastContext);
 }
 
+/**
+ * Lifts toasts by `offset` while the calling screen is focused, for screens
+ * with their own bar at the bottom (the Assistente's message box).
+ */
+export function useToastOffset(offset: number) {
+  const setOffset = useContext(ToastOffsetContext);
+  useFocusEffect(
+    useCallback(() => {
+      setOffset(offset);
+      return () => setOffset(0);
+    }, [offset, setOffset])
+  );
+}
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<ToastState | null>(null);
+  const [offset, setOffset] = useState(0);
   const counter = useRef(0);
 
   const show = useCallback((options: ToastOptions) => {
@@ -44,13 +61,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   return (
     <ToastContext.Provider value={show}>
-      {children}
-      {toast && <ToastView key={toast.id} toast={toast} onClose={() => setToast(null)} />}
+      <ToastOffsetContext.Provider value={setOffset}>
+        {children}
+        {toast && <ToastView key={toast.id} toast={toast} offset={offset} onClose={() => setToast(null)} />}
+      </ToastOffsetContext.Provider>
     </ToastContext.Provider>
   );
 }
 
-function ToastView({ toast, onClose }: { toast: ToastState; onClose: () => void }) {
+function ToastView({ toast, offset, onClose }: { toast: ToastState; offset: number; onClose: () => void }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const icon = toast.tone === 'success' ? 'checkmark' : toast.tone === 'error' ? 'alert-outline' : 'information-circle-outline';
@@ -58,7 +77,7 @@ function ToastView({ toast, onClose }: { toast: ToastState; onClose: () => void 
   const bg = theme.colors.textPrimary;
   const fg = theme.colors.background;
   return (
-    <View pointerEvents="box-none" style={[styles.host, { bottom: insets.bottom + 72 }]}>
+    <View pointerEvents="box-none" style={[styles.host, { bottom: insets.bottom + 72 + offset }]}>
       <Animated.View
         entering={FadeInDown.duration(motion.feedback)}
         exiting={FadeOutDown.duration(motion.feedback)}

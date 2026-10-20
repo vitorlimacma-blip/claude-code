@@ -2,12 +2,13 @@ import { randomUUID } from 'expo-crypto';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import type { AssistantAction } from '../../src/ai/assistant';
 import type { CategorySuggestion } from '../../src/ai/categorizer';
 import { ValidationError } from '../../src/data/context';
 import type { TransactionPatch } from '../../src/data/repositories';
 import { descriptionSuggestions, lastUsedAccountId, type DescriptionSuggestion } from '../../src/domain/autocomplete';
 import { buildCategoryTree } from '../../src/domain/categories';
-import { addDaysToDateKey, formatDateBR, formatMonthBR, parseDateInput } from '../../src/domain/dates';
+import { addDaysToDateKey, formatDateBR, formatMonthBR, parseDateInput, todayKey } from '../../src/domain/dates';
 import { ACCOUNT_TYPE_ICONS, NATURE_LABELS, PAYMENT_METHOD_LABELS } from '../../src/domain/labels';
 import { inferTransferNature, refundableAmount, splitInstallments } from '../../src/domain/ledger';
 import { formatCents } from '../../src/domain/money';
@@ -35,6 +36,32 @@ type FormType = 'expense' | 'income' | 'transfer';
 const FORM_METHODS: PaymentMethod[] = ['pix', 'debit', 'credit', 'cash', 'boleto', 'other'];
 const HISTORY_LIMIT = 800;
 
+type TransactionDraft = Extract<AssistantAction, { kind: 'draft' }>['draft'];
+
+/** The assistant's draft from the route, checked field by field: anything malformed is dropped. */
+function parseDraft(param: string | undefined): TransactionDraft | undefined {
+  if (!param) return undefined;
+  try {
+    const d = JSON.parse(param) as Partial<TransactionDraft>;
+    if (d.type !== 'expense' && d.type !== 'income') return undefined;
+    if (!Number.isSafeInteger(d.amount) || (d.amount as number) <= 0) return undefined;
+    return {
+      type: d.type,
+      amount: d.amount as number,
+      description: typeof d.description === 'string' ? d.description.slice(0, 200) : '',
+      categoryId: typeof d.categoryId === 'string' ? d.categoryId : null,
+      date: typeof d.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d.date) ? d.date : todayKey(),
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function withKnownCategory(draft: TransactionDraft | undefined, categories: Category[]): TransactionDraft | undefined {
+  const category = draft?.categoryId ? categories.find((c) => c.id === draft.categoryId && !c.archived) : undefined;
+  return draft && { ...draft, categoryId: category && category.kind === draft.type ? category.id : null };
+}
+
 function defaultMethod(account: Account | undefined): PaymentMethod {
   if (account?.type === 'credit_card') return 'credit';
   if (account?.type === 'wallet') return 'cash';
@@ -52,7 +79,14 @@ function accountOptions(accounts: Account[]): AccountOption[] {
 }
 
 export default function TransactionScreen() {
-  const { id, duplicate, recurrence: recurrenceId, due } = useLocalSearchParams<{ id: string; duplicate?: string; recurrence?: string; due?: string }>();
+  const { id, duplicate, recurrence: recurrenceId, due, draft: draftParam } = useLocalSearchParams<{
+    id: string;
+    duplicate?: string;
+    recurrence?: string;
+    due?: string;
+    /** An entry drafted by the assistant (JSON); the user reviews and saves it. */
+    draft?: string;
+  }>();
   const isNew = id === 'new';
   // Not refreshed on transaction changes: the form keeps what is being typed.
   const { data } = useQuery(
@@ -81,10 +115,11 @@ export default function TransactionScreen() {
         installments,
         expected,
         due,
+        draft: isNew ? withKnownCategory(parseDraft(draftParam), categories) : undefined,
       };
     },
     ['categories', 'accounts'],
-    [id, duplicate, recurrenceId, due]
+    [id, duplicate, recurrenceId, due, draftParam]
   );
 
   if (!data) return null;
@@ -99,7 +134,7 @@ export default function TransactionScreen() {
   return (
     <>
       <Stack.Screen options={{ title: isNew ? (duplicate ? 'Duplicar lançamento' : 'Novo lançamento') : 'Editar lançamento' }} />
-      <TransactionForm key={`${id}-${duplicate ?? ''}-${recurrenceId ?? ''}`} {...data} />
+      <TransactionForm key={`${id}-${duplicate ?? ''}-${recurrenceId ?? ''}-${draftParam ?? ''}`} {...data} />
     </>
   );
 }
@@ -116,6 +151,7 @@ function TransactionForm({
   installments,
   expected,
   due,
+  draft,
 }: {
   categories: Category[];
   accounts: Account[];
@@ -129,6 +165,7 @@ function TransactionForm({
   /** An expected bill or income being settled ("Registrar pagamento"): fills the form and links the transaction to it. */
   expected?: Recurrence;
   due?: string;
+  draft?: TransactionDraft;
 }) {
   const theme = useTheme();
   const repos = useRepositories();
@@ -146,14 +183,21 @@ function TransactionForm({
     paymentMethod: expected.paymentMethod,
     notes: '',
   };
-  const source = transaction ?? template ?? (fromExpected as Transaction | undefined);
+  const fromDraft: Partial<Transaction> | undefined = draft && {
+    type: draft.type,
+    amount: draft.amount,
+    description: draft.description,
+    categoryId: draft.categoryId,
+    notes: '',
+  };
+  const source = transaction ?? template ?? ((fromExpected ?? fromDraft) as Transaction | undefined);
   const isTransfer = !!transaction?.transferPairId;
   const isRefund = transaction?.nature === 'refund';
   const outLeg = transaction?.type === 'transfer_out' ? transaction : counterpart;
   const inLeg = transaction?.type === 'transfer_in' ? transaction : counterpart;
 
   const suggestedAccountId = useMemo(
-    () => (source ? null : lastUsedAccountId(history, new Set(accounts.map((a) => a.id)))),
+    () => (source?.accountId ? null : lastUsedAccountId(history, new Set(accounts.map((a) => a.id)))),
     [source, history, accounts]
   );
   const initialAccountId =
@@ -171,13 +215,15 @@ function TransactionForm({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     source?.paymentMethod ?? defaultMethod(accounts.find((a) => a.id === initialAccountId))
   );
-  const [methodTouched, setMethodTouched] = useState(!!source);
+  const [methodTouched, setMethodTouched] = useState(!!source?.paymentMethod);
   const [categoryId, setCategoryId] = useState<string | null>(source?.categoryId ?? null);
   const [categoryTouched, setCategoryTouched] = useState(!!source?.categoryId);
-  const [categorySource, setCategorySource] = useState<CategorySource | null>(expected?.categoryId ? 'rule' : null);
+  const [categorySource, setCategorySource] = useState<CategorySource | null>(
+    expected?.categoryId ? 'rule' : draft?.categoryId ? 'ai' : null
+  );
   // The category the learner proposed, until the user picks one themselves.
   const [suggestion, setSuggestion] = useState<CategorySuggestion | null>(null);
-  const [date, setDate] = useState<DateKey>(transaction?.date ?? (due && due < today ? due : today));
+  const [date, setDate] = useState<DateKey>(transaction?.date ?? draft?.date ?? (due && due < today ? due : today));
   const [dateText, setDateText] = useState('');
   const [notes, setNotes] = useState(source?.notes ?? '');
   const [pending, setPending] = useState(transaction?.status === 'pending');

@@ -362,6 +362,31 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
       bus.emit('transactions');
     },
 
+    /**
+     * Sets the category of several transactions in one write (an assistant
+     * proposal the user confirmed, or its undo). Rows deleted in the meantime
+     * and transfers are skipped. Returns how many changed.
+     */
+    async setCategories(changes: { id: string; categoryId: string | null; categorySource: CategorySource | null }[]): Promise<number> {
+      if (changes.length === 0) return 0;
+      const changed = await ctx.write(async (tx) => {
+        const updatedAt = timestamp(ctx);
+        let count = 0;
+        for (const change of changes) {
+          const current = await getLive(tx, change.id);
+          if (!current || current.transferPairId) continue;
+          await tx
+            .update(transactions)
+            .set({ categoryId: change.categoryId, categorySource: change.categorySource, categoryConfidence: null, updatedAt })
+            .where(eq(transactions.id, change.id));
+          count++;
+        }
+        return count;
+      });
+      if (changed > 0) bus.emit('transactions');
+      return changed;
+    },
+
     /** Soft-deletes a transaction (both legs, for a transfer). */
     async remove(id: string): Promise<void> {
       const now = timestamp(ctx);
