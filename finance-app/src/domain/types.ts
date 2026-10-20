@@ -136,6 +136,8 @@ export interface Transaction extends SyncFields {
   settledDate: DateKey | null;
   /** For refunds: the transaction being reversed. */
   refundOfId: string | null;
+  /** The expected bill or income this transaction settles, when linked explicitly. */
+  recurrenceId: string | null;
   /** Description as typed by the user or as it came from the bank statement. */
   description: string;
   /** Normalized merchant name (e.g. "IFOOD" for "IFD*IFOOD SAO PAULO"), used for learning. */
@@ -162,25 +164,29 @@ export interface Transaction extends SyncFields {
 
 export type AlertLevel = 'ok' | 'warning' | 'projected_overrun' | 'exceeded';
 
-export interface CategoryMonthlyAlert {
-  categoryId: string;
-  categoryName: string;
-  level: AlertLevel;
-  budget: Cents;
-  spentSoFar: Cents;
-  projectedMonthTotal: Cents;
-  /** spentSoFar / budget, e.g. 0.8 for 80%. Can exceed 1. */
-  percentOfBudgetUsed: number;
-  /** projectedMonthTotal / budget. Can exceed 1. */
-  percentOfBudgetProjected: number;
-}
+export const RECURRENCE_FREQUENCIES = ['monthly', 'yearly'] as const;
+export type RecurrenceFrequency = (typeof RECURRENCE_FREQUENCIES)[number];
 
-export interface ForecastPoint {
-  categoryId: string;
-  categoryName: string;
-  dailyAverage: Cents;
-  monthSpentSoFar: Cents;
-  projectedMonthTotal: Cents;
-  yearSpentSoFar: Cents;
-  projectedYearTotal: Cents;
+/**
+ * An expected bill or income ("conta fixa", "salário"): what is known to come,
+ * before it is recorded. Occurrences are reconciled with the transactions
+ * that settle them, so a commitment is never counted twice.
+ */
+export interface Recurrence extends SyncFields {
+  kind: Extract<TransactionType, 'expense' | 'income'>;
+  description: string;
+  /** Expected amount; the real one comes from the transaction that settles it. */
+  amount: Cents;
+  accountId: string;
+  categoryId: string | null;
+  paymentMethod: PaymentMethod;
+  frequency: RecurrenceFrequency;
+  /** Day of the month it is due (1-31, clamped to short months). */
+  dayOfMonth: number;
+  /** Yearly only: month it is due (1-12). */
+  monthOfYear: number | null;
+  /** First possible occurrence. */
+  startDate: DateKey;
+  /** Last possible occurrence, or null while it continues. */
+  endDate: DateKey | null;
 }

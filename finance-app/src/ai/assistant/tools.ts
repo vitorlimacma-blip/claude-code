@@ -1,7 +1,6 @@
 import type { Repositories } from '../../data/repositories';
-import { computeMonthlyAlert } from '../../domain/alerts';
-import { groupByCategoryTree } from '../../domain/categories';
-import { addMonths, DEFAULT_TIME_ZONE, fromDateKey, monthRange, todayKey } from '../../domain/dates';
+import { budgetStatuses, BUDGET_LEVEL_LABELS } from '../../domain/budgets';
+import { addMonths, DEFAULT_TIME_ZONE, monthRange, todayKey } from '../../domain/dates';
 import { ACCOUNT_TYPE_LABELS, NATURE_LABELS, PAYMENT_METHOD_LABELS } from '../../domain/labels';
 import {
   expensesByCategory,
@@ -238,40 +237,34 @@ export function createFinanceTools(repos: Repositories, now: () => Date = () => 
   const orcamentosDoMes: LocalTool = {
     name: 'orcamentos_do_mes',
     description:
-      'Orçamentos por categoria num mês: valor do orçamento, gasto até agora, projeção para o fim do mês e ' +
-      'situação (ok, atenção, ameaça de estouro, estourado).',
+      'Orçamentos por categoria num mês: valor do orçamento, gasto até agora (já descontando estornos), contas ' +
+      'previstas ainda a vencer, projeção para o fim do mês e situação. A projeção é a mesma do Resumo: gasto + ' +
+      'contas a vencer + o que um mês típico ainda somaria (mediana dos últimos meses completos).',
     parameters: objectSchema({ mes: { type: 'string', description: 'Mês no formato AAAA-MM.' } }),
     async run(input) {
       const { mes } = input as { mes: string };
       if (!/^\d{4}-\d{2}$/.test(mes)) throw new Error('Mês inválido: use AAAA-MM.');
       const today = todayKey(now());
       const { from, to } = monthRange(mes);
-      const reference = fromDateKey(to < today ? to : today < from ? from : today);
-      const [{ categories, byId }, budgets, transactions] = await Promise.all([
+      // For a past month, its last day; for a future one, its first.
+      const reference = to < today ? to : today < from ? from : today;
+      const [{ categories, byId }, budgets, transactions, recurrences] = await Promise.all([
         loadCategories(),
         repos.budgets.amountsForMonth(mes),
-        repos.transactions.list({ from, to }),
+        repos.transactions.list({ from: `${addMonths(mes, -4)}-01`, to }),
+        repos.recurrences.list(),
       ]);
-      const grouped = groupByCategoryTree(categories, transactions);
-      const levels = { ok: 'ok', warning: 'atenção', projected_overrun: 'ameaça de estouro', exceeded: 'estourado' };
-      const rows = [...budgets.entries()].flatMap(([categoryId, budget]) => {
-        const category = byId.get(categoryId);
-        if (!category) return [];
-        const alert = computeMonthlyAlert(
-          { categoryId, categoryName: category.name, budget, transactions: grouped.get(categoryId) ?? [] },
-          reference
-        );
-        return [
-          {
-            categoria: categoryPath(category, byId),
-            orcamento: formatCents(budget),
-            gasto: formatCents(alert.spentSoFar),
-            projecao_fim_do_mes: formatCents(alert.projectedMonthTotal),
-            situacao: levels[alert.level],
-          },
-        ];
-      });
-      return { mes, orcamentos: rows, observacao: rows.length === 0 ? 'Nenhum orçamento definido.' : undefined };
+      const statuses = budgetStatuses({ categories, budgets, transactions, recurrences, today: reference });
+      const rows = statuses.map((b) => ({
+        categoria: categoryPath(byId.get(b.categoryId)!, byId),
+        orcamento: formatCents(b.budget),
+        gasto: formatCents(b.spent),
+        contas_a_vencer: formatCents(b.committed),
+        projecao_fim_do_mes: formatCents(b.projected),
+        situacao: BUDGET_LEVEL_LABELS[b.level],
+        metodo: b.method === 'typical' ? 'gasto + contas a vencer + restante do mês típico' : 'sem histórico: só gasto + contas a vencer',
+      }));
+      return { mes, data_de_referencia: reference, orcamentos: rows, observacao: rows.length === 0 ? 'Nenhum orçamento definido.' : undefined };
     },
   };
 

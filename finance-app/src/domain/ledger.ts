@@ -338,3 +338,55 @@ export function refundableAmount(
 ): Cents {
   return Math.max(0, origin.amount - existingRefunds.reduce((sum, r) => sum + r.amount, 0));
 }
+
+export interface OpenInvoice {
+  accountId: string;
+  /** YYYY-MM of the due date. */
+  month: MonthKey;
+  closingDate: DateKey;
+  dueDate: DateKey;
+  /** Still owed: purchases minus refunds, minus payments (applied to the oldest invoice first). */
+  amount: Cents;
+}
+
+/**
+ * Invoices of a card that are still owed. Purchases go to the invoice of
+ * their `invoiceMonth` (or the one their date falls into); refunds reduce it;
+ * payments to the card settle the oldest invoices first. Returns null when the
+ * card has no closing or due day, since the invoices can't be known.
+ */
+export function openInvoices(
+  card: Pick<Account, 'id' | 'type' | 'closingDay' | 'dueDay'>,
+  rows: Pick<Transaction, 'accountId' | 'type' | 'nature' | 'amount' | 'date' | 'invoiceMonth' | 'deletedAt'>[]
+): OpenInvoice[] | null {
+  if (card.type !== 'credit_card' || !card.closingDay || !card.dueDay) return null;
+  const charges = new Map<MonthKey, Cents>();
+  let payments = 0;
+  for (const t of rows) {
+    if (t.deletedAt || t.accountId !== card.id) continue;
+    if (t.type === 'transfer_in') {
+      payments += t.amount;
+      continue;
+    }
+    if (t.type === 'transfer_out') continue;
+    const month = t.invoiceMonth ?? invoiceFor(t.date, card.closingDay, card.dueDay).month;
+    charges.set(month, (charges.get(month) ?? 0) + (t.type === 'expense' ? t.amount : -t.amount));
+  }
+  const invoices: OpenInvoice[] = [];
+  for (const month of [...charges.keys()].sort()) {
+    let amount = charges.get(month)!;
+    const paid = Math.min(Math.max(amount, 0), payments);
+    amount -= paid;
+    payments -= paid;
+    if (amount <= 0) continue;
+    const closingMonth = card.dueDay > card.closingDay ? month : addMonths(month, -1);
+    invoices.push({
+      accountId: card.id,
+      month,
+      closingDate: dayOfMonthKey(closingMonth, card.closingDay),
+      dueDate: dayOfMonthKey(month, card.dueDay),
+      amount,
+    });
+  }
+  return invoices;
+}

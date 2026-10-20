@@ -1,5 +1,5 @@
 import { addMonths, daysInMonth, fromDateKey, monthRange, toDateKey } from './dates';
-import { defaultNature, inferTransferNature } from './ledger';
+import { defaultNature, inferTransferNature, invoiceFor } from './ledger';
 import type { AccountType, Cents, DateKey, MonthKey, PaymentMethod, TransactionNature, TransactionType } from './types';
 
 /**
@@ -45,10 +45,24 @@ export interface DemoBudget {
   amount: Cents;
 }
 
+export interface DemoRecurrence {
+  id: string;
+  kind: 'expense' | 'income';
+  description: string;
+  amount: Cents;
+  accountId: string;
+  categoryId: string;
+  paymentMethod: PaymentMethod;
+  dayOfMonth: number;
+  startDate: DateKey;
+}
+
 export interface DemoData {
   accounts: DemoAccount[];
   transactions: DemoTransaction[];
   budgets: DemoBudget[];
+  /** The salary and fixed bills, as expected items ("Contas previstas"). */
+  recurrences: DemoRecurrence[];
 }
 
 export const DEMO_ACCOUNTS = {
@@ -328,9 +342,9 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
     return `${month}-${String(Math.min(day, daysInMonth(y, m - 1))).padStart(2, '0')}`;
   };
 
-  function add(t: Omit<DemoTransaction, 'id' | 'transferPairId' | 'nature'>) {
+  function add(t: Omit<DemoTransaction, 'id' | 'transferPairId' | 'nature'> & { nature?: TransactionNature }) {
     if (t.date > today) return; // never in the future
-    transactions.push({ ...t, id: id('tx'), nature: defaultNature(t.type), transferPairId: null });
+    transactions.push({ ...t, id: id('tx'), nature: t.nature ?? defaultNature(t.type), transferPairId: null });
   }
 
   const accountType = new Map(ACCOUNTS.map((a) => [a.id, a.type]));
@@ -344,9 +358,13 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
     transactions.push({ ...common, id: id('tx'), accountId: to, type: 'transfer_in' });
   }
 
-  const cardSpendByMonth = new Map<MonthKey, Cents>();
-  const spendOnCard = (date: DateKey, amount: Cents) =>
-    cardSpendByMonth.set(date.slice(0, 7), (cardSpendByMonth.get(date.slice(0, 7)) ?? 0) + amount);
+  // Card purchases per invoice (by its due month), using the card's closing and due days.
+  const card = ACCOUNTS.find((a) => a.id === DEMO_ACCOUNTS.santanderCard)!;
+  const cardSpendByInvoice = new Map<MonthKey, Cents>();
+  const spendOnCard = (date: DateKey, amount: Cents) => {
+    const invoice = invoiceFor(date, card.closingDay!, card.dueDay!).month;
+    cardSpendByInvoice.set(invoice, (cardSpendByInvoice.get(invoice) ?? 0) + amount);
+  };
 
   for (let i = 0; i < months; i++) {
     const month = addMonths(firstMonth, i);
@@ -371,6 +389,8 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
       amount: random.money(230, 290),
       date: dayOf(month, lastDay),
       description: 'RENDIMENTO CDB XP',
+      // Appreciation of an investment is not available income (briefing §9).
+      nature: 'investment_return',
       paymentMethod: 'transfer',
     });
     if (random.chance(0.6)) {
@@ -443,19 +463,6 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
     transfer(DEMO_ACCOUNTS.itau, DEMO_ACCOUNTS.xp, 100000, dayOf(month, 6), 'TED APLICACAO XP');
   }
 
-  // Credit card: on each due day, pay the previous month's purchases from the checking account.
-  for (let i = 1; i < months; i++) {
-    const month = addMonths(firstMonth, i);
-    const previous = addMonths(month, -1);
-    transfer(
-      DEMO_ACCOUNTS.itau,
-      DEMO_ACCOUNTS.santanderCard,
-      cardSpendByMonth.get(previous) ?? 0,
-      dayOf(month, 10),
-      'PAGAMENTO FATURA CARTAO SANTANDER'
-    );
-  }
-
   // Unusual expenses, for the "gastos fora do normal" features.
   const lastMonth = addMonths(currentMonth, -1);
   add({
@@ -476,6 +483,19 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
     description: 'MAGAZINE LUIZA',
     paymentMethod: 'credit',
   });
+  spendOnCard(dayOf(addMonths(currentMonth, -3), 12), 459900);
+
+  // Credit card: on each due day, pay that invoice in full from the checking account.
+  for (let i = 0; i < months; i++) {
+    const month = addMonths(firstMonth, i);
+    transfer(
+      DEMO_ACCOUNTS.itau,
+      DEMO_ACCOUNTS.santanderCard,
+      cardSpendByInvoice.get(month) ?? 0,
+      dayOf(month, card.dueDay!),
+      'PAGAMENTO FATURA CARTAO SANTANDER'
+    );
+  }
 
   // Recent entries with new merchants and no category, for the AI to suggest.
   const recentFrom = toDateKey(new Date(fromDateKey(today).getTime() - 20 * 86_400_000));
@@ -494,5 +514,30 @@ export function generateDemoData(today: DateKey, options: { months?: number; see
   }
 
   transactions.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  return { accounts: ACCOUNTS, transactions, budgets: BUDGETS };
+  const startDate = `${firstMonth}-01`;
+  const recurrences: DemoRecurrence[] = [
+    {
+      id: `${DEMO_PREFIX}rec-salario`,
+      kind: 'income',
+      description: 'CREDITO SALARIO',
+      amount: 980000,
+      accountId: DEMO_ACCOUNTS.itau,
+      categoryId: 'sys-receita-salario',
+      paymentMethod: 'transfer',
+      dayOfMonth: 5,
+      startDate,
+    },
+    ...FIXED.map(([day, categoryId, description, min, max, method, where], i) => ({
+      id: `${DEMO_PREFIX}rec-${String(i + 1).padStart(2, '0')}`,
+      kind: 'expense' as const,
+      description,
+      amount: Math.round(((min + max) / 2) * 100),
+      accountId: where === 'card' ? DEMO_ACCOUNTS.santanderCard : DEMO_ACCOUNTS.itau,
+      categoryId,
+      paymentMethod: method,
+      dayOfMonth: day,
+      startDate,
+    })),
+  ];
+  return { accounts: ACCOUNTS, transactions, budgets: BUDGETS, recurrences };
 }

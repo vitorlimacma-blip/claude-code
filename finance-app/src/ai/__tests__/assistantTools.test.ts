@@ -83,13 +83,22 @@ describe('assistant tools', () => {
     ]);
   });
 
-  it('reports budgets with projections for the month', async () => {
+  it('reports budgets with the same projection as the Resumo (typical month, no naive pace)', async () => {
     const { repos, tool, add } = await setup();
     await repos.budgets.set('sys-alimentacao', 50000);
     await add('2026-03-02', 30000, 'sys-alimentacao-mercado');
-    const out = (await tool('orcamentos_do_mes').run({ mes: '2026-03' })) as any;
-    expect(out.orcamentos).toEqual([
-      expect.objectContaining({ categoria: 'Alimentação', situacao: 'ameaça de estouro' }),
+
+    // Without history, only what is known: R$ 300 of R$ 500 is not flagged by stretching 2 days to 31.
+    const withoutHistory = (await tool('orcamentos_do_mes').run({ mes: '2026-03' })) as any;
+    expect(withoutHistory.orcamentos).toEqual([
+      expect.objectContaining({ categoria: 'Alimentação', projecao_fim_do_mes: expect.stringContaining('300,00'), situacao: 'Dentro do previsto' }),
+    ]);
+
+    // With a typical month of R$ 600, the rest of the month is expected: R$ 300 + R$ 300 = R$ 600 > R$ 500.
+    for (const m of ['2025-12', '2026-01', '2026-02']) await add(`${m}-01`, 60000, 'sys-alimentacao-mercado');
+    const withHistory = (await tool('orcamentos_do_mes').run({ mes: '2026-03' })) as any;
+    expect(withHistory.orcamentos).toEqual([
+      expect.objectContaining({ categoria: 'Alimentação', projecao_fim_do_mes: expect.stringContaining('600,00'), situacao: 'Pode passar do limite' }),
     ]);
   });
 });

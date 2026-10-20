@@ -119,7 +119,8 @@ export default function SettingsScreen() {
       <Group title="Contas e categorias">
         <Row icon="wallet-outline" color="#176B5B" title="Contas e cartões" subtitle={data ? `${data.accounts.length} conta(s) ativa(s)` : ' '} href="/accounts" />
         <Row icon="pricetags-outline" color="#365BB5" title="Categorias" subtitle={activeCategories !== undefined ? `${activeCategories} principais · reordenar, arquivar, juntar` : ' '} href="/categories" />
-        <Row icon="trending-up-outline" color="#0891B2" title="Previsões" subtitle="Projeção de gastos do mês e do ano" href="/forecasts" />
+        <Row icon="calendar-outline" color="#8A5200" title="Contas previstas" subtitle="Salário e contas fixas, usados na margem do Resumo" href="/recurrences" />
+        <Row icon="trending-up-outline" color="#0891B2" title="Previsões por categoria" subtitle="Gasto do mês, mês típico e previsão" href="/forecasts" />
       </Group>
 
       <Section title="Aparência e acessibilidade">

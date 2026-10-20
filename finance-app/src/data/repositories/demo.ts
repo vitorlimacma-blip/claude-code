@@ -4,7 +4,7 @@ import { invoiceMonthFor } from '../../domain/ledger';
 import { normalizeMerchant } from '../../domain/merchant';
 import type { DateKey } from '../../domain/types';
 import { type RepositoryContext, timestamp } from '../context';
-import { accounts, budgets, transactions } from '../schema';
+import { accounts, budgets, recurrences, transactions } from '../schema';
 
 const CHUNK = 50;
 const demoId = `${DEMO_PREFIX}%`;
@@ -17,6 +17,7 @@ export function createDemoRepository(ctx: RepositoryContext) {
     // Hard delete: demo rows (and anything the user added to demo accounts) never existed for real.
     await tx.delete(transactions).where(or(like(transactions.id, demoId), like(transactions.accountId, demoId)));
     await tx.delete(budgets).where(like(budgets.id, demoId));
+    await tx.delete(recurrences).where(or(like(recurrences.id, demoId), like(recurrences.accountId, demoId)));
     await tx.delete(accounts).where(like(accounts.id, demoId));
   }
 
@@ -35,6 +36,7 @@ export function createDemoRepository(ctx: RepositoryContext) {
         await clearIn(tx);
         await tx.insert(accounts).values(data.accounts.map((a, i) => ({ ...a, ...sync, archived: false, sortOrder: i + 1 })));
         await tx.insert(budgets).values(data.budgets.map((b) => ({ ...b, ...sync, month: null })));
+        await tx.insert(recurrences).values(data.recurrences.map((r) => ({ ...r, ...sync, frequency: 'monthly' as const })));
         const accountById = new Map(data.accounts.map((a) => [a.id, a]));
         const rows = data.transactions.map((t) => ({
           ...t,
@@ -47,13 +49,13 @@ export function createDemoRepository(ctx: RepositoryContext) {
           await tx.insert(transactions).values(rows.slice(i, i + CHUNK));
         }
       });
-      bus.emit('accounts', 'budgets', 'transactions');
+      bus.emit('accounts', 'budgets', 'transactions', 'recurrences');
       return { accounts: data.accounts.length, transactions: data.transactions.length };
     },
 
     async clear(): Promise<void> {
       await ctx.write(clearIn);
-      bus.emit('accounts', 'budgets', 'transactions');
+      bus.emit('accounts', 'budgets', 'transactions', 'recurrences');
     },
   };
 }

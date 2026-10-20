@@ -18,6 +18,7 @@ export function makeTransaction(partial: Partial<Transaction> & Pick<Transaction
     dueDate: null,
     settledDate: null,
     refundOfId: null,
+    recurrenceId: null,
     description: '',
     merchant: null,
     notes: '',

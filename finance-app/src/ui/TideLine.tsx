@@ -74,6 +74,7 @@ export function TideLine({
   height = 56,
   color,
   accessibilityLabel,
+  splitIndex,
 }: {
   values: number[];
   width: number;
@@ -81,13 +82,24 @@ export function TideLine({
   color?: string;
   /** What the line shows, in words. Without it the line is treated as decorative. */
   accessibilityLabel?: string;
+  /**
+   * Index of the last realized point: the line is solid up to it (with a dot
+   * on it) and dashed after, for projected values.
+   */
+  splitIndex?: number;
 }) {
   const theme = useTheme();
   const stroke = color ?? theme.colors.chart[0];
   const points = scaleSeries(values, width, height);
-  const line = smoothPath(points);
-  const last = points[points.length - 1];
-  const area = points.length > 1 ? `${line} L${width},${height} L0,${height} Z` : '';
+  const split = splitIndex === undefined ? points.length - 1 : Math.max(0, Math.min(splitIndex, points.length - 1));
+  const solid = smoothPath(points.slice(0, split + 1));
+  const dashed = split < points.length - 1 ? smoothPath(points.slice(split)) : '';
+  const marker = points[split];
+  const area = split > 0 ? `${solid} L${points[split].x},${height} L0,${height} Z` : '';
+  // A faint zero line when the series crosses it: where the balance would turn negative.
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const zeroY = min < 0 && max > 0 ? scaleSeries([min, 0, max], width, height)[1].y : null;
   return (
     <View
       accessible={!!accessibilityLabel}
@@ -103,9 +115,15 @@ export function TideLine({
             <Stop offset="1" stopColor={stroke} stopOpacity={0} />
           </LinearGradient>
         </Defs>
+        {zeroY !== null && (
+          <Path d={`M0,${zeroY} L${width},${zeroY}`} stroke={theme.colors.borderStrong} strokeWidth={1} strokeDasharray="2 4" fill="none" />
+        )}
         {area !== '' && <Path d={area} fill="url(#tide)" />}
-        <Path d={line} stroke={stroke} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        {last && <Circle cx={last.x} cy={last.y} r={4} fill={theme.colors.surface} stroke={stroke} strokeWidth={2.5} />}
+        {solid !== '' && <Path d={solid} stroke={stroke} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />}
+        {dashed !== '' && (
+          <Path d={dashed} stroke={stroke} strokeWidth={2} strokeDasharray="5 5" strokeLinecap="round" fill="none" opacity={0.8} />
+        )}
+        {marker && <Circle cx={marker.x} cy={marker.y} r={4} fill={theme.colors.surface} stroke={stroke} strokeWidth={2.5} />}
       </Svg>
     </View>
   );

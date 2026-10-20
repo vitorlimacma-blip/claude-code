@@ -41,6 +41,8 @@ export interface NewTransactionInput {
   competenceMonth?: MonthKey | null;
   dueDate?: DateKey | null;
   settledDate?: DateKey | null;
+  /** The expected bill or income this transaction settles. */
+  recurrenceId?: string | null;
   description?: string;
   merchant?: string | null;
   notes?: string;
@@ -177,6 +179,7 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
       dueDate: null,
       settledDate: null,
       refundOfId: null,
+      recurrenceId: null,
       description: '',
       merchant: null,
       notes: '',
@@ -273,6 +276,7 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
           competenceMonth: input.competenceMonth ?? null,
           dueDate: input.dueDate ?? null,
           settledDate: input.settledDate ?? null,
+          recurrenceId: input.recurrenceId ?? null,
           categoryId,
           description: input.description?.trim() ?? '',
           merchant: input.merchant ?? (normalizeMerchant(input.description ?? '') || null),

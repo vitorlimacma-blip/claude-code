@@ -31,13 +31,14 @@ describe('generateDemoData', () => {
     expect(data.transactions.length).toBeGreaterThan(300);
   });
 
-  it('pays each card invoice with a linked transfer equal to the previous month purchases', () => {
+  it('pays each card invoice in full on its due day, with a linked transfer', () => {
     const payments = data.transactions.filter((t) => t.description.startsWith('PAGAMENTO FATURA') && t.type === 'transfer_in');
-    expect(payments.length).toBe(5);
-    const september = data.transactions
-      .filter((t) => t.accountId === DEMO_ACCOUNTS.santanderCard && t.type === 'expense' && t.date.startsWith('2026-09'))
+    expect(payments.length).toBeGreaterThanOrEqual(5);
+    // The card closes on the 3rd and is due on the 10th: the October invoice holds purchases from Sep 3 to Oct 2.
+    const octoberInvoice = data.transactions
+      .filter((t) => t.accountId === DEMO_ACCOUNTS.santanderCard && t.type === 'expense' && t.date >= '2026-09-03' && t.date <= '2026-10-02')
       .reduce((s, t) => s + t.amount, 0);
-    expect(payments.find((p) => p.date === '2026-10-10')?.amount).toBe(september);
+    expect(payments.find((p) => p.date === '2026-10-10')?.amount).toBe(octoberInvoice);
     for (const p of payments) {
       const legs = data.transactions.filter((t) => t.transferPairId === p.transferPairId);
       expect(legs.map((l) => l.type).sort()).toEqual(['transfer_in', 'transfer_out']);

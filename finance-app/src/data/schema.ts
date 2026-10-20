@@ -6,6 +6,7 @@ import {
   CATEGORY_SOURCES,
   DEFAULT_CURRENCY,
   PAYMENT_METHODS,
+  RECURRENCE_FREQUENCIES,
   TRANSACTION_NATURES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
@@ -87,6 +88,7 @@ export const transactions = sqliteTable(
     dueDate: text('due_date'),
     settledDate: text('settled_date'),
     refundOfId: text('refund_of_id'),
+    recurrenceId: text('recurrence_id'),
     description: text('description').notNull().default(''),
     merchant: text('merchant'),
     notes: text('notes').notNull().default(''),
@@ -109,9 +111,25 @@ export const transactions = sqliteTable(
     index('transactions_category_idx').on(t.categoryId),
     index('transactions_fingerprint_idx').on(t.fingerprint),
     index('transactions_refund_of_idx').on(t.refundOfId),
+    index('transactions_recurrence_idx').on(t.recurrenceId),
     index('transactions_live_idx').on(t.deletedAt).where(sql`${t.deletedAt} IS NULL`),
   ]
 );
+
+export const recurrences = sqliteTable('recurrences', {
+  ...syncColumns,
+  kind: text('kind', { enum: ['expense', 'income'] }).notNull(),
+  description: text('description').notNull(),
+  amount: integer('amount').notNull(),
+  accountId: text('account_id').notNull(),
+  categoryId: text('category_id'),
+  paymentMethod: text('payment_method', { enum: PAYMENT_METHODS }).notNull().default('other'),
+  frequency: text('frequency', { enum: RECURRENCE_FREQUENCIES }).notNull().default('monthly'),
+  dayOfMonth: integer('day_of_month').notNull(),
+  monthOfYear: integer('month_of_year'),
+  startDate: text('start_date').notNull(),
+  endDate: text('end_date'),
+});
 
 /** Key/value app settings; values are JSON-encoded. */
 export const settings = sqliteTable('settings', {
@@ -120,4 +138,4 @@ export const settings = sqliteTable('settings', {
   updatedAt: text('updated_at').notNull(),
 });
 
-export const schema = { accounts, categories, budgets, transactions, settings };
+export const schema = { accounts, categories, budgets, transactions, recurrences, settings };

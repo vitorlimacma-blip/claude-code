@@ -5,6 +5,7 @@ import { createBackupRepository } from './backup';
 import { createBudgetsRepository } from './budgets';
 import { createCategoriesRepository } from './categories';
 import { createDemoRepository } from './demo';
+import { createRecurrencesRepository } from './recurrences';
 import { createSettingsRepository } from './settings';
 import { createTransactionsRepository } from './transactions';
 
@@ -19,6 +20,8 @@ export function createRepositories(ctx: RepositoryContext, options: { backups?: 
     categories: createCategoriesRepository(ctx),
     budgets: createBudgetsRepository(ctx),
     transactions: createTransactionsRepository(ctx),
+    /** Expected bills and incomes, used by projections. */
+    recurrences: createRecurrencesRepository(ctx),
     settings: createSettingsRepository(ctx),
     /** Export/import and automatic backups (kept in a separate database). */
     backup: createBackupRepository(ctx, options.backups),
@@ -33,6 +36,7 @@ export type Repositories = ReturnType<typeof createRepositories>;
 
 export type { NewAccountInput, AccountPatch } from './accounts';
 export type { NewCategoryInput, CategoryPatch } from './categories';
+export type { NewRecurrenceInput, RecurrencePatch } from './recurrences';
 export type {
   NewInstallmentsInput,
   NewRefundInput,

@@ -11,7 +11,7 @@ import { addDaysToDateKey, formatDateBR, formatMonthBR, parseDateInput } from '.
 import { ACCOUNT_TYPE_ICONS, NATURE_LABELS, PAYMENT_METHOD_LABELS } from '../../src/domain/labels';
 import { inferTransferNature, refundableAmount, splitInstallments } from '../../src/domain/ledger';
 import { formatCents } from '../../src/domain/money';
-import type { Account, Category, CategorySource, DateKey, PaymentMethod, Transaction } from '../../src/domain/types';
+import type { Account, Category, CategorySource, DateKey, PaymentMethod, Recurrence, Transaction } from '../../src/domain/types';
 import { notify } from '../../src/platform/dialogs';
 import { logError, userFacingError } from '../../src/platform/errors';
 import { successFeedback } from '../../src/platform/haptics';
@@ -52,17 +52,18 @@ function accountOptions(accounts: Account[]): AccountOption[] {
 }
 
 export default function TransactionScreen() {
-  const { id, duplicate } = useLocalSearchParams<{ id: string; duplicate?: string }>();
+  const { id, duplicate, recurrence: recurrenceId, due } = useLocalSearchParams<{ id: string; duplicate?: string; recurrence?: string; due?: string }>();
   const isNew = id === 'new';
   // Not refreshed on transaction changes: the form keeps what is being typed.
   const { data } = useQuery(
     async (r) => {
-      const [categories, accounts, history, transaction, template] = await Promise.all([
+      const [categories, accounts, history, transaction, template, expected] = await Promise.all([
         r.categories.list(),
         r.accounts.list(),
         r.transactions.list({ limit: HISTORY_LIMIT }),
         isNew ? undefined : r.transactions.get(id),
         duplicate ? r.transactions.get(duplicate) : undefined,
+        isNew && recurrenceId ? r.recurrences.get(recurrenceId) : undefined,
       ]);
       const pair = transaction?.transferPairId ? await r.transactions.getTransferPair(transaction.transferPairId) : [];
       const refundOrigin = transaction?.refundOfId ? await r.transactions.get(transaction.refundOfId) : undefined;
@@ -78,10 +79,12 @@ export default function TransactionScreen() {
         refundOrigin,
         refunds,
         installments,
+        expected,
+        due,
       };
     },
     ['categories', 'accounts'],
-    [id, duplicate]
+    [id, duplicate, recurrenceId, due]
   );
 
   if (!data) return null;
@@ -96,7 +99,7 @@ export default function TransactionScreen() {
   return (
     <>
       <Stack.Screen options={{ title: isNew ? (duplicate ? 'Duplicar lançamento' : 'Novo lançamento') : 'Editar lançamento' }} />
-      <TransactionForm key={`${id}-${duplicate ?? ''}`} {...data} />
+      <TransactionForm key={`${id}-${duplicate ?? ''}-${recurrenceId ?? ''}`} {...data} />
     </>
   );
 }
@@ -111,6 +114,8 @@ function TransactionForm({
   refundOrigin,
   refunds,
   installments,
+  expected,
+  due,
 }: {
   categories: Category[];
   accounts: Account[];
@@ -121,6 +126,9 @@ function TransactionForm({
   refundOrigin?: Transaction;
   refunds: Transaction[];
   installments: Transaction[];
+  /** An expected bill or income being settled ("Registrar pagamento"): fills the form and links the transaction to it. */
+  expected?: Recurrence;
+  due?: string;
 }) {
   const theme = useTheme();
   const repos = useRepositories();
@@ -128,7 +136,17 @@ function TransactionForm({
   const today = useToday();
   const { suggest } = useCategorizer();
 
-  const source = transaction ?? template;
+  // A bill being settled fills the form like a template.
+  const fromExpected: Partial<Transaction> | undefined = expected && {
+    type: expected.kind,
+    amount: expected.amount,
+    description: expected.description,
+    accountId: expected.accountId,
+    categoryId: expected.categoryId,
+    paymentMethod: expected.paymentMethod,
+    notes: '',
+  };
+  const source = transaction ?? template ?? (fromExpected as Transaction | undefined);
   const isTransfer = !!transaction?.transferPairId;
   const isRefund = transaction?.nature === 'refund';
   const outLeg = transaction?.type === 'transfer_out' ? transaction : counterpart;
@@ -146,7 +164,7 @@ function TransactionForm({
   const [type, setType] = useState<FormType>(
     isTransfer ? 'transfer' : source?.type === 'income' ? 'income' : 'expense'
   );
-  const [amount, setAmount] = useState(transaction?.amount ?? template?.amount ?? 0);
+  const [amount, setAmount] = useState(source?.amount ?? 0);
   const [description, setDescription] = useState(source?.description ?? '');
   const [accountId, setAccountId] = useState(initialAccountId);
   const [toAccountId, setToAccountId] = useState(inLeg?.accountId ?? accounts.find((a) => a.id !== initialAccountId)?.id ?? '');
@@ -156,10 +174,10 @@ function TransactionForm({
   const [methodTouched, setMethodTouched] = useState(!!source);
   const [categoryId, setCategoryId] = useState<string | null>(source?.categoryId ?? null);
   const [categoryTouched, setCategoryTouched] = useState(!!source?.categoryId);
-  const [categorySource, setCategorySource] = useState<CategorySource | null>(null);
+  const [categorySource, setCategorySource] = useState<CategorySource | null>(expected?.categoryId ? 'rule' : null);
   // The category the learner proposed, until the user picks one themselves.
   const [suggestion, setSuggestion] = useState<CategorySuggestion | null>(null);
-  const [date, setDate] = useState<DateKey>(transaction?.date ?? today);
+  const [date, setDate] = useState<DateKey>(transaction?.date ?? (due && due < today ? due : today));
   const [dateText, setDateText] = useState('');
   const [notes, setNotes] = useState(source?.notes ?? '');
   const [pending, setPending] = useState(transaction?.status === 'pending');
@@ -318,6 +336,7 @@ function TransactionForm({
           categoryConfidence: accepted?.confidence ?? null,
           paymentMethod,
           status: pending ? 'pending' : 'cleared',
+          recurrenceId: expected?.id ?? null,
         });
         undo = () => repos.transactions.remove(clientId);
         message = type === 'income' ? 'Receita salva' : 'Despesa salva';
@@ -381,6 +400,11 @@ function TransactionForm({
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
+        {expected && (
+          <Info icon="calendar-outline">
+            Registrando “{expected.description}”. O valor previsto é {formatCents(expected.amount)}; ajuste para o valor real.
+          </Info>
+        )}
         {isRefund && refundOrigin && (
           <Info icon="return-down-back-outline">
             Estorno de “{refundOrigin.description || 'lançamento sem descrição'}”, de {formatDateBR(refundOrigin.date)} (

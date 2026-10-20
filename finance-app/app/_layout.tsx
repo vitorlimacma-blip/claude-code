@@ -63,9 +63,11 @@ function AppNavigation() {
             <Stack.Screen name="ai-settings" options={{ title: 'Inteligência artificial' }} />
             <Stack.Screen name="backup" options={{ title: 'Backup e restauração' }} />
             {/* Outside the tabs: hidden tabs (href: null) can't be navigated to with js-tabs. */}
-            <Stack.Screen name="forecasts" options={{ title: 'Previsões' }} />
+            <Stack.Screen name="forecasts" options={{ title: 'Previsões por categoria' }} />
             <Stack.Screen name="catalogo" options={{ title: 'Catálogo de componentes' }} />
             <Stack.Screen name="categories" options={{ title: 'Categorias' }} />
+            <Stack.Screen name="recurrences" options={{ title: 'Contas previstas' }} />
+            <Stack.Screen name="recurrence/[id]" options={{ presentation: 'modal', title: 'Conta prevista' }} />
           </Stack>
           </ToastProvider>
         </AIContextProvider>

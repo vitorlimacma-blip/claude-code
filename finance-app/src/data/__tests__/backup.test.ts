@@ -131,13 +131,13 @@ describe('export and import', () => {
     const source = await populated();
     const json = await source.repos.backup.exportJson();
     const parsed = parseSnapshot(json);
-    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'settings', 'transactions']);
+    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'recurrences', 'settings', 'transactions']);
 
     const target = createTestContext();
     const targetRepos = await prepareDatabase(target, { backups: createTestSnapshotStore() });
     await targetRepos.backup.importJson(json);
 
-    for (const table of ['accounts', 'categories', 'budgets', 'transactions', 'settings']) {
+    for (const table of ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'settings']) {
       expect(rowsOf(target, table)).toEqual(rowsOf(source.ctx, table));
     }
     expect(rowsOf(target, 'transactions').some((r) => r.deleted_at !== null)).toBe(true);
