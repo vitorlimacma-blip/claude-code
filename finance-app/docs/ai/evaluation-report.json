@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-22T19:19:11.254Z",
-  "app_commit": "78a0641",
+  "generated_at": "2026-10-22T23:20:46.186Z",
+  "app_commit": "d5e982f",
   "model": null,
   "note": "Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.",
   "summary": {

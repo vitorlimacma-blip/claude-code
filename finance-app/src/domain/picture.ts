@@ -35,7 +35,7 @@ export function computeFinancialPicture(data: PictureData, today: DateKey) {
   const categoryMonth = categoryProjections({ categories, transactions: rows, recurrences, today });
   const comparison = compareEquivalentPeriods(rows, categories, today);
   const monthRows = rows.filter((t) => t.date >= `${month}-01` && t.date <= today);
-  const insights = buildInsights({ today, projection, budgets: budgetList, comparison, categories, monthTransactions: monthRows });
+  const insights = buildInsights({ today, comparison, categories, monthTransactions: monthRows });
   // Reserves aren't free: the realized line uses the same base as the projection that continues it.
   const reservedNow = reservedInAvailable(accounts, reserves);
   const realized = availableBalanceHistory(accounts, balances, rows, `${month}-01`, today).map((p) => ({ ...p, balance: p.balance - reservedNow }));

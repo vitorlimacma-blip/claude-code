@@ -56,3 +56,8 @@ Comece pela Fase 0.
 - Escolha do dono: o documento é a Fase 6; "corrigir aprendizados" e parte de privacidade entram nela. Open Finance (só interfaces) e onboarding/notificações ficam para a Fase 7.
 - Executar em etapas (6.1, 6.2, 6.3), com testes, commit, resumo e parada para aprovação ao fim de cada uma.
 - Prova no celular depende de development build; sem conta Apple Developer nem Android por ora: fica pendente, sem resultado inventado.
+
+## Fase 7 — Open Finance (interfaces), onboarding e avisos (iniciada em 22/10/2026)
+- Open Finance só nas interfaces e na reconciliação (briefing §14), sem integração real nem conector simulado no app.
+- Onboarding curto e pulável; avisos com motivo, ação, dispensa e preferências; resumo diário opcional no celular com privacidade na tela bloqueada (briefing §13).
+- Notificações no aparelho dependem de teste no iPhone (Expo Go): pendente até o dono testar.

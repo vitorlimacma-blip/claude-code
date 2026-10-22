@@ -1,9 +1,7 @@
 import { rootCategoryIds } from './categories';
-import { addDaysToDateKey, addMonths, dayOfMonthKey, daysInMonth, formatDateBR, formatMonthBR } from './dates';
+import { addMonths, dayOfMonthKey, daysInMonth, formatDateBR, formatMonthBR } from './dates';
 import { expensesByCategory, resultEffect } from './ledger';
 import { formatCents } from './money';
-import type { CashProjection } from './projection';
-import type { BudgetStatus } from './budgets';
 import type { Category, Cents, DateKey, Transaction } from './types';
 
 // Comparisons between equivalent periods and a few actionable observations
@@ -71,41 +69,15 @@ const MIN_INCREASE: Cents = 10000; // R$ 100
 /** At most three observations, the most useful first. Nothing is produced without the data behind it. */
 export function buildInsights(input: {
   today: DateKey;
-  projection: CashProjection | null;
-  budgets: BudgetStatus[];
   comparison: EquivalentComparison;
   categories: Category[];
   monthTransactions: Transaction[];
 }): Insight[] {
-  const { today, projection, budgets, comparison, categories, monthTransactions } = input;
+  const { today, comparison, categories, monthTransactions } = input;
   const out: Insight[] = [];
   const names = new Map(categories.map((c) => [c.id, c.name]));
 
-  if (projection && projection.status !== 'unavailable' && projection.lowest.amount < 0) {
-    out.push({
-      id: 'low-balance',
-      title: 'O saldo pode ficar negativo antes do recebimento',
-      body: `Pela previsão, o saldo disponível chega a ${formatCents(projection.lowest.amount)} em ${formatDateBR(projection.lowest.date)}.`,
-      basis: 'Base: saldo atual, contas previstas, faturas e gasto variável típico (veja “Como calculamos”).',
-      tone: 'attention',
-      icon: 'alert-outline',
-      action: { label: 'Ver contas previstas', target: 'recurrences' },
-    });
-  }
-
-  const soon = projection?.outflows.find((e) => e.date >= today && e.date <= addDaysToDateKey(today, 3) && !e.overdue);
-  if (soon) {
-    out.push({
-      id: `soon-${soon.label}`,
-      title: `${soon.label} vence ${soon.date === today ? 'hoje' : `em ${formatDateBR(soon.date)}`}`,
-      body: `Valor previsto: ${formatCents(-soon.amount)}. Quando pagar, registre o lançamento para ele sair dos compromissos.`,
-      basis: soon.source === 'invoice' ? 'Base: compras registradas nessa fatura menos pagamentos.' : 'Base: suas contas previstas.',
-      tone: 'neutral',
-      icon: 'calendar-outline',
-      action: { label: 'Ver contas previstas', target: 'recurrences' },
-    });
-  }
-
+  // Cash risk, bills due soon and budget overruns are alerts (alerts.ts): dismissible, with preferences.
   if (comparison.comparable) {
     const rising = comparison.byRoot
       .filter((r) => r.categoryId && r.current - r.previous >= MIN_INCREASE && r.current >= r.previous * 1.3)
@@ -122,19 +94,6 @@ export function buildInsights(input: {
         action: { label: 'Ver lançamentos', target: 'transactions', categoryId: rising.categoryId },
       });
     }
-  }
-
-  const over = budgets.find((b) => b.level === 'projected_overrun');
-  if (over && out.length < 3) {
-    out.push({
-      id: `budget-${over.categoryId}`,
-      title: `${over.categoryName} pode passar do orçamento`,
-      body: `Gasto até agora ${formatCents(over.spent)} de ${formatCents(over.budget)}; previsão para o mês ${formatCents(over.projected)}.`,
-      basis: over.method === 'typical' ? 'Base: gasto até hoje, contas previstas e o restante de um mês típico.' : 'Base: gasto até hoje e contas previstas (sem histórico para estimar o resto).',
-      tone: 'neutral',
-      icon: 'information-circle-outline',
-      action: { label: 'Ver lançamentos', target: 'transactions', categoryId: over.categoryId },
-    });
   }
 
   const uncategorized = monthTransactions.filter((t) => !t.deletedAt && t.categoryId === null && (resultEffect(t) === 'expense' || resultEffect(t) === 'income')).length;

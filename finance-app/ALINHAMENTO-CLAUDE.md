@@ -7,7 +7,48 @@ as anotações abaixo serão juntadas a ele.
 
 Regra combinada: **nenhum design novo é aplicado sem comando do dono.** A interface atual segue o sistema Maré Clara.
 
-## Situação em 2026-10-22 — etapa 6.3 concluída (aguardando aprovação)
+## Situação em 2026-10-22 — Fase 7 concluída (aguardando aprovação)
+
+### Avanços
+
+- **Primeiro uso:** três passos puláveis.
+  1. O que o app faz e como trata os dados.
+  2. A primeira conta, com o saldo de hoje opcional.
+  3. O primeiro lançamento.
+
+  Também há a opção "Explorar com dados de demonstração", identificada como teste. Quem já tem dados (o caso do dono)
+  não vê a introdução. Em Ajustes › Sobre o app há "Rever a introdução".
+- **Avisos no Resumo** (logo abaixo da margem):
+  - risco de caixa;
+  - conta prevista sem lançamento;
+  - contas a vencer;
+  - orçamento estourado ou com estouro previsto.
+
+  Cada aviso traz o motivo ("Base: …") e uma ação. Dispensar tem "Desfazer". Em Ajustes › Avisos e notificações dá
+  para escolher os tipos e a antecedência.
+- **Resumo diário no celular:** opcional e desligado por padrão.
+  - A permissão só é pedida ao ligar.
+  - No máximo uma notificação por dia.
+  - Na tela bloqueada aparece só "Há N avisos", sem valores, a menos que a pessoa permita.
+- **Open Finance:** só as interfaces (consentimento, estados da conexão, histórico de sincronização, importação sem
+  duplicar e reconciliação com o que foi lançado à mão). Não há banco conectado. A tela "Conexão com bancos" só
+  explica.
+
+### Limitações
+
+- **Notificações não testadas em aparelho.** A parte que agenda foi testada em código; a entrega no iPhone (Expo Go)
+  depende de um teste do dono.
+- **Antecedência limitada.** Os avisos de vencimento usam a previsão até o próximo recebimento. Uma conta que vence
+  depois do próximo salário só vira aviso após esse salário.
+
+### Pontos para o design (ChatGPT)
+
+- **Introdução:** se for redesenhada, precisa continuar curta, pulável e honesta sobre os dados.
+- **Cartão de aviso:** hoje reutiliza o cartão de "Para olhar", com um botão de fechar.
+- **Notificação:** o texto padrão na tela bloqueada não leva valores. Qualquer mudança aí é decisão de privacidade, não
+  só de design.
+
+## Situação em 2026-10-22 — etapa 6.3 (aprovada)
 
 ### Avanços
 
@@ -68,4 +109,3 @@ Regra combinada: **nenhum design novo é aplicado sem comando do dono.** A inter
 
 - **Do dono:** enviar o `ALINHAMENTO.md` ao repositório ou anexá-lo no chat.
 - **Do dono (opcional):** testar o modelo local no PC com o Ollama, seguindo `docs/ai/user-setup.md`.
-- **Fase 7 (após aprovação):** interfaces de Open Finance (sem integração real), onboarding e notificações.

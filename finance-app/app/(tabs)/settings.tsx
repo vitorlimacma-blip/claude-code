@@ -145,6 +145,7 @@ export default function SettingsScreen() {
         <Row icon="calendar-outline" color="#8A5200" title="Contas previstas" subtitle="Salário e contas fixas, usados na margem do Resumo" href="/recurrences" />
         <Row icon="trending-up-outline" color="#0891B2" title="Previsões por categoria" subtitle="Gasto do mês, mês típico e previsão" href="/forecasts" />
         <Row icon="star-outline" color="#B45309" title="Metas, reservas e saldo mínimo" subtitle="Dinheiro separado não conta como livre" href="/goals" />
+        <Row icon="link-outline" color="#365BB5" title="Conexão com bancos" subtitle="Nenhum banco conectado nesta versão" href="/open-finance" />
       </Group>
 
       <Section title="Aparência e acessibilidade">
@@ -201,13 +202,14 @@ export default function SettingsScreen() {
         )}
       </Group>
 
-      <Group title="Notificações">
-        <View style={styles.note}>
-          <MutedText>
-            O app ainda não envia notificações. Quando houver avisos de vencimento e de risco de caixa, eles serão opcionais e o
-            app só vai pedir permissão no momento em que forem úteis.
-          </MutedText>
-        </View>
+      <Group title="Avisos e notificações">
+        <Row
+          icon="notifications-outline"
+          color="#B45309"
+          title="Avisos e notificações"
+          subtitle="Contas a vencer, risco de caixa e orçamento; resumo diário opcional no celular"
+          href="/notifications"
+        />
       </Group>
 
       <Group title="Dados de teste">
@@ -228,6 +230,7 @@ export default function SettingsScreen() {
       </Group>
 
       <Group title="Sobre o app">
+        <Row icon="help-circle-outline" color="#0F766E" title="Rever a introdução" subtitle="Os três passos do primeiro uso; seus dados não mudam" href="/onboarding" />
         <Row icon="color-palette-outline" color="#176B5B" title="Catálogo de componentes" subtitle="Tela interna para revisar o visual nos dois temas" href="/catalogo" />
       </Group>
     </Screen>

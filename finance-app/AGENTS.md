@@ -24,3 +24,6 @@ This project uses Expo SDK 57 (the version the App Store Expo Go supports). Read
 - The app is developed PC-first (web) but must keep working on phones: use `useIsWide()` / `CONTENT_MAX_WIDTH` for layout, `src/platform/dialogs.ts` instead of `Alert` (a no-op on web), and `src/platform/secrets` for keys.
 - UI text is Brazilian Portuguese; code and comments are English.
 - Before pushing: `npm test`, `npm run typecheck`, `npm run lint`.
+- Alerts come only from `src/domain/alerts.ts` (via `useAlerts`): each has a stable key, a reason and an action; notifications are planned by `planNotifications` (one summary a day, private lock screen by default) and scheduled through `src/platform/notifications`. Never request notification permission outside the moment the person turns them on.
+- Open Finance is interfaces only (`src/domain/openFinance.ts`): never add a connector, a fake bank or provider secrets to the app; imports must be idempotent by external id and go through `reconcile`.
+- First run: `onboardingNeeded` (`src/data/onboarding.ts`) gates the tabs; anyone with existing data skips it.

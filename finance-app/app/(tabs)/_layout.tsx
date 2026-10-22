@@ -1,6 +1,11 @@
+import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
+import { useEffect, useState } from 'react';
 import type { ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { onboardingNeeded } from '../../src/data/onboarding';
+import { logError } from '../../src/platform/errors';
+import { useRepositories } from '../../src/state/DataProvider';
 import { Icon, type IconName } from '../../src/ui/icons';
 import { useIsWide } from '../../src/ui/layout';
 import { useTheme } from '../../src/ui/theme';
@@ -14,6 +19,23 @@ function tabIcon(name: IconName) {
 
 /** Bottom tabs on phones; a side menu on wide screens (computer, tablet). */
 export default function TabsLayout() {
+  const repos = useRepositories();
+  // First run goes to the onboarding; anyone with data goes straight to the app.
+  const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
+  useEffect(() => {
+    onboardingNeeded(repos)
+      .then(setNeedsOnboarding)
+      .catch((error) => {
+        logError('onboarding.check', error);
+        setNeedsOnboarding(false);
+      });
+  }, [repos]);
+  if (needsOnboarding === null) return null;
+  if (needsOnboarding) return <Redirect href="/onboarding" />;
+  return <AppTabs />;
+}
+
+function AppTabs() {
   const wide = useIsWide();
   const theme = useTheme();
   const insets = useSafeAreaInsets();

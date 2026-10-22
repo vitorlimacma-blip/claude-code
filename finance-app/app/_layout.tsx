@@ -8,6 +8,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvide
 import { StatusBar } from 'expo-status-bar';
 import { AIContextProvider } from '../src/state/AIContext';
 import { DataProvider } from '../src/state/DataProvider';
+import { NotificationSync } from '../src/state/useAlerts';
 import { ThemePreferenceSync } from '../src/state/useThemePreference';
 import { ThemeProvider, useTheme } from '../src/ui/theme';
 import { ToastProvider } from '../src/ui/Toast';
@@ -54,6 +55,7 @@ function AppNavigation() {
         <ThemePreferenceSync />
         <AIContextProvider>
           <ToastProvider>
+          <NotificationSync />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="transaction/[id]" options={{ presentation: 'modal', title: 'Lançamento' }} />
@@ -69,6 +71,9 @@ function AppNavigation() {
             <Stack.Screen name="recurrences" options={{ title: 'Contas previstas' }} />
             <Stack.Screen name="memory" options={{ title: 'Memória do assistente' }} />
             <Stack.Screen name="goals" options={{ title: 'Metas, reservas e saldo mínimo' }} />
+            <Stack.Screen name="notifications" options={{ title: 'Avisos e notificações' }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="open-finance" options={{ title: 'Conexão com bancos' }} />
             <Stack.Screen name="recurrence/[id]" options={{ presentation: 'modal', title: 'Conta prevista' }} />
           </Stack>
           </ToastProvider>

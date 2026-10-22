@@ -19,6 +19,7 @@ export function InsightCard({
   icon = 'bulb-outline',
   tone = 'neutral',
   action,
+  onDismiss,
 }: {
   title: string;
   body: string;
@@ -27,6 +28,8 @@ export function InsightCard({
   icon?: IconName;
   tone?: 'neutral' | 'attention';
   action?: { label: string; onPress: () => void };
+  /** Shows a "Dispensar" button (alerts the person can hide). */
+  onDismiss?: () => void;
 }) {
   const theme = useTheme();
   const accent = tone === 'attention' ? theme.colors.warning : theme.colors.primary;
@@ -38,6 +41,11 @@ export function InsightCard({
           <Icon name={icon} size={20} color={accent} />
         </View>
         <Text style={[theme.type.bodyStrong, styles.flex, { color: theme.colors.textPrimary }]}>{title}</Text>
+        {onDismiss && (
+          <Pressable accessibilityRole="button" accessibilityLabel={`Dispensar: ${title}`} onPress={onDismiss} hitSlop={10}>
+            <Icon name="close" size={18} color={theme.colors.textSecondary} />
+          </Pressable>
+        )}
       </View>
       <Text style={[theme.type.body, { color: theme.colors.textPrimary }]}>{body}</Text>
       {basis && <Text style={[theme.type.label, { color: theme.colors.textSecondary }]}>{basis}</Text>}

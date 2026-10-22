@@ -7,6 +7,7 @@ import { BUDGET_LEVEL_LABELS } from '../../src/domain/budgets';
 import { findInstitution } from '../../src/domain/institutions';
 import { ACCOUNT_TYPE_ICONS } from '../../src/domain/labels';
 import { formatCents, formatSignedCents } from '../../src/domain/money';
+import { useAlerts } from '../../src/state/useAlerts';
 import { useFinancialPicture, type FinancialPicture } from '../../src/state/useFinancialPicture';
 import { BudgetProgress } from '../../src/ui/BudgetProgress';
 import { InsightCard } from '../../src/ui/cards';
@@ -15,6 +16,7 @@ import { Icon, type IconName } from '../../src/ui/icons';
 import { EmptyState, SkeletonRows } from '../../src/ui/states';
 import { useTheme } from '../../src/ui/theme';
 import { TideLine } from '../../src/ui/TideLine';
+import { useToast } from '../../src/ui/Toast';
 import { motion } from '../../src/ui/tokens';
 
 /**
@@ -54,6 +56,8 @@ function Dashboard({ picture }: { picture: FinancialPicture }) {
         </View>
 
         <MarginHero picture={picture} />
+
+        <AlertsSection />
 
         <Card style={{ gap: 4, paddingVertical: 8 }}>
           <Fact
@@ -305,3 +309,32 @@ const styles = StyleSheet.create({
   link: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 40, alignSelf: 'flex-start' },
   step: { flexDirection: 'row', alignItems: 'baseline', gap: 12 },
 });
+
+/** Alerts (briefing §13): each with its reason and action; dismissing hides it until the situation changes. */
+function AlertsSection() {
+  const { visible, dismiss, restore } = useAlerts();
+  const toast = useToast();
+  if (visible.length === 0) return null;
+  return (
+    <Section title="Avisos" action={<Button label="Preferências" variant="ghost" onPress={() => router.push('/notifications')} />}>
+      {visible.map((a) => (
+        <InsightCard
+          key={a.key}
+          title={a.title}
+          body={a.body}
+          basis={a.reason}
+          icon={a.kind === 'cash_risk' || a.kind === 'overdue' ? 'alert-outline' : a.kind === 'due' ? 'calendar-outline' : 'information-circle-outline'}
+          tone={a.severity === 'attention' ? 'attention' : 'neutral'}
+          action={{
+            label: a.action.label,
+            onPress: () => router.push(a.action.target === 'recurrences' ? '/recurrences' : a.action.target === 'goals' ? '/goals' : '/transactions'),
+          }}
+          onDismiss={async () => {
+            await dismiss(a.key);
+            toast({ message: 'Aviso dispensado.', action: { label: 'Desfazer', onPress: () => void restore(a.key) } });
+          }}
+        />
+      ))}
+    </Section>
+  );
+}
