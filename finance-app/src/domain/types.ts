@@ -213,3 +213,28 @@ export interface Reserve extends SyncFields {
   name: string;
   amount: Cents;
 }
+
+export const MEMORY_TYPES = ['preference', 'goal', 'correction', 'rule_proposal'] as const;
+export type MemoryType = (typeof MEMORY_TYPES)[number];
+/** A proposal only counts once the person confirms it. */
+export const MEMORY_REVIEW_STATUSES = ['proposed', 'confirmed'] as const;
+export type MemoryReviewStatus = (typeof MEMORY_REVIEW_STATUSES)[number];
+
+/** Value of each memory type. A rule with `categoryId: null` means "stop suggesting a category for this merchant". */
+export type MemoryValue =
+  | { kind: 'text'; text: string }
+  | { kind: 'rule'; merchant: string; categoryId: string | null }
+  | { kind: 'correction'; transactionId: string; note: string };
+
+export interface MemoryItem {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  userScope: string;
+  type: MemoryType;
+  value: MemoryValue;
+  scope: string;
+  evidenceRef: string | null;
+  reviewStatus: MemoryReviewStatus;
+  version: number;
+}

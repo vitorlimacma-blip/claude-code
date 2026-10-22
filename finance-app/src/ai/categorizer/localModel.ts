@@ -113,13 +113,33 @@ export class LocalCategorizer {
     return model;
   }
 
+  /** Rules the person confirmed in the assistant's memory: they win over what was learned. `null` = don't suggest. */
+  private readonly confirmed = new Map<string, string | null>();
+
+  /** Applies confirmed rules from memory (correct or forget what was learned for a merchant). */
+  withConfirmedRules(rules: { merchant: string; categoryId: string | null }[]): this {
+    this.confirmed.clear();
+    for (const r of rules) this.confirmed.set(normalizeMerchant(r.merchant), r.categoryId);
+    return this;
+  }
+
   /** Number of merchants the user has taught a category for. */
   get ruleCount(): number {
     return this.rules.size;
   }
 
+  /** What was learned per merchant, for review ("O que o app aprendeu"). */
+  learnedRules(): { merchant: string; categoryId: string; agreeing: number; total: number }[] {
+    return [...this.rules].map(([merchant, r]) => ({ merchant, ...r })).sort((a, b) => b.total - a.total || a.merchant.localeCompare(b.merchant));
+  }
+
   predict(input: CategorizeInput): CategorySuggestion | null {
     const merchant = normalizeMerchant(input.description);
+    if (merchant && this.confirmed.has(merchant)) {
+      const categoryId = this.confirmed.get(merchant)!;
+      if (categoryId === null || this.kinds.get(categoryId) !== input.kind) return null;
+      return { categoryId, confidence: 0.97, source: 'rule', reason: 'Regra que você confirmou.' };
+    }
     const exact = merchant ? this.rules.get(merchant) : undefined;
     const prefix = merchant ? prefixKey(merchant) : null;
     const near = !exact && prefix ? this.prefixRules.get(prefix) : undefined;

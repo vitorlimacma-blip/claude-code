@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { DEFAULT_CATEGORIES, DEFAULT_CATEGORIES_VERSION } from '../domain/defaultCategories';
 import { CATEGORY_KINDS } from '../domain/types';
-import { appliedMigrationCount, type SnapshotStore, snapshotHasData, takeSnapshot } from './backup';
+import { appliedMigrationCount, DATA_TABLES, type SnapshotStore, snapshotHasData, takeSnapshot } from './backup';
 import type { AppDatabase, RepositoryContext } from './context';
 import { applyDataMigrations } from './dataMigrations';
 import bundledMigrations from './migrations.generated';
@@ -32,10 +32,27 @@ export async function prepareDatabase(
   await migrate(ctx.db);
 
   const repos = createRepositories(ctx, options);
+  repos.eraseAll = () => eraseAllData(ctx, repos, options.backups);
   await seedDefaults(ctx, repos);
   if (hadLegacySchema) await importLegacyData(ctx);
   await applyDataMigrations(ctx);
   return repos;
+}
+
+/**
+ * Erases every piece of personal data on this device: all rows of every data
+ * table (memory included) and the automatic backups, then puts back the
+ * default categories and account. Nothing is kept for undo; the screen offers
+ * an export first. Copies the person exported or sent elsewhere are outside
+ * the app's reach.
+ */
+export async function eraseAllData(ctx: RepositoryContext, repos: Repositories, backups?: SnapshotStore): Promise<void> {
+  await ctx.write(async (tx) => {
+    for (const table of DATA_TABLES) await tx.run(sql.raw(`DELETE FROM "${table}"`));
+  });
+  await backups?.clear();
+  await seedDefaults(ctx, repos);
+  ctx.bus.emit(...DATA_TABLES);
 }
 
 export async function pendingMigrationCount(db: AppDatabase): Promise<number> {

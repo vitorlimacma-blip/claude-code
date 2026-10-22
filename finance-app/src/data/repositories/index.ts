@@ -6,6 +6,7 @@ import { createBudgetsRepository } from './budgets';
 import { createCategoriesRepository } from './categories';
 import { createDemoRepository } from './demo';
 import { createGoalsRepository } from './goals';
+import { createMemoryRepository } from './memory';
 import { createRecurrencesRepository } from './recurrences';
 import { createSettingsRepository } from './settings';
 import { createTransactionsRepository } from './transactions';
@@ -25,6 +26,8 @@ export function createRepositories(ctx: RepositoryContext, options: { backups?: 
     recurrences: createRecurrencesRepository(ctx),
     /** Savings goals and reserves (money set aside, not free to spend). */
     goals: createGoalsRepository(ctx),
+    /** The assistant's memory of the person (proposals, confirmed items, rules). */
+    memory: createMemoryRepository(ctx),
     settings: createSettingsRepository(ctx),
     /** Export/import and automatic backups (kept in a separate database). */
     backup: createBackupRepository(ctx, options.backups),
@@ -32,6 +35,11 @@ export function createRepositories(ctx: RepositoryContext, options: { backups?: 
     demo: createDemoRepository(ctx),
     /** Subscribe to data changes (used by the `useQuery` hook to refresh screens). */
     subscribe: ctx.bus.subscribe,
+    /**
+     * Erases all personal data and the automatic backups (Ajustes › Seus dados).
+     * Set by `prepareDatabase`, which knows how to put the defaults back.
+     */
+    eraseAll: null as null | (() => Promise<void>),
   };
 }
 

@@ -20,8 +20,7 @@ import { toJsonSchema, validateArgs, type ArgsSpec } from './validation';
 // database. The user comes from the session, never from an argument, and no
 // tool writes, runs SQL or reaches the network.
 
-/** The only user of this local app. Tools receive it from the session, not from the model. */
-export const LOCAL_USER_SCOPE = 'local';
+export { LOCAL_USER_SCOPE } from '../session';
 
 export const FINANCE_SETTINGS = {
   /** `{ amount: Cents }`: the lowest balance the person wants to keep in the operating accounts. */
@@ -55,6 +54,8 @@ export interface FinanceResult<T = unknown> {
   data: T | null;
   /** For invalid arguments or ambiguity: what to fix or ask. */
   errors?: string[];
+  /** Knowledge chunks behind the result (documents, not transactions). */
+  chunkIds?: string[];
 }
 
 export interface FinanceTool {
@@ -107,7 +108,7 @@ const REGIME_TEXT: Record<Regime, string> = {
   cash: 'Visão de caixa: saídas e entradas das contas bancárias; o pagamento da fatura é a saída, sem somar as compras do cartão.',
 };
 
-function base(tool: string, session: FinanceSession, referenceDate: DateKey): FinanceResult {
+export function base(tool: string, session: FinanceSession, referenceDate: DateKey): FinanceResult {
   return {
     tool,
     status: 'ok',

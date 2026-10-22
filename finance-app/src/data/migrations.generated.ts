@@ -35,6 +35,13 @@ const journal = {
       "when": 1792676303816,
       "tag": "0004_smooth_maddog",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792677843568,
+      "tag": "0005_little_nocturne",
+      "breakpoints": true
     }
   ]
 };
@@ -44,7 +51,8 @@ const migrations: Record<string, string> = {
   "m0001": "ALTER TABLE `accounts` ADD `payment_account_id` text;--> statement-breakpoint\nALTER TABLE `accounts` ADD `currency` text DEFAULT 'BRL' NOT NULL;--> statement-breakpoint\nALTER TABLE `transactions` ADD `nature` text DEFAULT 'expense' NOT NULL;--> statement-breakpoint\nALTER TABLE `transactions` ADD `currency` text DEFAULT 'BRL' NOT NULL;--> statement-breakpoint\nALTER TABLE `transactions` ADD `competence_month` text;--> statement-breakpoint\nALTER TABLE `transactions` ADD `due_date` text;--> statement-breakpoint\nALTER TABLE `transactions` ADD `settled_date` text;--> statement-breakpoint\nALTER TABLE `transactions` ADD `refund_of_id` text;--> statement-breakpoint\nCREATE INDEX `transactions_refund_of_idx` ON `transactions` (`refund_of_id`);",
   "m0002": "ALTER TABLE `categories` ADD `archived` integer DEFAULT false NOT NULL;",
   "m0003": "CREATE TABLE `recurrences` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`deleted_at` text,\n\t`kind` text NOT NULL,\n\t`description` text NOT NULL,\n\t`amount` integer NOT NULL,\n\t`account_id` text NOT NULL,\n\t`category_id` text,\n\t`payment_method` text DEFAULT 'other' NOT NULL,\n\t`frequency` text DEFAULT 'monthly' NOT NULL,\n\t`day_of_month` integer NOT NULL,\n\t`month_of_year` integer,\n\t`start_date` text NOT NULL,\n\t`end_date` text\n);\n--> statement-breakpoint\nALTER TABLE `transactions` ADD `recurrence_id` text;--> statement-breakpoint\nCREATE INDEX `transactions_recurrence_idx` ON `transactions` (`recurrence_id`);",
-  "m0004": "CREATE TABLE `goals` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`deleted_at` text,\n\t`name` text NOT NULL,\n\t`target_amount` integer NOT NULL,\n\t`currency` text DEFAULT 'BRL' NOT NULL,\n\t`deadline` text,\n\t`contribution_dates` text DEFAULT '[]' NOT NULL,\n\t`archived` integer DEFAULT false NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE `reserves` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`deleted_at` text,\n\t`account_id` text NOT NULL,\n\t`purpose` text NOT NULL,\n\t`goal_id` text,\n\t`name` text NOT NULL,\n\t`amount` integer NOT NULL\n);\n--> statement-breakpoint\nCREATE INDEX `reserves_account_idx` ON `reserves` (`account_id`);"
+  "m0004": "CREATE TABLE `goals` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`deleted_at` text,\n\t`name` text NOT NULL,\n\t`target_amount` integer NOT NULL,\n\t`currency` text DEFAULT 'BRL' NOT NULL,\n\t`deadline` text,\n\t`contribution_dates` text DEFAULT '[]' NOT NULL,\n\t`archived` integer DEFAULT false NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE `reserves` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`deleted_at` text,\n\t`account_id` text NOT NULL,\n\t`purpose` text NOT NULL,\n\t`goal_id` text,\n\t`name` text NOT NULL,\n\t`amount` integer NOT NULL\n);\n--> statement-breakpoint\nCREATE INDEX `reserves_account_idx` ON `reserves` (`account_id`);",
+  "m0005": "CREATE TABLE `memory_items` (\n\t`id` text PRIMARY KEY NOT NULL,\n\t`created_at` text NOT NULL,\n\t`updated_at` text NOT NULL,\n\t`user_scope` text NOT NULL,\n\t`type` text NOT NULL,\n\t`value` text NOT NULL,\n\t`scope` text NOT NULL,\n\t`evidence_ref` text,\n\t`review_status` text NOT NULL,\n\t`version` integer DEFAULT 1 NOT NULL\n);\n--> statement-breakpoint\nCREATE INDEX `memory_scope_idx` ON `memory_items` (`user_scope`,`type`);"
 };
 
 export default { journal, migrations };

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { LocalCategorizer, suggestCategory, type CategorySuggestion } from '../ai/categorizer';
+import { LOCAL_USER_SCOPE } from '../ai/session';
 import type { CategoryKind } from '../domain/types';
 import { useAI } from './AIContext';
 import { useQuery } from './useQuery';
@@ -15,13 +16,16 @@ export function useCategorizer() {
   const { provider, settings } = useAI();
   const { data } = useQuery(
     async (r) => {
-      const [categories, history] = await Promise.all([
+      const [categories, history, rules] = await Promise.all([
         r.categories.list(),
         r.transactions.list({ limit: HISTORY_LIMIT }),
+        r.memory.list(LOCAL_USER_SCOPE, { type: 'rule_proposal', status: 'confirmed' }),
       ]);
-      return { categories, history: history.filter((t) => t.categoryId !== null) };
+      const confirmed = rules.flatMap((m) => (m.value.kind === 'rule' ? [{ merchant: m.value.merchant, categoryId: m.value.categoryId }] : []));
+      return { categories, history: history.filter((t) => t.categoryId !== null), confirmed };
     },
-    ['transactions', 'categories']
+    // Memory changes rebuild the model, so a forgotten rule stops counting right away.
+    ['transactions', 'categories', 'memory_items']
   );
 
   const learn = settings.learnFromCorrections;
@@ -30,7 +34,7 @@ export function useCategorizer() {
     // Without learning, the user's own choices don't train the model; archived categories are never suggested.
     const history = learn ? data.history : data.history.filter((t) => t.categorySource !== 'manual');
     const categories = data.categories.filter((c) => !c.archived);
-    return { categories, history, local: LocalCategorizer.train(categories, history) };
+    return { categories, history, local: LocalCategorizer.train(categories, history).withConfirmedRules(data.confirmed) };
   }, [data, learn]);
   const local = model?.local ?? null;
   const ai = settings.aiCategorization ? provider : null;
@@ -43,5 +47,5 @@ export function useCategorizer() {
     [model, ai]
   );
 
-  return { suggest, ready: !!local, ruleCount: local?.ruleCount ?? 0 };
+  return { suggest, ready: !!local, ruleCount: local?.ruleCount ?? 0, learnedRules: local?.learnedRules() ?? [] };
 }

@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { AssistantAction, Evidence } from '../ai/assistant';
+import { knowledgeBase } from '../ai/knowledge/base';
 import { formatDateBR } from '../domain/dates';
 import { formatCents } from '../domain/money';
 import { useRepositories } from '../state/DataProvider';
@@ -22,15 +23,17 @@ import { logError, userFacingError } from '../platform/errors';
 const KIND_TEXT: Record<Evidence['kind'], { label: string; detail: string }> = {
   fato: { label: 'Fato', detail: 'Calculado a partir dos lançamentos registrados.' },
   estimativa: { label: 'Estimativa', detail: 'Depende de premissas, como contas previstas e o gasto de um mês típico.' },
+  documento: { label: 'Documento', detail: 'Trecho de uma ficha aprovada do app, com versão e fonte.' },
 };
 
 /** "Fato" or "Estimativa", told apart by text and color. */
 export function KindBadge({ kind }: { kind: Evidence['kind'] }) {
   const theme = useTheme();
-  const estimate = kind === 'estimativa';
+  const bg = kind === 'estimativa' ? theme.colors.infoSurface : kind === 'documento' ? theme.colors.surfaceMuted : theme.colors.primarySoft;
+  const fg = kind === 'estimativa' ? theme.colors.info : kind === 'documento' ? theme.colors.textPrimary : theme.colors.onPrimarySoft;
   return (
-    <View style={[styles.badge, { backgroundColor: estimate ? theme.colors.infoSurface : theme.colors.primarySoft, borderRadius: theme.radius.sm }]}>
-      <Text style={[theme.type.caption, { color: estimate ? theme.colors.info : theme.colors.onPrimarySoft, fontWeight: '700' }]}>
+    <View style={[styles.badge, { backgroundColor: bg, borderRadius: theme.radius.sm }]}>
+      <Text style={[theme.type.caption, { color: fg, fontWeight: '700' }]}>
         {KIND_TEXT[kind].label}
       </Text>
     </View>
@@ -109,9 +112,25 @@ export function EvidenceSheet({ evidence, onClose }: { evidence: Evidence | null
             ))}
           </View>
         )}
-        <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>
-          {total === 0 ? 'Não é uma soma de lançamentos' : `${total} lançamento(s)`}
-        </Text>
+        {(evidence.chunkIds ?? []).map((id) => {
+          const c = knowledgeBase().chunkById(id);
+          const source = c ? knowledgeBase().source(c.sourceId) : undefined;
+          if (!c || !source) return null;
+          return (
+            <View key={id} style={{ gap: 4, padding: 12, borderRadius: theme.radius.md, backgroundColor: theme.colors.surfaceMuted }}>
+              <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>{source.title}</Text>
+              <Text style={[theme.type.body, { color: theme.colors.textPrimary }]}>{c.text}</Text>
+              <Text style={[theme.type.caption, { color: theme.colors.textSecondary }]}>
+                Ficha {source.id}, versão {source.version}, desde {source.effectiveAt ? formatDateBR(source.effectiveAt) : '—'} · {source.rightsEvidence}
+              </Text>
+            </View>
+          );
+        })}
+        {evidence.kind !== 'documento' && (
+          <Text style={[theme.type.bodyStrong, { color: theme.colors.textPrimary }]}>
+            {total === 0 ? 'Não é uma soma de lançamentos' : `${total} lançamento(s)`}
+          </Text>
+        )}
         {total > 0 &&
           (!data ? (
             <SkeletonRows count={3} />

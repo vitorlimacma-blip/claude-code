@@ -11,7 +11,7 @@ export const SNAPSHOT_FORMAT = 'finance-app-data';
 export const SNAPSHOT_VERSION = 1;
 
 /** Tables that hold the user's data, in restore order. Anything else is never touched by a restore. */
-export const DATA_TABLES = ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'settings'] as const;
+export const DATA_TABLES = ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'memory_items', 'settings'] as const;
 
 export type SnapshotValue = string | number | null;
 
@@ -40,6 +40,8 @@ export interface SnapshotStore {
   save(snapshot: DataSnapshot): Promise<SnapshotInfo>;
   list(): Promise<SnapshotInfo[]>;
   load(id: string): Promise<DataSnapshot | undefined>;
+  /** Deletes every stored backup (used when the person erases all data). */
+  clear(): Promise<void>;
 }
 
 const IDENTIFIER = /^[a-z_][a-z0-9_]*$/;
@@ -231,6 +233,11 @@ export function createSqliteSnapshotStore(executor: SqlExecutor, newId: () => st
       const { rows } = await executor('SELECT payload FROM snapshots WHERE id = ?', [id], 'get');
       const row = rows as unknown[] | undefined;
       return row && row.length > 0 ? parseSnapshot(String(row[0])) : undefined;
+    },
+
+    async clear() {
+      await init();
+      await executor('DELETE FROM snapshots', [], 'run');
     },
   };
 }

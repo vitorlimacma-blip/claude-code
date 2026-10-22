@@ -36,7 +36,10 @@ export default function AISettingsScreen() {
   }
 
   async function runTest() {
-    if (!provider) return;
+    if (!provider) {
+      setTest({ ok: false, message: 'Ligue a permissão "Enviar perguntas ao provedor externo" para testar a conexão.' });
+      return;
+    }
     setTesting(true);
     setTest(null);
     try {
@@ -147,19 +150,43 @@ export default function AISettingsScreen() {
         </>
       )}
 
+      <SectionTitle>Permissões</SectionTitle>
+      <MutedText>
+        Cada uso de fora do aparelho tem a sua permissão, e todas começam desligadas. Salvar uma chave não autoriza nada
+        sozinho, e se algo local falhar o app não passa para a nuvem por conta própria.
+      </MutedText>
+      <Card style={{ gap: 14 }}>
+        <ToggleRow
+          title="Enviar perguntas ao provedor externo"
+          subtitle={
+            active
+              ? `As perguntas e os resultados calculados que cada resposta precisa vão para ${PROVIDER_LABELS[active]}. Extratos inteiros nunca são enviados.`
+              : 'Escolha um provedor acima para poder ligar.'
+          }
+          value={settings.permissions.externalInference}
+          onChange={(v) => update({ permissions: { ...settings.permissions, externalInference: v, web: v && settings.permissions.web } })}
+        />
+        <ToggleRow
+          title="Busca na internet"
+          subtitle="O provedor externo pode pesquisar Selic, CDI, IPCA, cotações e notícias. Só os termos da busca saem do app, nunca os seus lançamentos."
+          value={settings.permissions.web}
+          onChange={(v) => update({ webSearch: v, permissions: { ...settings.permissions, web: v && settings.permissions.externalInference } })}
+        />
+        <ToggleRow
+          title="Usar exemplos revisados para treino futuro"
+          subtitle="Hoje o app não treina nenhum modelo; esta opção só registra a sua escolha. Conversas e extratos nunca entram."
+          value={settings.permissions.trainingUse}
+          onChange={(v) => update({ permissions: { ...settings.permissions, trainingUse: v } })}
+        />
+      </Card>
+
       <SectionTitle>Recursos</SectionTitle>
       <Card style={{ gap: 14 }}>
         <ToggleRow
           title="Categorização com IA"
-          subtitle="Quando a inteligência local não tiver certeza, pede uma sugestão à IA."
+          subtitle="Quando a inteligência local não tiver certeza, pede uma sugestão ao provedor externo (precisa da permissão acima)."
           value={settings.aiCategorization}
           onChange={(v) => update({ aiCategorization: v })}
-        />
-        <ToggleRow
-          title="Busca na internet"
-          subtitle="O assistente pode pesquisar Selic, CDI, IPCA, cotações e notícias. Só os termos da busca saem do app, nunca os seus lançamentos."
-          value={settings.webSearch}
-          onChange={(v) => update({ webSearch: v })}
         />
       </Card>
     </ScrollView>

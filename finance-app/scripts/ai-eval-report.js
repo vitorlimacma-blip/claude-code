@@ -16,19 +16,29 @@ const cases = fs
 
 // Why a case was not run yet, by the stage that implements it (docs/ai/architecture.md §2).
 const PENDING = [
-  [/^E(16|17|19|20|22|23|24|25|26|35|36|37|40)$/, 'Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados.'],
-  [/^E21$/, 'Etapa 6.2: isolamento da memória por usuário. Só a parte das ferramentas foi verificada (teste parcial).'],
   [/^E(27|28|29|30|34)$/, 'Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho.'],
-  [/^E(4\d|5\d|60)$/, 'Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos).'],
-  [/^E(6\d|7\d|80|81)$/, 'Identidade e comunicação com modelo real: etapas 6.2 e 6.3.'],
+  [/^E(4\d|5\d|60)$/, 'Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos.'],
+  [/^E(6\d|7\d|80|81)$/, 'Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão.'],
   [/^E(8[2-9]|9[0-3])$/, 'Etapa 6.3: planejamento de viagens (anexo M).'],
 ];
 
 const out = path.join(root, '.ai-eval-jest.json');
+const metricsFile = path.join(root, '.ai-eval-metrics.json');
 spawnSync(process.execPath, [path.join(root, 'node_modules/jest/bin/jest.js'), 'src/ai/eval', '--json', `--outputFile=${out}`], {
   cwd: root,
   stdio: 'inherit',
+  env: { ...process.env, AI_EVAL_METRICS: metricsFile },
 });
+let metrics = null;
+try {
+  metrics = JSON.parse(fs.readFileSync(metricsFile, 'utf8'));
+} catch {}
+fs.rmSync(metricsFile, { force: true });
+if (metrics?.retrieval) {
+  const r = metrics.retrieval;
+  r.status = r.blind_collection.top3 >= r.target ? 'meets_target' : 'below_target';
+  r.next_step = r.status === 'below_target' ? 'Medir embeddings locais (contrato §6); sem rede para baixar o modelo nesta sessão. Não ampliar o corpus antes.' : null;
+}
 const results = JSON.parse(fs.readFileSync(out, 'utf8'));
 fs.rmSync(out, { force: true });
 const tests = results.testResults.flatMap((file) =>
@@ -63,6 +73,7 @@ const doc = {
   model: null,
   note: 'Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.',
   summary: { total: report.length, pass: count('pass'), fail: count('fail'), not_run: count('not_run') },
+  metrics,
   cases: report,
 };
 fs.writeFileSync(path.join(root, 'docs/ai/evaluation-report.json'), JSON.stringify(doc, null, 2) + '\n');

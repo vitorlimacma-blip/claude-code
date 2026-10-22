@@ -5,7 +5,7 @@ import type { CategorySource, Cents, DateKey, TransactionType } from '../../doma
 // and the transactions that produced it, so the answer can be checked.
 
 /** A fact is computed from recorded data; an estimate also depends on assumptions (typical month, expected bills). */
-export type EvidenceKind = 'fato' | 'estimativa';
+export type EvidenceKind = 'fato' | 'estimativa' | 'documento';
 
 export interface Evidence {
   /** "E1", "E2"…: what the answer cites. */
@@ -19,6 +19,8 @@ export interface Evidence {
   transactionIds: string[];
   /** Every amount (in cents) returned to the model in this result. */
   amounts: Cents[];
+  /** Approved document chunks behind it (kind 'documento'). */
+  chunkIds?: string[];
 }
 
 /** A change the assistant proposes; nothing is written until the user confirms it. */

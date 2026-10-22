@@ -85,6 +85,7 @@ describe('migrations from the previous schema, with automatic backup', () => {
       save: () => Promise.reject(new Error('no space left')),
       list: async () => [],
       load: async () => undefined,
+      clear: async () => undefined,
     };
     const pending = await pendingMigrationCount(ctx.db);
     await expect(prepareDatabase(ctx, { backups: failing })).rejects.toThrow('no space left');
@@ -126,6 +127,7 @@ describe('export and import', () => {
     await repos.settings.set('ui.theme', 'dark');
     const trip = await repos.goals.create({ name: 'Viagem', targetAmount: 300000, contributionDates: ['2026-11-05'] });
     await repos.goals.createReserve({ accountId: DEFAULT_ACCOUNT_ID, purpose: 'goal', goalId: trip.id, name: 'Viagem', amount: 130000 });
+    await repos.memory.propose('local', { type: 'preference', value: { kind: 'text', text: 'Prefiro preservar a reserva.' }, scope: 'assistant' });
     return { ctx, repos };
   }
 
@@ -133,13 +135,13 @@ describe('export and import', () => {
     const source = await populated();
     const json = await source.repos.backup.exportJson();
     const parsed = parseSnapshot(json);
-    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'goals', 'recurrences', 'reserves', 'settings', 'transactions']);
+    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'goals', 'memory_items', 'recurrences', 'reserves', 'settings', 'transactions']);
 
     const target = createTestContext();
     const targetRepos = await prepareDatabase(target, { backups: createTestSnapshotStore() });
     await targetRepos.backup.importJson(json);
 
-    for (const table of ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'settings']) {
+    for (const table of ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'memory_items', 'settings']) {
       expect(rowsOf(target, table)).toEqual(rowsOf(source.ctx, table));
     }
     expect(rowsOf(target, 'transactions').some((r) => r.deleted_at !== null)).toBe(true);

@@ -2,6 +2,22 @@ import { ClaudeProvider } from './providers/claude';
 import { OpenAIProvider } from './providers/openai';
 import type { AIProvider, ModelTier, ProviderId } from './types';
 
+/**
+ * Separate permissions per purpose (AI contract §7). All off by default; a
+ * saved key never authorizes calls by itself, and a local failure never
+ * turns any of them on.
+ */
+export interface AIPermissions {
+  /** Send questions (and the minimum data they need) to the chosen external provider. */
+  externalInference: boolean;
+  /** Let the external provider search the web. */
+  web: boolean;
+  /** Use reviewed examples for future training. Nothing is trained today; this only records the choice. */
+  trainingUse: boolean;
+}
+
+export const NO_PERMISSIONS: AIPermissions = { externalInference: false, web: false, trainingUse: false };
+
 export interface AISettings {
   /** Active provider, or 'none' to run with local intelligence only. */
   provider: ProviderId | 'none';
@@ -16,6 +32,7 @@ export interface AISettings {
    * accepted suggestions, not from manual choices.
    */
   learnFromCorrections: boolean;
+  permissions: AIPermissions;
 }
 
 export const AI_SETTINGS_KEY = 'ai.settings';
@@ -29,6 +46,7 @@ export const DEFAULT_AI_SETTINGS: AISettings = {
   webSearch: false,
   aiCategorization: true,
   learnFromCorrections: true,
+  permissions: NO_PERMISSIONS,
 };
 
 export const PROVIDER_LABELS: Record<ProviderId, string> = {
@@ -55,11 +73,21 @@ export const MODEL_OPTIONS: Record<ProviderId, { id: string; label: string }[]> 
   ],
 };
 
-/** Merges saved settings over the defaults, so settings saved by older versions keep working. */
+/**
+ * Merges saved settings over the defaults, so settings saved by older versions
+ * keep working. Settings from before the permissions existed carry over the
+ * person's explicit choices: picking a provider authorized it, and the web
+ * search switch authorized the web (D-074).
+ */
 export function withDefaults(saved: Partial<AISettings> | null | undefined): AISettings {
+  const legacy = saved && !saved.permissions;
+  const permissions: AIPermissions = legacy
+    ? { externalInference: (saved.provider ?? 'none') !== 'none', web: !!saved.webSearch, trainingUse: false }
+    : { ...NO_PERMISSIONS, ...saved?.permissions };
   return {
     ...DEFAULT_AI_SETTINGS,
     ...saved,
+    permissions,
     models: {
       claude: { ...DEFAULT_AI_SETTINGS.models.claude, ...saved?.models?.claude },
       openai: { ...DEFAULT_AI_SETTINGS.models.openai, ...saved?.models?.openai },
@@ -72,7 +100,13 @@ export function createProvider(
   apiKey: string | null,
   options: { fetch?: typeof fetch } = {}
 ): AIProvider | null {
-  if (settings.provider === 'none' || !apiKey) return null;
+  // A saved key is not an authorization: the external-inference permission is.
+  if (settings.provider === 'none' || !apiKey || !settings.permissions.externalInference) return null;
   const common = { apiKey, models: settings.models[settings.provider], fetch: options.fetch };
   return settings.provider === 'claude' ? new ClaudeProvider(common) : new OpenAIProvider(common);
+}
+
+/** Web search only with both the switch and the web permission. */
+export function webSearchAllowed(settings: AISettings): boolean {
+  return settings.webSearch && settings.permissions.web && settings.permissions.externalInference;
 }

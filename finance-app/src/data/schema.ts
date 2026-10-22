@@ -8,6 +8,8 @@ import {
   PAYMENT_METHODS,
   RECURRENCE_FREQUENCIES,
   RESERVE_PURPOSES,
+  MEMORY_TYPES,
+  MEMORY_REVIEW_STATUSES,
   TRANSACTION_NATURES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
@@ -161,6 +163,32 @@ export const reserves = sqliteTable(
   (t) => [index('reserves_account_idx').on(t.accountId)]
 );
 
+/**
+ * The assistant's memory of one person (AI contract §3): preferences, goals,
+ * corrections and rule proposals, each with origin and review state. Unlike
+ * other tables, deleting removes the row (no soft delete): a forgotten memory
+ * must stop influencing anything.
+ */
+export const memoryItems = sqliteTable(
+  'memory_items',
+  {
+    id: text('id').primaryKey().notNull(),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    userScope: text('user_scope').notNull(),
+    type: text('type', { enum: MEMORY_TYPES }).notNull(),
+    /** JSON, shaped by the type. */
+    value: text('value').notNull(),
+    /** What it applies to: 'assistant', 'categorization' or 'transaction:<id>'. */
+    scope: text('scope').notNull(),
+    /** Where it came from: the conversation, a transaction, a correction. */
+    evidenceRef: text('evidence_ref'),
+    reviewStatus: text('review_status', { enum: MEMORY_REVIEW_STATUSES }).notNull(),
+    version: integer('version').notNull().default(1),
+  },
+  (t) => [index('memory_scope_idx').on(t.userScope, t.type)]
+);
+
 /** Key/value app settings; values are JSON-encoded. */
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey().notNull(),
@@ -168,4 +196,4 @@ export const settings = sqliteTable('settings', {
   updatedAt: text('updated_at').notNull(),
 });
 
-export const schema = { accounts, categories, budgets, transactions, recurrences, goals, reserves, settings };
+export const schema = { accounts, categories, budgets, transactions, recurrences, goals, reserves, memoryItems, settings };

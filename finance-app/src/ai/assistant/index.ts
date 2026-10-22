@@ -33,6 +33,15 @@ export interface AssistantAnswer {
   check: AnswerCheck;
   /** Computed on the device, without a model. */
   local: boolean;
+  /** How it was produced (AI contract §4): rules on the device, a local model, or the authorized external provider. */
+  mode?: 'deterministic' | 'local_model' | 'external_opt_in';
+  /** Response contract fields when produced by the engine (status of the evidence, missing data). */
+  evidenceStatus?: 'sufficient' | 'partial' | 'missing' | 'conflicting';
+  missingData?: string[];
+  /** A memory proposal to confirm or discard. */
+  memoryProposalId?: string;
+  /** Memories matching a "forget" request, to delete only on confirmation. */
+  forgetCandidates?: { id: string; text: string }[];
 }
 
 /** Only the most recent turns are sent, to bound cost; tools re-fetch any numbers needed. */
@@ -71,5 +80,6 @@ export async function askAssistant(options: {
     actions: ctx.actions,
     check: checkAnswer(result.text, ctx.evidences),
     local: false,
+    mode: 'external_opt_in',
   };
 }
