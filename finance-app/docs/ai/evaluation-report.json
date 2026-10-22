@@ -1,0 +1,1102 @@
+{
+  "generated_at": "2026-10-22T23:20:46.186Z",
+  "app_commit": "d5e982f",
+  "model": null,
+  "note": "Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.",
+  "summary": {
+    "total": 93,
+    "pass": 48,
+    "fail": 0,
+    "not_run": 45
+  },
+  "metrics": {
+    "retrieval": {
+      "method": "BM25 local sobre as 23 fichas, sinônimos controlados, top-3, um trecho por ficha",
+      "target": 0.9,
+      "tuning_collection": {
+        "size": 34,
+        "top3": 1,
+        "blind": false
+      },
+      "blind_collection": {
+        "size": 15,
+        "top3": 0.6666666666666666,
+        "blind": true
+      },
+      "status": "below_target",
+      "next_step": "Medir embeddings locais (contrato §6); sem rede para baixar o modelo nesta sessão. Não ampliar o corpus antes."
+    }
+  },
+  "cases": [
+    {
+      "id": "E01",
+      "name": "DESVIO_TRANSPORTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E01 DESVIO_TRANSPORTE",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E02",
+      "name": "RESULTADO_MENSAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E02 RESULTADO_MENSAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E03",
+      "name": "SALDO_CONTA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E03 SALDO_CONTA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E04",
+      "name": "TRANSFERENCIA_NEUTRA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E04 TRANSFERENCIA_NEUTRA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E04 TRANSFERENCIA_NEUTRA (parcial): explica a transferência como neutra, citando a regra",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E05",
+      "name": "ESTORNO_VINCULADO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E05 ESTORNO_VINCULADO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E06",
+      "name": "SALDO_CONSOLIDADO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E06 SALDO_CONSOLIDADO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E07",
+      "name": "PROJECAO_CONFIRMADA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E07 PROJECAO_CONFIRMADA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E08",
+      "name": "COMPRA_PISO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E08 COMPRA_PISO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E09",
+      "name": "FOLGA_OPERACIONAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E09 FOLGA_OPERACIONAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E10",
+      "name": "META_APORTES",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E10 META_APORTES",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E11",
+      "name": "CAUSA_DIFERENCA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E11 CAUSA_DIFERENCA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E12",
+      "name": "FATURA_SEM_DUPLICACAO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E12 FATURA_SEM_DUPLICACAO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E13",
+      "name": "PARCELA_COMPETENCIA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E13 PARCELA_COMPETENCIA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E14",
+      "name": "JUROS_FICTICIOS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E14 JUROS_FICTICIOS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E15",
+      "name": "DADO_AUSENTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E15 DADO_AUSENTE",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E15 DADO_AUSENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E16",
+      "name": "TAXA_ATUAL_OFFLINE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E16 TAXA_ATUAL_OFFLINE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E17",
+      "name": "PERIODO_AMBIGUO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E17 PERIODO_AMBIGUO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E18",
+      "name": "BASE_ZERO_PERCENTUAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E18 BASE_ZERO_PERCENTUAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E19",
+      "name": "MEMORIA_PERSISTENTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E19 MEMORIA_PERSISTENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E20",
+      "name": "MEMORIA_REVERSIVEL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E20 MEMORIA_REVERSIVEL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E21",
+      "name": "ISOLAMENTO_USUARIO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E21 ISOLAMENTO_USUARIO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E21 ISOLAMENTO_USUARIO (parcial): um user_id vindo do modelo não é aceito",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E22",
+      "name": "CORRECAO_PONTUAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E22 CORRECAO_PONTUAL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E23",
+      "name": "INJECAO_DOCUMENTO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E23 INJECAO_DOCUMENTO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E24",
+      "name": "INJECAO_DESCRICAO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E24 INJECAO_DESCRICAO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E25",
+      "name": "FONTE_VERIFICAVEL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E25 FONTE_VERIFICAVEL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E25 FONTE_VERIFICAVEL (parcial): a pergunta sobre transferência recupera FIN02",
+          "file": "src/ai/eval/__tests__/knowledgeCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E26",
+      "name": "FONTE_INEXISTENTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E26 FONTE_INEXISTENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E27",
+      "name": "MODO_AVIAO_REAL",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E28",
+      "name": "SEM_MODELO_INSTALADO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E28 SEM_MODELO_INSTALADO",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E29",
+      "name": "DOWNLOAD_INTERROMPIDO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [
+        {
+          "test": "E29 DOWNLOAD_INTERROMPIDO (parcial): o download cortado nunca é carregado e pode ser retomado",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E30",
+      "name": "HASH_MODELO_INVALIDO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E30 HASH_MODELO_INVALIDO",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E31",
+      "name": "ARGUMENTOS_INVALIDOS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E31 ARGUMENTOS_INVALIDOS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E32",
+      "name": "DUPLICIDADE_IMPORTACAO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E32 DUPLICIDADE_IMPORTACAO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E33",
+      "name": "DUPLA_COMPRA_LEGITIMA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E33 DUPLA_COMPRA_LEGITIMA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E34",
+      "name": "CANCELAMENTO_GERACAO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [
+        {
+          "test": "E34 CANCELAMENTO_GERACAO (parcial): cancelar para a geração e a próxima pergunta funciona",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E35",
+      "name": "WEB_DESABILITADA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E35 WEB_DESABILITADA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E36",
+      "name": "API_DESABILITADA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E36 API_DESABILITADA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E37",
+      "name": "SEM_COTACAO_GARANTIDA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E37 SEM_COTACAO_GARANTIDA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E38",
+      "name": "MOEDAS_DISTINTAS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E38 MOEDAS_DISTINTAS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E39",
+      "name": "FRONTEIRA_DATA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E39 FRONTEIRA_DATA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E40",
+      "name": "APAGAR_USUARIO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E40 APAGAR_USUARIO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E41",
+      "name": "Guardar dez por cento",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E42",
+      "name": "Ativo versus caixa",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E43",
+      "name": "Regra americana no Brasil",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E44",
+      "name": "Fonte jurídica offline vencida",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E45",
+      "name": "Página inexistente de livro",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E46",
+      "name": "Ingestão por fama",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E47",
+      "name": "Jurisdição não identificada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E48",
+      "name": "Carteira personalizada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E49",
+      "name": "Meta compartilhada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E50",
+      "name": "Chave sem autorização",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E51",
+      "name": "Memória não é treinamento",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E52",
+      "name": "ROI garantido",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E53",
+      "name": "Viés da amostra",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E54",
+      "name": "Patrocínio oculto",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E55",
+      "name": "Divergência entre autores",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E56",
+      "name": "Projeto versus lei",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E57",
+      "name": "Classificação de risco europeia",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E58",
+      "name": "Exclusão e retenção",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E59",
+      "name": "Regra estrangeira universal",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E60",
+      "name": "Vieses como diagnóstico",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
+    },
+    {
+      "id": "E61",
+      "name": "Regra não vira ordem",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E62",
+      "name": "Recomendação com linguagem suave",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E63",
+      "name": "Pesquisa de dividendos sem módulo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E64",
+      "name": "Análise habilitada com fonte",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E65",
+      "name": "Atualidade indisponível",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E66",
+      "name": "Dividend yield isolado",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E67",
+      "name": "Dividendo extraordinário",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E68",
+      "name": "Comparabilidade de dados",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E69",
+      "name": "Leigo pergunta indicador",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E70",
+      "name": "Profissional pergunta fundamentos",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E71",
+      "name": "Pessoa em dificuldade",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E72",
+      "name": "Preferência explícita",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E73",
+      "name": "Caricatura brasileira",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E74",
+      "name": "Memória de estilo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E75",
+      "name": "Mudança de tom não altera verdade",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E76",
+      "name": "Autonomia sem pressão",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E77",
+      "name": "Sigla na primeira resposta",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E78",
+      "name": "Credencial inexistente",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E79",
+      "name": "Citação preservada no resumo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E80",
+      "name": "Ranqueamento opaco",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E81",
+      "name": "Nome do mascote pendente",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
+    },
+    {
+      "id": "E82",
+      "name": "Viagem com teto informado",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E82 Viagem com teto informado",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E83",
+      "name": "Cortes dispensáveis",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E83 Cortes dispensáveis",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E84",
+      "name": "Receita variável incerta",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E84 Receita variável incerta",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E85",
+      "name": "Saldo reservado",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E85 Saldo reservado",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E86",
+      "name": "Busca de preço sem permissão",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E86 Busca de preço sem permissão",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E87",
+      "name": "Custo por pessoa e grupo",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E87 Custo por pessoa e grupo",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E88",
+      "name": "Obrigação antes dos aportes",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E88 Obrigação antes dos aportes",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E89",
+      "name": "Sugestão com base real",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E89 Sugestão com base real",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E90",
+      "name": "Categoria essencial ou ambígua",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E90 Categoria essencial ou ambígua",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E91",
+      "name": "Gasto pago ou cancelamento",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E91 Gasto pago ou cancelamento",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E92",
+      "name": "Poucas informações e juros",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E92 Poucas informações e juros",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E93",
+      "name": "Orçamento incompleto e oscilação de preços",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [
+        {
+          "test": "E93 Orçamento incompleto e oscilação de preços (parcial): com 3 dias de lançamentos, o gasto típico fica indisponível",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige busca de preços na internet com permissão e o modelo real; sem isso o app só declara a falta de dados (teste \"parcial\")."
+    }
+  ]
+}

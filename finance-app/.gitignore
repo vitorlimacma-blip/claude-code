@@ -20,6 +20,7 @@ expo-env.d.ts
 
 # Metro
 .metro-health-check*
+.metro-cache/
 
 # debug
 npm-debug.*
@@ -37,3 +38,6 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# AI evaluation scratch files
+.ai-eval-*.json

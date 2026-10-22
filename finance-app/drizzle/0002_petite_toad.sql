@@ -1,0 +1,1 @@
+ALTER TABLE `categories` ADD `archived` integer DEFAULT false NOT NULL;

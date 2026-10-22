@@ -1,0 +1,1252 @@
+{
+  "note": "Catálogo de referências (anexos H, J.1, J.2 e L.3). Metadados apenas: auto_ingest=false, nenhum texto integral foi baixado ou incorporado. Referência não é evidência de trecho ou página.",
+  "verified_sources_H": [
+    {
+      "id": "S01",
+      "title": "Caderno de Educação Financeira, 2ª edição, 2026",
+      "author": "Banco Central do Brasil",
+      "url": "https://www.bcb.gov.br/content/cidadaniafinanceira/documentos_cidadania/Cuidando_do_seu_dinheiro_Gestao_de_Financas_Pessoais/caderno_cidadania_financeira.pdf",
+      "type": "financeiro",
+      "priority": "P1",
+      "read_status": "PDF de 98 páginas obtido; ficha, sumário e seções relevantes consultados",
+      "rights": "Direito de incorporação comercial não confirmado nesta edição; referência, não corpus automático",
+      "usage": "Orçamento, consumo, crédito e planejamento; ler módulos 1–4 primeiro.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "download_sha256": "e42aa64c16d7e35ccaba4c73b28f604873e442fa1b093f13cfc2ec056db90cc3",
+      "download_bytes": 8160797
+    },
+    {
+      "id": "S02",
+      "title": "TOP Planejamento Financeiro Pessoal, 2ª edição, 2025",
+      "author": "CVM e Planejar",
+      "url": "https://www.gov.br/investidor/pt-br/educacional/publicacoes-educacionais/livros-cvm/livro-top-planejamento-financeiro-pessoal",
+      "type": "financeiro",
+      "priority": "P1",
+      "read_status": "Página oficial e escopo consultados; PDF integral não obtido nesta pesquisa",
+      "rights": "Conferir licença do arquivo da edição; não inferir pelo rodapé do portal",
+      "usage": "Aprofundamento para o responsável pelo conteúdo; selecionar gestão financeira e planejamento integrado.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S03",
+      "title": "Guia CVM de Planejamento Financeiro, 2014",
+      "author": "CVM",
+      "url": "https://www.gov.br/investidor/pt-br/educacional/publicacoes-educacionais/guias/guia-de-planejamento-financeiro/guia-planejamento-financeiro.pdf/@@display-file/file",
+      "type": "financeiro",
+      "priority": "P2",
+      "read_status": "Texto de licença identificado no PDF oficial; consulta focada",
+      "rights": "Arquivo informa CC BY-NC-ND 3.0 Brasil; bloquear incorporação comercial sem autorização específica",
+      "usage": "Referência pessoal complementar; não distribuir nem adaptar no produto automaticamente.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S04",
+      "title": "A psicologia financeira",
+      "author": "Morgan Housel / HarperCollins Brasil",
+      "url": "https://harpercollins.com.br/products/a-psicologia-financeira-morgan-housel",
+      "type": "livro_comercial",
+      "priority": "P2",
+      "read_status": "Página editorial consultada; livro integral não adquirido nem lido",
+      "rights": "Obra comercial; compra de exemplar não deve ser tratada como autorização de redistribuição/treino",
+      "usage": "Leitura do fundador para comunicação e comportamento; não é motor de cálculo nem regra universal.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S05",
+      "title": "Como organizar sua vida financeira",
+      "author": "Gustavo Cerbasi / Sextante",
+      "url": "https://sextante.com.br/products/como-organizar-sua-vida-financeira",
+      "type": "livro_comercial",
+      "priority": "P2",
+      "read_status": "Página editorial e ficha consultadas; livro integral não adquirido nem lido",
+      "rights": "Obra comercial; corpus e distribuição dependem de direitos específicos",
+      "usage": "Leitura prática complementar; conferir atualidade de exemplos tributários e produtos.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S06",
+      "title": "Cuidados na contratação de crédito / CET",
+      "author": "Banco Central do Brasil",
+      "url": "https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito",
+      "type": "financeiro",
+      "priority": "P1",
+      "read_status": "Trecho do índice de busca oficial consultado; página dinâmica exige JavaScript",
+      "rights": "Referência oficial; não incorporada como texto integral",
+      "usage": "CET abrange custos além dos juros; usar contratos e fluxos reais nas simulações.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S07",
+      "title": "Calculadora do Cidadão: valor futuro de capital",
+      "author": "Banco Central do Brasil",
+      "url": "https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCalculoValorFuturoCapital.do?method=exibirFormCalculoValorFuturoCapital",
+      "type": "financeiro",
+      "priority": "P1",
+      "read_status": "Página de simulação e convenções consultadas",
+      "rights": "Referência metodológica; não corpus",
+      "usage": "Validar convenção de período e taxa; não contém taxa atual garantida.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S08",
+      "title": "Calculadora do Cidadão: prestações fixas",
+      "author": "Banco Central do Brasil",
+      "url": "https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormFinanciamentoPrestacoesFixas.do?method=exibirFormFinanciamentoPrestacoesFixas",
+      "type": "financeiro",
+      "priority": "P1",
+      "read_status": "Página de simulação e hipóteses consultadas",
+      "rights": "Referência metodológica; não corpus",
+      "usage": "Conferência independente de fórmula, entrada e primeira prestação.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S09",
+      "title": "Cancelamento de autorização no Open Finance",
+      "author": "Banco Central do Brasil",
+      "url": "https://www.bcb.gov.br/meubc/faqs/p/como-cancelar-uma-autorizacao-no-open-finance",
+      "type": "integracao_futura",
+      "priority": "P3",
+      "read_status": "Trecho oficial de busca consultado; página dinâmica não renderizada",
+      "rights": "Referência; integração fora do MVP",
+      "usage": "Preparar adaptador futuro; autorização de dados bancários não é autorização de treinamento.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "S10",
+      "title": "Guia de segurança da informação para agentes de tratamento de pequeno porte",
+      "author": "ANPD",
+      "url": "https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia-orientativo-sobre-seguranca-da-informacao-para-agentes-de-tratamento-de-pequeno-porte",
+      "type": "privacidade",
+      "priority": "P1",
+      "read_status": "Página oficial, escopo e referência ao guia consultados",
+      "rights": "Referência de projeto; avaliar requisitos concretos antes do lançamento",
+      "usage": "Orientar revisão de acessos, retenção e proteção; este estudo não certifica conformidade.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T01",
+      "title": "Ollama para Windows",
+      "author": "Ollama",
+      "url": "https://docs.ollama.com/windows",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Documentação consultada",
+      "rights": "Licenças do software e modelos são separadas",
+      "usage": "Motor de laboratório no PC; não equivale ao runtime embarcado no celular.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T02",
+      "title": "Autenticação da API local",
+      "author": "Ollama",
+      "url": "https://docs.ollama.com/api/authentication",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Documentação consultada",
+      "rights": "Referência técnica",
+      "usage": "Execução local não requer chave externa.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T03",
+      "title": "FAQ: desativação de recursos cloud",
+      "author": "Ollama",
+      "url": "https://docs.ollama.com/faq",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Seção de execução local consultada",
+      "rights": "Referência técnica",
+      "usage": "Modo local-only deve ser verificado na instalação; não inferir offline só pelo nome do modelo.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T04",
+      "title": "llama.cpp",
+      "author": "ggml-org",
+      "url": "https://github.com/ggml-org/llama.cpp",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Repositório e exemplos consultados",
+      "rights": "MIT para o runtime; conferir licença de cada peso/modelo",
+      "usage": "Base de inferência local; versionar runtime, arquitetura e artefato GGUF.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T05",
+      "title": "llama.rn",
+      "author": "BRICKS / mybigday",
+      "url": "https://github.com/mybigday/llama.rn",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "README, configuração Expo e licença consultados",
+      "rights": "MIT do binding; não cobre os pesos",
+      "usage": "Candidato principal para React Native; versão atual consultada exige New Architecture desde v0.10.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T06",
+      "title": "Development builds",
+      "author": "Expo",
+      "url": "https://docs.expo.dev/develop/development-builds/introduction/",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Documentação consultada",
+      "rights": "Referência técnica",
+      "usage": "Integração nativa precisa de binário compatível; não validar somente no Expo Go.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T07",
+      "title": "expo-sqlite",
+      "author": "Expo",
+      "url": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Configuração de persistência, FTS e SQLCipher consultada",
+      "rights": "Conferir versão do SDK instalado, não copiar latest sem auditoria",
+      "usage": "FTS para busca inicial; criptografia exige configuração e rebuild compatíveis.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T08",
+      "title": "expo-secure-store",
+      "author": "Expo",
+      "url": "https://docs.expo.dev/versions/latest/sdk/securestore/",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "API, limites e configuração consultados",
+      "rights": "Referência técnica",
+      "usage": "Guardar segredos pequenos; não documentos nem banco inteiro; testar backup e recuperação.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T09",
+      "title": "Build iOS",
+      "author": "Expo",
+      "url": "https://docs.expo.dev/build-reference/ios-builds/",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Processo de build consultado",
+      "rights": "Referência técnica",
+      "usage": "Construção iOS remota usa macOS; separar dependência de desenvolvimento da inferência em produção.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T10",
+      "title": "Qwen3.5-2B",
+      "author": "Equipe Qwen",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-2B",
+      "type": "modelo",
+      "priority": "P1",
+      "read_status": "Model card, licença e finalidade consultadas",
+      "rights": "Apache-2.0 declarada no model card; validar arquivo GGUF específico e avisos",
+      "usage": "Candidato compacto para prova móvel; não aprovado neste estudo por benchmark.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T11",
+      "title": "Qwen3.5:4b no Ollama",
+      "author": "Ollama / modelo Qwen",
+      "url": "https://ollama.com/library/qwen3.5:4b",
+      "type": "modelo",
+      "priority": "P1",
+      "read_status": "Artefatos e comando de execução consultados",
+      "rights": "Conferir licença e quantização do artefato escolhido",
+      "usage": "Candidato de comparação no PC; tamanho de arquivo não é pico total de RAM.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T12",
+      "title": "RAG com dados próprios",
+      "author": "Hugging Face",
+      "url": "https://huggingface.co/learn/cookbook/rag_with_unstructured_data",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Introdução e fluxo de ingestão consultados",
+      "rights": "Referência técnica; não importar automaticamente dados do tutorial",
+      "usage": "Documentos externos precisam de extração, metadados e recuperação; RAG não é treino.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T13",
+      "title": "Fine-tuning",
+      "author": "Hugging Face",
+      "url": "https://huggingface.co/docs/transformers/training",
+      "type": "tecnico",
+      "priority": "P2",
+      "read_status": "Conceito e separação treino/avaliação consultados",
+      "rights": "Referência técnica",
+      "usage": "Treino modifica parâmetros; tem conjunto de treino separado do teste.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T14",
+      "title": "LoRA",
+      "author": "Hugging Face PEFT",
+      "url": "https://huggingface.co/docs/peft/main/en/conceptual_guides/lora",
+      "type": "tecnico",
+      "priority": "P2",
+      "read_status": "Conceito de adaptação e pesos base consultado",
+      "rights": "Conferir versão estável e compatibilidade do modelo",
+      "usage": "Etapa futura; não requisito para personalização inicial.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T15",
+      "title": "Prevenção de prompt injection",
+      "author": "OWASP",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html",
+      "type": "seguranca",
+      "priority": "P1",
+      "read_status": "Seções sobre fontes externas, RAG e ferramentas consultadas",
+      "rights": "Referência técnica; não corpus do usuário",
+      "usage": "Usar separação de dados/instruções, validação e ferramentas limitadas; prompt isolado não basta.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T16",
+      "title": "Floating Point Numbers",
+      "author": "SQLite",
+      "url": "https://www.sqlite.org/floatingpoint.html",
+      "type": "tecnico",
+      "priority": "P1",
+      "read_status": "Seção de precisão numérica consultada",
+      "rights": "Referência técnica",
+      "usage": "Valores REAL são aproximados; proposta usa centavos inteiros com limites seguros.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T17",
+      "title": "multilingual-e5-small",
+      "author": "intfloat / autores do modelo",
+      "url": "https://huggingface.co/intfloat/multilingual-e5-small/raw/main/README.md",
+      "type": "modelo_opcional",
+      "priority": "P3",
+      "read_status": "Model card em texto, idioma pt e licença consultados",
+      "rights": "MIT declarada; validar conversão e runtime antes de empacotar",
+      "usage": "Candidato de embeddings local se FTS não atingir a meta; não requisito do MVP.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "T18",
+      "title": "ONNX Runtime para React Native",
+      "author": "ONNX Runtime / Microsoft",
+      "url": "https://onnxruntime.ai/docs/get-started/with-javascript/react-native.html",
+      "type": "tecnico_opcional",
+      "priority": "P3",
+      "read_status": "Documentação de integração consultada",
+      "rights": "Conferir licenças e compatibilidade do pacote exato",
+      "usage": "Possível runtime para embeddings; custo adicional de memória deve ser medido.",
+      "checked_at": "2026-10-21",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    }
+  ],
+  "books_J1": [
+    {
+      "id": "B01",
+      "title": "O homem mais rico da Babilônia",
+      "author": "George S. Clason",
+      "priority": "A",
+      "genre": "parábolas",
+      "url": "https://www.penguinrandomhouse.com/books/831685/the-richest-man-in-babylon-deluxe-hardbound-edition-by-george-s-clason/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B02",
+      "title": "Pai rico, pai pobre",
+      "author": "Robert T. Kiyosaki",
+      "priority": "B",
+      "genre": "educação popular e narrativa",
+      "url": "https://richdad.com/assets-vs-liabilities/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B03",
+      "title": "A psicologia financeira / The Psychology of Money",
+      "author": "Morgan Housel",
+      "priority": "A",
+      "genre": "ensaios e histórias",
+      "url": "https://harpercollins.com.br/products/a-psicologia-financeira-morgan-housel",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B04",
+      "title": "O mesmo de sempre / Same as Ever",
+      "author": "Morgan Housel",
+      "priority": "B",
+      "genre": "ensaios",
+      "url": "https://www.companhiadasletras.com.br/livro/9788539007899/o-mesmo-de-sempre",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B05",
+      "title": "Como organizar sua vida financeira",
+      "author": "Gustavo Cerbasi",
+      "priority": "A",
+      "genre": "guia brasileiro",
+      "url": "https://sextante.com.br/products/como-organizar-sua-vida-financeira",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B06",
+      "title": "Casais inteligentes enriquecem juntos",
+      "author": "Gustavo Cerbasi",
+      "priority": "A",
+      "genre": "guia brasileiro",
+      "url": "https://sextante.com.br/products/casais-inteligentes-enriquecem-juntos",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B07",
+      "title": "Investimentos inteligentes — edição revista e atualizada",
+      "author": "Gustavo Cerbasi",
+      "priority": "B",
+      "genre": "guia brasileiro",
+      "url": "https://sextante.com.br/products/investimentos-inteligentes-edicao-revista-e-atualizada",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B08",
+      "title": "Me Poupe! — edição atualizada",
+      "author": "Nathalia Arcuri",
+      "priority": "B",
+      "genre": "educação popular brasileira",
+      "url": "https://sextante.com.br/products/me-poupe-edicao-atualizada",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B09",
+      "title": "Your Money or Your Life",
+      "author": "Vicki Robin e Joe Dominguez",
+      "priority": "A",
+      "genre": "guia de valores e finanças",
+      "url": "https://www.penguinrandomhouse.com/books/303637/your-money-or-your-life-by-vicki-robin-and-joe-dominguez-foreword-by-mr-money-mustache/9780143115762/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B10",
+      "title": "Como ficar rico / I Will Teach You to Be Rich",
+      "author": "Ramit Sethi",
+      "priority": "A",
+      "genre": "guia prático",
+      "url": "https://sextante.com.br/products/como-ficar-rico",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B11",
+      "title": "O caminho simples para a riqueza / The Simple Path to Wealth",
+      "author": "JL Collins",
+      "priority": "B",
+      "genre": "filosofia prática de investimentos",
+      "url": "https://sextante.com.br/products/o-caminho-simples-para-a-riqueza",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B12",
+      "title": "The Millionaire Next Door",
+      "author": "Thomas J. Stanley e William D. Danko",
+      "priority": "B",
+      "genre": "pesquisa descritiva e divulgação",
+      "url": "https://themillionairenextdoor.com/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B13",
+      "title": "Just Keep Buying",
+      "author": "Nick Maggiulli",
+      "priority": "B",
+      "genre": "divulgação baseada em dados históricos",
+      "url": "https://www.harriman-house.com/justkeepbuying",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B14",
+      "title": "The One-Page Financial Plan",
+      "author": "Carl Richards",
+      "priority": "A",
+      "genre": "planejamento prático",
+      "url": "https://www.penguinrandomhouse.com/books/317476/the-one-page-financial-plan-by-carl-richards/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B15",
+      "title": "The Behavior Gap",
+      "author": "Carl Richards",
+      "priority": "B",
+      "genre": "educação comportamental",
+      "url": "https://www.harriman-house.com/authors/carl-richards/49668",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B16",
+      "title": "O investidor de bom senso / The Little Book of Common Sense Investing",
+      "author": "John C. Bogle",
+      "priority": "B",
+      "genre": "filosofia de investimentos",
+      "url": "https://www.wiley.com/en-us/shop/general-finance-investments/the-little-book-of-common-sense-investing-the-only-way-to-guarantee-your-fair-share-of-stock-market-returns-updated-and-revised-p-9781119404507",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B17",
+      "title": "A Random Walk Down Wall Street",
+      "author": "Burton G. Malkiel",
+      "priority": "B",
+      "genre": "divulgação de teoria de investimentos",
+      "url": "https://wwnorton.com/books/9781324035435",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B18",
+      "title": "O investidor inteligente / The Intelligent Investor",
+      "author": "Benjamin Graham",
+      "priority": "C",
+      "genre": "clássico de investimentos",
+      "url": "https://www.harpercollins.com/products/intelligent-investor-benjamin-graham",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B19",
+      "title": "One Up On Wall Street",
+      "author": "Peter Lynch e John Rothchild",
+      "priority": "C",
+      "genre": "experiência de gestão e investimento ativo",
+      "url": "https://www.simonandschuster.com/books/One-Up-On-Wall-Street/Peter-Lynch/9780743200400",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B20",
+      "title": "The Most Important Thing",
+      "author": "Howard Marks",
+      "priority": "C",
+      "genre": "ensaios de investimento",
+      "url": "https://cup.columbia.edu/book/the-most-important-thing/9780231153683/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B21",
+      "title": "The Four Pillars of Investing — segunda edição",
+      "author": "William J. Bernstein",
+      "priority": "B",
+      "genre": "síntese de investimentos",
+      "url": "https://www.mheducation.com/highered/mhp/product/four-pillars-investing-second-edition-lessons-building-winning-portfolio.html",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B22",
+      "title": "Poor Charlie’s Almanack",
+      "author": "Charles T. Munger; organização de Peter D. Kaufman",
+      "priority": "C",
+      "genre": "discursos e modelos mentais",
+      "url": "https://www.stripe.press/poor-charlies-almanack/book",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B23",
+      "title": "Rápido e devagar / Thinking, Fast and Slow",
+      "author": "Daniel Kahneman",
+      "priority": "A",
+      "genre": "divulgação de psicologia",
+      "url": "https://www.penguin.co.uk/books/56314/thinking-fast-and-slow-by-kahneman-daniel/9780141033570",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B24",
+      "title": "Nudge — edição final",
+      "author": "Richard H. Thaler e Cass R. Sunstein",
+      "priority": "A",
+      "genre": "arquitetura de escolhas",
+      "url": "https://www.penguinrandomhouse.com/books/690485/nudge-by-richard-h-thaler-and-cass-r-sunstein/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B25",
+      "title": "Misbehaving",
+      "author": "Richard H. Thaler",
+      "priority": "B",
+      "genre": "história da economia comportamental",
+      "url": "https://wwnorton.co.uk/books/9780393080940-misbehaving",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B26",
+      "title": "Thinking in Bets",
+      "author": "Annie Duke",
+      "priority": "A",
+      "genre": "decisão sob incerteza",
+      "url": "https://www.penguinrandomhouse.com/authors/228221/annie-duke/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B27",
+      "title": "Quit",
+      "author": "Annie Duke",
+      "priority": "B",
+      "genre": "decisão e mudança de planos",
+      "url": "https://www.penguinrandomhouse.com/books/692752/quit-by-annie-duke/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B28",
+      "title": "Fooled by Randomness",
+      "author": "Nassim Nicholas Taleb",
+      "priority": "B",
+      "genre": "ensaios sobre probabilidade",
+      "url": "https://www.penguinrandomhouse.com/books/176225/fooled-by-randomness-by-nassim-nicholas-taleb/9781400067930/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B29",
+      "title": "A lógica do cisne negro / The Black Swan",
+      "author": "Nassim Nicholas Taleb",
+      "priority": "B",
+      "genre": "ensaios sobre incerteza",
+      "url": "https://www.penguinrandomhouse.ca/books/176226/the-black-swan-second-edition-by-nassim-nicholas-taleb/9780679604181",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B30",
+      "title": "Hábitos atômicos / Atomic Habits",
+      "author": "James Clear",
+      "priority": "A",
+      "genre": "síntese prática de hábitos",
+      "url": "https://jamesclear.com/atomic-habits",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B31",
+      "title": "Tiny Habits",
+      "author": "BJ Fogg",
+      "priority": "A",
+      "genre": "método de mudança de hábitos",
+      "url": "https://tinyhabits.com/book/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B32",
+      "title": "How to Change",
+      "author": "Katy Milkman",
+      "priority": "A",
+      "genre": "divulgação de ciência comportamental",
+      "url": "https://www.katymilkman.com/how-to-change",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B33",
+      "title": "Scarcity",
+      "author": "Sendhil Mullainathan e Eldar Shafir",
+      "priority": "A",
+      "genre": "divulgação de pesquisa e contexto social",
+      "url": "https://us.macmillan.com/books/9781250056115/scarcity/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B34",
+      "title": "Pound Foolish",
+      "author": "Helaine Olen",
+      "priority": "B",
+      "genre": "jornalismo crítico",
+      "url": "https://www.penguinrandomhouse.com/books/308568/pound-foolish-by-helaine-olen/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B35",
+      "title": "Finance for the People",
+      "author": "Paco de Leon",
+      "priority": "A",
+      "genre": "guia acessível e reflexivo",
+      "url": "https://www.penguinrandomhouse.com/books/665268/finance-for-the-people-by-paco-de-leon/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    },
+    {
+      "id": "B36",
+      "title": "Antifrágil / Antifragile",
+      "author": "Nassim Nicholas Taleb",
+      "priority": "C",
+      "genre": "ensaios sobre risco e sistemas",
+      "url": "https://www.penguinrandomhouse.com/books/176227/antifragile-by-nassim-nicholas-taleb/9780679645276/",
+      "checked_at": "2026-10-22",
+      "access": "public_presentation_only; no_full_book",
+      "allowed_uses": [
+        "bibliographic_reference"
+      ],
+      "auto_ingest": false,
+      "distributed_full_text": false,
+      "rights_status": "not_cleared_for_ingestion_training_or_distribution"
+    }
+  ],
+  "legal_J2": [
+    {
+      "id": "L01",
+      "title": "LGPD — texto compilado",
+      "jurisdiction": "BR",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm",
+      "status": "Lei vigente; enquadramento depende das operações e agentes.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L02",
+      "title": "ANPD — segurança para agentes de pequeno porte",
+      "jurisdiction": "BR",
+      "url": "https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia-orientativo-sobre-seguranca-da-informacao-para-agentes-de-tratamento-de-pequeno-porte",
+      "status": "Orientação oficial; não é dispensa geral da LGPD.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L03",
+      "title": "ANPD — comunicação de incidentes",
+      "jurisdiction": "BR",
+      "url": "https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+      "status": "Orientação oficial vinculada à Resolução CD/ANPD 15/2024.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L04",
+      "title": "ANPD — transferências internacionais e Resolução 19/2024",
+      "jurisdiction": "BR",
+      "url": "https://www.gov.br/anpd/pt-br/assuntos/assuntos-internacionais/transferencia-internacional-de-dados",
+      "status": "Regulamentação e orientação oficial; conferir atos aplicáveis ao destino e à operação.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L05",
+      "title": "Código de Defesa do Consumidor — texto compilado",
+      "jurisdiction": "BR",
+      "url": "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm",
+      "status": "Lei vigente; avaliar relação de consumo.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L06",
+      "title": "Decreto 7.962/2013 — comércio eletrônico",
+      "jurisdiction": "BR",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm",
+      "status": "Aplicação conforme forma de contratação.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L07",
+      "title": "Lei 9.610/1998 — direitos autorais",
+      "jurisdiction": "BR",
+      "url": "https://www.planalto.gov.br/ccivil_03/leis/l9610.htm",
+      "status": "Lei vigente; examinar obra, edição, finalidade e autorização.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L08",
+      "title": "Resolução CVM 19 — texto consolidado",
+      "jurisdiction": "BR",
+      "url": "https://conteudo.cvm.gov.br/export/sites/cvm/legislacao/resolucoes/anexos/001/resol019consolid.pdf",
+      "status": "Regulação da consultoria de valores mobiliários; análise por funcionalidade.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L09",
+      "title": "CVM — orientação sobre consultoria, 19/01/2026",
+      "jurisdiction": "BR",
+      "url": "https://www.gov.br/cvm/pt-br/assuntos/noticias/2026/area-tecnica-da-cvm-orienta-sobre-atividade-de-consultoria-de-valores-mobiliarios",
+      "status": "Orientação da área técnica; Ofício Circular CVM/SIN 2/2026.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L10",
+      "title": "BCB — Resolução Conjunta 1/2020, página normativa",
+      "jurisdiction": "BR",
+      "url": "https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?numero=1&tipo=Resolu%C3%A7%C3%A3o+Conjunta",
+      "status": "Regulamentação do Open Finance com alterações; página dinâmica.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L11",
+      "title": "Marco Civil da Internet — Lei 12.965/2014",
+      "jurisdiction": "BR",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm",
+      "status": "Lei vigente; incidência depende do serviço online.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L12",
+      "title": "Câmara dos Deputados — PL 2338/2023",
+      "jurisdiction": "BR",
+      "url": "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262",
+      "status": "Projeto legislativo; não tratar como lei vigente.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L13",
+      "title": "Receita Federal — Meu Imposto de Renda",
+      "jurisdiction": "BR",
+      "url": "https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda",
+      "status": "Portal oficial; regras dependem do exercício e da operação.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L14",
+      "title": "Comissão Europeia — proteção de dados",
+      "jurisdiction": "UE/EEE",
+      "url": "https://commission.europa.eu/law/law-topic/data-protection/data-protection-explained_en",
+      "status": "Triagem internacional; aplicação territorial deve ser verificada.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L15",
+      "title": "Comissão Europeia — AI Act e cronograma",
+      "jurisdiction": "UE",
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "status": "Triagem internacional; página oficial consultada em 22/10/2026.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L16",
+      "title": "ICO — orientação UK GDPR",
+      "jurisdiction": "Reino Unido",
+      "url": "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/",
+      "status": "Triagem inicial; regras próprias e alterações locais precisam de revisão.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L17",
+      "title": "California DOJ — CCPA",
+      "jurisdiction": "EUA/Califórnia",
+      "url": "https://www.oag.ca.gov/privacy/ccpa",
+      "status": "Triagem estadual; não representa uma lei geral uniforme dos EUA.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    }
+  ],
+  "research_J2": [
+    {
+      "id": "R01",
+      "title": "The Economic Importance of Financial Literacy: Theory and Evidence",
+      "authors": "Annamaria Lusardi e Olivia S. Mitchell",
+      "url": "https://www.nber.org/papers/w18952",
+      "status": "Resumo e metadados de pesquisa consultados; versão publicada em JEL, 2014.",
+      "finding": "Usar pesquisa de educação financeira para formular objetivos de aprendizagem, sem supor que apenas informação resolve toda restrição financeira.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "R02",
+      "title": "Financial Education Affects Financial Knowledge and Downstream Behaviors",
+      "authors": "Tim Kaiser, Annamaria Lusardi, Lukas Menkhoff e Carly Urban",
+      "url": "https://www.nber.org/papers/w27057",
+      "status": "Resumo/metadados e resultado indexado do working paper; página direta retornou 403. Versão publicada em Journal of Financial Economics, 2022.",
+      "finding": "A meta-análise de intervenções dá suporte a avaliar educação financeira; seus resultados agregados não validam este app nem cada livro selecionado.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "R03",
+      "title": "Maps of Bounded Rationality — Prize Lecture",
+      "authors": "Daniel Kahneman",
+      "url": "https://www.nobelprize.org/prizes/economic-sciences/2002/kahneman/lecture/",
+      "status": "Página institucional da conferência consultada; não transcrição integral revista.",
+      "finding": "Base para estudar julgamento e limites de racionalidade; não atestado de validade de toda afirmação de divulgação posterior.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "R04",
+      "title": "The Prize in Economic Sciences 2017 — Popular Information",
+      "authors": "Nobel Prize; contribuição de Richard H. Thaler",
+      "url": "https://www.nobelprize.org/prizes/economic-sciences/2017/popular-information/",
+      "status": "Apresentação institucional consultada.",
+      "finding": "Contextualizar economia comportamental e arquitetura de escolhas; medir separadamente cada intervenção do produto.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "R05",
+      "title": "Berkshire Hathaway — carta aos acionistas, 2013",
+      "authors": "Warren E. Buffett",
+      "url": "https://www.berkshirehathaway.com/letters/2013ltr.pdf",
+      "status": "PDF oficial localizado e trechos indexados consultados; não análise integral das demonstrações.",
+      "finding": "Estudar argumentos sobre custos e horizonte; instruções para contexto específico americano não viram carteira padrão brasileira.",
+      "checked_at": "2026-10-22",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    }
+  ],
+  "complementary_L3": [
+    {
+      "id": "L18",
+      "title": "Resolução CVM 20 — texto consolidado",
+      "url": "https://conteudo.cvm.gov.br/export/sites/cvm/legislacao/resolucoes/anexos/001/resol020consolid.pdf",
+      "kind": "norma",
+      "jurisdiction": "BR",
+      "checked_at": "2026-10-22",
+      "scope": "Dispositivos de enquadramento de análise e automação consultados; não auditoria integral de todos os deveres profissionais.",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "L19",
+      "title": "CVM — esclarecimento sobre atuação de influenciadores, 11/11/2020",
+      "url": "https://www.gov.br/cvm/pt-br/assuntos/noticias/2020/area-tecnica-da-cvm-esclarece-duvidas-sobre-atuacao-de-influenciadores-que-recomendam-investimentos-dddc1973876d4cc78c734b8ceeaaa740",
+      "kind": "orientacao_historica",
+      "jurisdiction": "BR",
+      "checked_at": "2026-10-22",
+      "scope": "Orientação histórica sobre linguagem e exercício profissional; aplicar em conjunto com normas vigentes, sem tratar instrução antiga citada como atual.",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "M01",
+      "title": "B3/Bora Investir — Dividend Yield",
+      "url": "https://borainvestir.b3.com.br/glossario/dividend-yield/",
+      "kind": "educacional",
+      "jurisdiction": "BR",
+      "checked_at": "2026-10-22",
+      "scope": "Definição introdutória do indicador; não seleção de ações nem licença de feed de mercado.",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    },
+    {
+      "id": "M02",
+      "title": "B3 — Dividend Index (IDIV)",
+      "url": "https://www.b3.com.br/en_us/market-data-and-indices/indexes/indexes-for-segments-and-sectors/dividend-index-idiv.htm",
+      "kind": "metodologia_de_indice",
+      "jurisdiction": "BR",
+      "checked_at": "2026-10-22",
+      "scope": "Apresentação do índice; não implica carteira ideal, adequação individual ou autorização de redistribuir dados.",
+      "auto_ingest": false,
+      "distributed_full_text": false
+    }
+  ]
+}

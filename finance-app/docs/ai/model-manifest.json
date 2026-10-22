@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "candidate_not_validated",
+  "base_model_id": "Qwen/Qwen3.5-2B",
+  "base_model_revision": null,
+  "artifact_repository": null,
+  "artifact_filename": null,
+  "artifact_revision": null,
+  "download_url": null,
+  "sha256": null,
+  "size_bytes": null,
+  "quantization": "Q4_K_M_candidate",
+  "base_license": "Apache-2.0 declared in model card; verify exact artifact",
+  "license_files": [],
+  "runtime": null,
+  "runtime_version": null,
+  "chat_template_source": null,
+  "context_tokens_initial_candidate": 2048,
+  "tool_format_verified": false,
+  "offline_verified": false,
+  "approved_devices": [],
+  "notes": "Preencher de fonte verificada. Nunca inventar hash, revisão, tamanho ou compatibilidade. Etapa 6.3: o app (src/ai/local/manifest.ts) bloqueia a instalação enquanto download_url, sha256 ou size_bytes forem null; a fonte oficial não estava acessível nesta sessão (rede)."
+}

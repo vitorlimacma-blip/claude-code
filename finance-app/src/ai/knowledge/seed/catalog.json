@@ -1,0 +1,1082 @@
+[
+ {
+  "id": "S01",
+  "title": "Caderno de Educação Financeira, 2ª edição, 2026",
+  "author": "Banco Central do Brasil",
+  "group": "fonte_verificada",
+  "access": "PDF de 98 páginas obtido; ficha, sumário e seções relevantes consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S02",
+  "title": "TOP Planejamento Financeiro Pessoal, 2ª edição, 2025",
+  "author": "CVM e Planejar",
+  "group": "fonte_verificada",
+  "access": "Página oficial e escopo consultados; PDF integral não obtido nesta pesquisa",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S03",
+  "title": "Guia CVM de Planejamento Financeiro, 2014",
+  "author": "CVM",
+  "group": "fonte_verificada",
+  "access": "Texto de licença identificado no PDF oficial; consulta focada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S04",
+  "title": "A psicologia financeira",
+  "author": "Morgan Housel / HarperCollins Brasil",
+  "group": "fonte_verificada",
+  "access": "Página editorial consultada; livro integral não adquirido nem lido",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S05",
+  "title": "Como organizar sua vida financeira",
+  "author": "Gustavo Cerbasi / Sextante",
+  "group": "fonte_verificada",
+  "access": "Página editorial e ficha consultadas; livro integral não adquirido nem lido",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S06",
+  "title": "Cuidados na contratação de crédito / CET",
+  "author": "Banco Central do Brasil",
+  "group": "fonte_verificada",
+  "access": "Trecho do índice de busca oficial consultado; página dinâmica exige JavaScript",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S07",
+  "title": "Calculadora do Cidadão: valor futuro de capital",
+  "author": "Banco Central do Brasil",
+  "group": "fonte_verificada",
+  "access": "Página de simulação e convenções consultadas",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S08",
+  "title": "Calculadora do Cidadão: prestações fixas",
+  "author": "Banco Central do Brasil",
+  "group": "fonte_verificada",
+  "access": "Página de simulação e hipóteses consultadas",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S09",
+  "title": "Cancelamento de autorização no Open Finance",
+  "author": "Banco Central do Brasil",
+  "group": "fonte_verificada",
+  "access": "Trecho oficial de busca consultado; página dinâmica não renderizada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "S10",
+  "title": "Guia de segurança da informação para agentes de tratamento de pequeno porte",
+  "author": "ANPD",
+  "group": "fonte_verificada",
+  "access": "Página oficial, escopo e referência ao guia consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T01",
+  "title": "Ollama para Windows",
+  "author": "Ollama",
+  "group": "fonte_verificada",
+  "access": "Documentação consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T02",
+  "title": "Autenticação da API local",
+  "author": "Ollama",
+  "group": "fonte_verificada",
+  "access": "Documentação consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T03",
+  "title": "FAQ: desativação de recursos cloud",
+  "author": "Ollama",
+  "group": "fonte_verificada",
+  "access": "Seção de execução local consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T04",
+  "title": "llama.cpp",
+  "author": "ggml-org",
+  "group": "fonte_verificada",
+  "access": "Repositório e exemplos consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T05",
+  "title": "llama.rn",
+  "author": "BRICKS / mybigday",
+  "group": "fonte_verificada",
+  "access": "README, configuração Expo e licença consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T06",
+  "title": "Development builds",
+  "author": "Expo",
+  "group": "fonte_verificada",
+  "access": "Documentação consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T07",
+  "title": "expo-sqlite",
+  "author": "Expo",
+  "group": "fonte_verificada",
+  "access": "Configuração de persistência, FTS e SQLCipher consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T08",
+  "title": "expo-secure-store",
+  "author": "Expo",
+  "group": "fonte_verificada",
+  "access": "API, limites e configuração consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T09",
+  "title": "Build iOS",
+  "author": "Expo",
+  "group": "fonte_verificada",
+  "access": "Processo de build consultado",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T10",
+  "title": "Qwen3.5-2B",
+  "author": "Equipe Qwen",
+  "group": "fonte_verificada",
+  "access": "Model card, licença e finalidade consultadas",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T11",
+  "title": "Qwen3.5:4b no Ollama",
+  "author": "Ollama / modelo Qwen",
+  "group": "fonte_verificada",
+  "access": "Artefatos e comando de execução consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T12",
+  "title": "RAG com dados próprios",
+  "author": "Hugging Face",
+  "group": "fonte_verificada",
+  "access": "Introdução e fluxo de ingestão consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T13",
+  "title": "Fine-tuning",
+  "author": "Hugging Face",
+  "group": "fonte_verificada",
+  "access": "Conceito e separação treino/avaliação consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T14",
+  "title": "LoRA",
+  "author": "Hugging Face PEFT",
+  "group": "fonte_verificada",
+  "access": "Conceito de adaptação e pesos base consultado",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T15",
+  "title": "Prevenção de prompt injection",
+  "author": "OWASP",
+  "group": "fonte_verificada",
+  "access": "Seções sobre fontes externas, RAG e ferramentas consultadas",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T16",
+  "title": "Floating Point Numbers",
+  "author": "SQLite",
+  "group": "fonte_verificada",
+  "access": "Seção de precisão numérica consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T17",
+  "title": "multilingual-e5-small",
+  "author": "intfloat / autores do modelo",
+  "group": "fonte_verificada",
+  "access": "Model card em texto, idioma pt e licença consultados",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "T18",
+  "title": "ONNX Runtime para React Native",
+  "author": "ONNX Runtime / Microsoft",
+  "group": "fonte_verificada",
+  "access": "Documentação de integração consultada",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B01",
+  "title": "O homem mais rico da Babilônia",
+  "author": "George S. Clason",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B02",
+  "title": "Pai rico, pai pobre",
+  "author": "Robert T. Kiyosaki",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B03",
+  "title": "A psicologia financeira / The Psychology of Money",
+  "author": "Morgan Housel",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B04",
+  "title": "O mesmo de sempre / Same as Ever",
+  "author": "Morgan Housel",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B05",
+  "title": "Como organizar sua vida financeira",
+  "author": "Gustavo Cerbasi",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B06",
+  "title": "Casais inteligentes enriquecem juntos",
+  "author": "Gustavo Cerbasi",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B07",
+  "title": "Investimentos inteligentes — edição revista e atualizada",
+  "author": "Gustavo Cerbasi",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B08",
+  "title": "Me Poupe! — edição atualizada",
+  "author": "Nathalia Arcuri",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B09",
+  "title": "Your Money or Your Life",
+  "author": "Vicki Robin e Joe Dominguez",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B10",
+  "title": "Como ficar rico / I Will Teach You to Be Rich",
+  "author": "Ramit Sethi",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B11",
+  "title": "O caminho simples para a riqueza / The Simple Path to Wealth",
+  "author": "JL Collins",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B12",
+  "title": "The Millionaire Next Door",
+  "author": "Thomas J. Stanley e William D. Danko",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B13",
+  "title": "Just Keep Buying",
+  "author": "Nick Maggiulli",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B14",
+  "title": "The One-Page Financial Plan",
+  "author": "Carl Richards",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B15",
+  "title": "The Behavior Gap",
+  "author": "Carl Richards",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B16",
+  "title": "O investidor de bom senso / The Little Book of Common Sense Investing",
+  "author": "John C. Bogle",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B17",
+  "title": "A Random Walk Down Wall Street",
+  "author": "Burton G. Malkiel",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B18",
+  "title": "O investidor inteligente / The Intelligent Investor",
+  "author": "Benjamin Graham",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B19",
+  "title": "One Up On Wall Street",
+  "author": "Peter Lynch e John Rothchild",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B20",
+  "title": "The Most Important Thing",
+  "author": "Howard Marks",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B21",
+  "title": "The Four Pillars of Investing — segunda edição",
+  "author": "William J. Bernstein",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B22",
+  "title": "Poor Charlie’s Almanack",
+  "author": "Charles T. Munger; organização de Peter D. Kaufman",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B23",
+  "title": "Rápido e devagar / Thinking, Fast and Slow",
+  "author": "Daniel Kahneman",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B24",
+  "title": "Nudge — edição final",
+  "author": "Richard H. Thaler e Cass R. Sunstein",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B25",
+  "title": "Misbehaving",
+  "author": "Richard H. Thaler",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B26",
+  "title": "Thinking in Bets",
+  "author": "Annie Duke",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B27",
+  "title": "Quit",
+  "author": "Annie Duke",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B28",
+  "title": "Fooled by Randomness",
+  "author": "Nassim Nicholas Taleb",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B29",
+  "title": "A lógica do cisne negro / The Black Swan",
+  "author": "Nassim Nicholas Taleb",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B30",
+  "title": "Hábitos atômicos / Atomic Habits",
+  "author": "James Clear",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B31",
+  "title": "Tiny Habits",
+  "author": "BJ Fogg",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B32",
+  "title": "How to Change",
+  "author": "Katy Milkman",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B33",
+  "title": "Scarcity",
+  "author": "Sendhil Mullainathan e Eldar Shafir",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B34",
+  "title": "Pound Foolish",
+  "author": "Helaine Olen",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B35",
+  "title": "Finance for the People",
+  "author": "Paco de Leon",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "B36",
+  "title": "Antifrágil / Antifragile",
+  "author": "Nassim Nicholas Taleb",
+  "group": "livro",
+  "access": "public_presentation_only; no_full_book",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L01",
+  "title": "LGPD — texto compilado",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Lei vigente; enquadramento depende das operações e agentes.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L02",
+  "title": "ANPD — segurança para agentes de pequeno porte",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Orientação oficial; não é dispensa geral da LGPD.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L03",
+  "title": "ANPD — comunicação de incidentes",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Orientação oficial vinculada à Resolução CD/ANPD 15/2024.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L04",
+  "title": "ANPD — transferências internacionais e Resolução 19/2024",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Regulamentação e orientação oficial; conferir atos aplicáveis ao destino e à operação.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L05",
+  "title": "Código de Defesa do Consumidor — texto compilado",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Lei vigente; avaliar relação de consumo.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L06",
+  "title": "Decreto 7.962/2013 — comércio eletrônico",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Aplicação conforme forma de contratação.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L07",
+  "title": "Lei 9.610/1998 — direitos autorais",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Lei vigente; examinar obra, edição, finalidade e autorização.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L08",
+  "title": "Resolução CVM 19 — texto consolidado",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Regulação da consultoria de valores mobiliários; análise por funcionalidade.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L09",
+  "title": "CVM — orientação sobre consultoria, 19/01/2026",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Orientação da área técnica; Ofício Circular CVM/SIN 2/2026.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L10",
+  "title": "BCB — Resolução Conjunta 1/2020, página normativa",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Regulamentação do Open Finance com alterações; página dinâmica.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L11",
+  "title": "Marco Civil da Internet — Lei 12.965/2014",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Lei vigente; incidência depende do serviço online.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L12",
+  "title": "Câmara dos Deputados — PL 2338/2023",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Projeto legislativo; não tratar como lei vigente.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L13",
+  "title": "Receita Federal — Meu Imposto de Renda",
+  "author": "BR",
+  "group": "juridico",
+  "access": "Portal oficial; regras dependem do exercício e da operação.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L14",
+  "title": "Comissão Europeia — proteção de dados",
+  "author": "UE/EEE",
+  "group": "juridico",
+  "access": "Triagem internacional; aplicação territorial deve ser verificada.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L15",
+  "title": "Comissão Europeia — AI Act e cronograma",
+  "author": "UE",
+  "group": "juridico",
+  "access": "Triagem internacional; página oficial consultada em 22/10/2026.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L16",
+  "title": "ICO — orientação UK GDPR",
+  "author": "Reino Unido",
+  "group": "juridico",
+  "access": "Triagem inicial; regras próprias e alterações locais precisam de revisão.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L17",
+  "title": "California DOJ — CCPA",
+  "author": "EUA/Califórnia",
+  "group": "juridico",
+  "access": "Triagem estadual; não representa uma lei geral uniforme dos EUA.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "R01",
+  "title": "The Economic Importance of Financial Literacy: Theory and Evidence",
+  "author": null,
+  "group": "pesquisa",
+  "access": "Resumo e metadados de pesquisa consultados; versão publicada em JEL, 2014.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "R02",
+  "title": "Financial Education Affects Financial Knowledge and Downstream Behaviors",
+  "author": null,
+  "group": "pesquisa",
+  "access": "Resumo/metadados e resultado indexado do working paper; página direta retornou 403. Versão publicada em Journal of Financial Economics, 2022.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "R03",
+  "title": "Maps of Bounded Rationality — Prize Lecture",
+  "author": null,
+  "group": "pesquisa",
+  "access": "Página institucional da conferência consultada; não transcrição integral revista.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "R04",
+  "title": "The Prize in Economic Sciences 2017 — Popular Information",
+  "author": null,
+  "group": "pesquisa",
+  "access": "Apresentação institucional consultada.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "R05",
+  "title": "Berkshire Hathaway — carta aos acionistas, 2013",
+  "author": null,
+  "group": "pesquisa",
+  "access": "PDF oficial localizado e trechos indexados consultados; não análise integral das demonstrações.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L18",
+  "title": "Resolução CVM 20 — texto consolidado",
+  "author": "BR",
+  "group": "complementar",
+  "access": "Dispositivos de enquadramento de análise e automação consultados; não auditoria integral de todos os deveres profissionais.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "L19",
+  "title": "CVM — esclarecimento sobre atuação de influenciadores, 11/11/2020",
+  "author": "BR",
+  "group": "complementar",
+  "access": "Orientação histórica sobre linguagem e exercício profissional; aplicar em conjunto com normas vigentes, sem tratar instrução antiga citada como atual.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "M01",
+  "title": "B3/Bora Investir — Dividend Yield",
+  "author": "BR",
+  "group": "complementar",
+  "access": "Definição introdutória do indicador; não seleção de ações nem licença de feed de mercado.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ },
+ {
+  "id": "M02",
+  "title": "B3 — Dividend Index (IDIV)",
+  "author": "BR",
+  "group": "complementar",
+  "access": "Apresentação do índice; não implica carteira ideal, adequação individual ou autorização de redistribuir dados.",
+  "allowed_uses": [
+   "bibliographic_reference"
+  ],
+  "auto_ingest": false,
+  "full_text_available": false
+ }
+]

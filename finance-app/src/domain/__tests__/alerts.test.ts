@@ -1,100 +1,118 @@
-import { computeMonthlyAlert, sortBySeverityDesc } from '../alerts';
-import type { Category, CategoryMonthlyAlert, Transaction } from '../types';
+import { buildAlerts, DEFAULT_ALERT_PREFERENCES, planNotifications, pruneDismissed, visibleAlerts, withAlertDefaults, type AlertPreferences } from '../alerts';
+import type { BudgetStatus } from '../budgets';
+import type { CashProjection } from '../projection';
 
-function category(partial: Partial<Category> = {}): Category {
+const today = '2026-10-22';
+
+function projection(partial: Partial<CashProjection> = {}): CashProjection {
   return {
-    id: 'cat-1',
-    name: 'Mercado',
-    color: '#ff0000',
-    monthlyBudget: 10000,
-    createdAt: '2026-01-01',
+    status: 'ok',
+    from: today,
+    to: '2026-11-04',
+    nextIncome: { date: '2026-11-05', label: 'Salário', amount: 500000 },
+    available: 100000,
+    availableAccounts: [],
+    incomes: [],
+    outflows: [],
+    variable: null,
+    margin: 0,
+    lowest: { amount: 50000, date: '2026-11-04' },
+    series: [],
+    steps: [],
+    basis: '',
+    limitations: [],
+    typical: {} as CashProjection['typical'],
     ...partial,
   };
 }
 
-function tx(date: string, amount: number): Transaction {
-  return {
-    id: Math.random().toString(36),
-    categoryId: 'cat-1',
-    type: 'expense',
-    amount,
-    date,
-    note: '',
-    createdAt: date,
-  };
-}
+const budget = (partial: Partial<BudgetStatus>): BudgetStatus => ({
+  categoryId: 'food',
+  categoryName: 'Alimentação',
+  budget: 100000,
+  spent: 50000,
+  committed: 0,
+  typicalRemaining: 0,
+  projected: 50000,
+  level: 'ok',
+  method: 'typical',
+  ...partial,
+});
 
-// Reference date: March 10, 2026 -> 10 days elapsed, 31 days in March.
-const referenceDate = new Date(2026, 2, 10);
+const outflows: CashProjection['outflows'] = [
+  { date: '2026-10-23', label: 'Aluguel', amount: -180000, source: 'recurrence' },
+  { date: '2026-10-29', label: 'Internet', amount: -12000, source: 'recurrence' },
+  { date: '2026-10-15', label: 'Academia', amount: -9900, source: 'recurrence', overdue: true },
+];
 
-describe('computeMonthlyAlert', () => {
-  it('returns null when the category has no budget', () => {
-    const result = computeMonthlyAlert(category({ monthlyBudget: null }), [], referenceDate);
-    expect(result).toBeNull();
+describe('buildAlerts', () => {
+  it('only bills inside the chosen window, unpaid bills and cash risk, most important first', () => {
+    const alerts = buildAlerts({ today, projection: projection({ outflows, lowest: { amount: -3000, date: '2026-10-30' } }), budgets: [], floor: 0, dueWithinDays: 3 });
+    expect(alerts.map((a) => a.kind)).toEqual(['cash_risk', 'overdue', 'due']);
+    expect(alerts[2].title).toBe('Aluguel vence amanhã');
+    expect(alerts.every((a) => a.reason.startsWith('Base:'))).toBe(true);
+    const wider = buildAlerts({ today, projection: projection({ outflows }), budgets: [], floor: 0, dueWithinDays: 7 });
+    expect(wider.filter((a) => a.kind === 'due')).toHaveLength(2);
   });
 
-  it('is "ok" when spend is well under budget and pace is sustainable', () => {
-    const transactions = [tx('2026-03-01', 1000), tx('2026-03-05', 1000)];
-    const result = computeMonthlyAlert(category({ monthlyBudget: 10000 }), transactions, referenceDate);
-    expect(result?.level).toBe('ok');
+  it('cash risk uses the floor the person set, and never fires when the projection is unavailable', () => {
+    const p = projection({ lowest: { amount: 20000, date: '2026-10-30' } });
+    expect(buildAlerts({ today, projection: p, budgets: [], floor: 0, dueWithinDays: 3 })).toHaveLength(0);
+    expect(buildAlerts({ today, projection: p, budgets: [], floor: 50000, dueWithinDays: 3 })[0].title).toMatch(/abaixo do mínimo/);
+    expect(buildAlerts({ today, projection: { ...p, status: 'unavailable' }, budgets: [], floor: 50000, dueWithinDays: 3 })).toHaveLength(0);
   });
 
-  it('is "warning" when 80%+ of the budget is spent but the pace still projects under budget', () => {
-    // Late in the month (day 29/31), so the run-rate projection barely extrapolates further.
-    const lateReferenceDate = new Date(2026, 2, 29);
-    const transactions = [tx('2026-03-01', 8000)];
-    const result = computeMonthlyAlert(category({ monthlyBudget: 10000 }), transactions, lateReferenceDate);
-    expect(result?.percentOfBudgetUsed).toBeCloseTo(0.8);
-    expect(result?.projectedMonthTotal).toBeLessThan(10000);
-    expect(result?.level).toBe('warning');
-  });
-
-  it('is "projected_overrun" when pace implies exceeding budget by month end, even under 80% spent', () => {
-    // Spent 4000 in 10 days (400/day) -> projected 31 days * 400 = 12400 > 10000 budget,
-    // while spentSoFar (4000) is only 40% of budget.
-    const transactions = [tx('2026-03-01', 2000), tx('2026-03-10', 2000)];
-    const result = computeMonthlyAlert(category({ monthlyBudget: 10000 }), transactions, referenceDate);
-    expect(result?.level).toBe('projected_overrun');
-    expect(result?.percentOfBudgetUsed).toBeLessThan(0.8);
-    expect(result?.projectedMonthTotal).toBeGreaterThan(result!.budget);
-  });
-
-  it('is "exceeded" once spend so far reaches the budget', () => {
-    const transactions = [tx('2026-03-01', 10500)];
-    const result = computeMonthlyAlert(category({ monthlyBudget: 10000 }), transactions, referenceDate);
-    expect(result?.level).toBe('exceeded');
-  });
-
-  it('treats a zero budget as exceeded by any spend', () => {
-    const transactions = [tx('2026-03-01', 1)];
-    const result = computeMonthlyAlert(category({ monthlyBudget: 0 }), transactions, referenceDate);
-    expect(result?.level).toBe('exceeded');
+  it('budget alerts only for overruns, keyed by month and level', () => {
+    const alerts = buildAlerts({
+      today,
+      projection: projection(),
+      budgets: [budget({ level: 'warning' }), budget({ categoryId: 'fun', categoryName: 'Lazer', level: 'projected_overrun', projected: 120000 })],
+      floor: 0,
+      dueWithinDays: 3,
+    });
+    expect(alerts.map((a) => a.key)).toEqual(['budget:fun:2026-10:projected_overrun']);
   });
 });
 
-describe('sortBySeverityDesc', () => {
-  it('orders exceeded > projected_overrun > warning > ok', () => {
-    const base = {
-      categoryId: 'x',
-      categoryName: 'x',
-      budget: 100,
-      spentSoFar: 0,
-      projectedMonthTotal: 0,
-      percentOfBudgetUsed: 0,
-      percentOfBudgetProjected: 0,
-    };
-    const alerts: CategoryMonthlyAlert[] = [
-      { ...base, level: 'ok' },
-      { ...base, level: 'exceeded' },
-      { ...base, level: 'warning' },
-      { ...base, level: 'projected_overrun' },
-    ];
+describe('dismiss and preferences', () => {
+  const alerts = buildAlerts({ today, projection: projection({ outflows }), budgets: [], floor: 0, dueWithinDays: 3 });
 
-    expect(sortBySeverityDesc(alerts).map((a) => a.level)).toEqual([
-      'exceeded',
-      'projected_overrun',
-      'warning',
-      'ok',
-    ]);
+  it('a dismissed alert stays hidden; turning a kind off hides it', () => {
+    const due = alerts.find((a) => a.kind === 'due')!;
+    expect(visibleAlerts(alerts, DEFAULT_ALERT_PREFERENCES, { [due.key]: today })).not.toContainEqual(due);
+    const prefs = withAlertDefaults({ kinds: { ...DEFAULT_ALERT_PREFERENCES.kinds, overdue: false } });
+    expect(visibleAlerts(alerts, prefs, {}).some((a) => a.kind === 'overdue')).toBe(false);
+  });
+
+  it('old dismissals are pruned', () => {
+    expect(pruneDismissed({ a: '2026-01-01', b: '2026-10-01' }, today)).toEqual({ b: '2026-10-01' });
+  });
+
+  it('missing preferences fall back to the defaults', () => {
+    expect(withAlertDefaults(null)).toEqual(DEFAULT_ALERT_PREFERENCES);
+    expect(withAlertDefaults({ notifications: { enabled: true } as AlertPreferences['notifications'] }).notifications.privateLockScreen).toBe(true);
+  });
+});
+
+describe('planNotifications', () => {
+  const on: AlertPreferences = { ...DEFAULT_ALERT_PREFERENCES, dueWithinDays: 7, notifications: { enabled: true, hour: 9, privateLockScreen: true } };
+  const alerts = buildAlerts({ today, projection: projection({ outflows, lowest: { amount: -3000, date: '2026-10-30' } }), budgets: [], floor: 0, dueWithinDays: 7 });
+
+  it('nothing is planned while notifications are off', () => {
+    expect(planNotifications(alerts, DEFAULT_ALERT_PREFERENCES, today, 8)).toEqual([]);
+  });
+
+  it('one summary a day; bills the day before; private text by default', () => {
+    const plan = planNotifications(alerts, on, today, 8);
+    expect(plan.map((p) => p.date)).toEqual(['2026-10-22', '2026-10-28']);
+    // Today: cash risk + unpaid bill + rent due tomorrow.
+    expect(plan[0].body).toBe('Há 3 avisos para olhar no app.');
+    expect(plan.every((p) => !/R\$/.test(p.body + p.title))).toBe(true);
+  });
+
+  it('after the hour, the first summary moves to tomorrow; names and amounts only when allowed', () => {
+    const plan = planNotifications(alerts, { ...on, notifications: { ...on.notifications, privateLockScreen: false } }, today, 10);
+    expect(plan[0].date).toBe('2026-10-23');
+    expect(plan[0].body).toMatch(/Aluguel vence amanhã \(R\$/);
   });
 });

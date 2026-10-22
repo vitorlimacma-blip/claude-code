@@ -1,187 +1,222 @@
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFinance } from '../../src/state/FinanceContext';
-import type { TransactionType } from '../../src/domain/types';
-import { formatCents, parseAmountToCents } from '../../src/utils/currency';
-import { toDateKey } from '../../src/utils/date';
+import { Pressable, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { addMonths } from '../../src/domain/dates';
+import { summarizePeriod } from '../../src/domain/ledger';
+import { periodRange, type ListPeriod } from '../../src/domain/periods';
+import { collapseTransfers, countsInResult, groupByDay } from '../../src/domain/transactionDisplay';
+import {
+  activeFilterCount,
+  applyTransactionFilters,
+  EMPTY_FILTERS,
+  type TransactionFilters,
+} from '../../src/domain/transactionFilters';
+import { useQuery } from '../../src/state/useQuery';
+import { useToday } from '../../src/state/useToday';
+import { Button, Fab, FinancialAmount, IconButton, MutedText, Title } from '../../src/ui/components';
+import { ActiveFilterChips, FilterButton, TransactionFiltersPanel } from '../../src/ui/filters/TransactionFiltersPanel';
+import { Icon } from '../../src/ui/icons';
+import { CONTENT_MAX_WIDTH } from '../../src/ui/layout';
+import { EmptyState, SkeletonRows } from '../../src/ui/states';
+import { useTheme } from '../../src/ui/theme';
+import { SCREEN_PADDING } from '../../src/ui/tokens';
+import { presentTransaction } from '../../src/ui/transactionPresentation';
+import { TransactionRow } from '../../src/ui/TransactionRow';
 
 export default function TransactionsScreen() {
-  const { categories, transactions, addTransaction, removeTransaction } = useFinance();
-  const [categoryId, setCategoryId] = useState<string | null>(categories[0]?.id ?? null);
-  const [type, setType] = useState<TransactionType>('expense');
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(() => toDateKey(new Date()));
+  const theme = useTheme();
+  const today = useToday();
+  const [period, setPeriod] = useState<ListPeriod>(() => ({ kind: 'month', month: today.slice(0, 7) }));
+  const range = periodRange(period, today);
+  // Kept across period changes on purpose: the same filter applies to whichever period is shown.
+  const [filters, setFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const activeCategoryId = categoryId ?? categories[0]?.id ?? null;
+  const { data } = useQuery(
+    async (r) => {
+      const [transactions, categories, accounts] = await Promise.all([
+        r.transactions.list({ from: range.from, to: range.to }),
+        r.categories.list(),
+        r.accounts.list({ includeArchived: true }),
+      ]);
+      return { transactions, categories, accounts };
+    },
+    ['transactions', 'categories', 'accounts'],
+    [range.from, range.to]
+  );
 
-  const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
+  const categoryById = useMemo(() => new Map(data?.categories.map((c) => [c.id, c])), [data]);
+  const accountById = useMemo(() => new Map(data?.accounts.map((a) => [a.id, a])), [data]);
+  const filterOptions = useMemo(
+    () => ({
+      categories: data?.categories ?? [],
+      // Archived accounts are offered only if already selected, so an old filter can still be removed.
+      accounts: (data?.accounts ?? []).filter((a) => !a.archived || filters.accountIds.includes(a.id)),
+    }),
+    [data, filters.accountIds]
+  );
+  const visible = useMemo(
+    () => applyTransactionFilters(data?.transactions ?? [], filters, data?.categories ?? [], data?.accounts ?? []),
+    [data, filters]
+  );
+  const entries = useMemo(
+    () => collapseTransfers(visible, filters.accountIds, data?.transactions ?? []),
+    [visible, filters.accountIds, data]
+  );
+  const sections = useMemo(() => groupByDay(entries, today), [entries, today]);
+  const totals = summarizePeriod(entries.map((e) => e.transaction));
+  const neutralCount = entries.filter((e) => !countsInResult(e.transaction)).length;
+  const filtering = activeFilterCount(filters) > 0 || filters.query.trim() !== '';
 
-  async function handleAdd() {
-    if (!activeCategoryId) {
-      Alert.alert('Crie uma categoria primeiro', 'Vá até a aba Categorias para cadastrar ao menos uma categoria.');
-      return;
-    }
-    const cents = parseAmountToCents(amount);
-    if (cents <= 0) {
-      Alert.alert('Valor inválido', 'Informe um valor maior que zero.');
-      return;
-    }
-    await addTransaction({ categoryId: activeCategoryId, type, amount: cents, date, note: note.trim() });
-    setAmount('');
-    setNote('');
-  }
+  const shiftMonth = (delta: number) => period.kind === 'month' && setPeriod({ kind: 'month', month: addMonths(period.month, delta) });
 
-  function handleDelete(id: string) {
-    Alert.alert('Remover lançamento', 'Deseja remover este lançamento?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Remover', style: 'destructive', onPress: () => removeTransaction(id) },
-    ]);
-  }
+  const header = (
+    <View style={{ gap: 12, marginBottom: 8 }}>
+      <Title
+        right={
+          <IconButton
+            icon={searchOpen ? 'close' : 'search-outline'}
+            accessibilityLabel={searchOpen ? 'Fechar busca' : 'Buscar lançamentos'}
+            onPress={() => {
+              if (searchOpen) setFilters((f) => ({ ...f, query: '' }));
+              setSearchOpen((v) => !v);
+            }}
+            color={theme.colors.primary}
+          />
+        }
+      >
+        Lançamentos
+      </Title>
+
+      {searchOpen && (
+        <View style={[styles.search, { borderColor: theme.colors.borderStrong, backgroundColor: theme.colors.surface, borderRadius: theme.radius.md }]}>
+          <Icon name="search-outline" size={18} color={theme.colors.textSecondary} />
+          <TextInput
+            autoFocus
+            value={filters.query}
+            onChangeText={(query) => setFilters((f) => ({ ...f, query }))}
+            placeholder="Descrição, categoria ou conta"
+            placeholderTextColor={theme.colors.textSecondary}
+            accessibilityLabel="Buscar lançamentos"
+            returnKeyType="search"
+            style={[theme.type.body, styles.searchInput, { color: theme.colors.textPrimary }]}
+          />
+        </View>
+      )}
+
+      <View style={styles.periodRow}>
+        {period.kind === 'month' ? (
+          <View style={styles.monthNav}>
+            <IconButton icon="chevron-back" accessibilityLabel="Mês anterior" onPress={() => shiftMonth(-1)} color={theme.colors.primary} />
+            <Text style={[theme.type.bodyStrong, styles.periodLabel, { color: theme.colors.textPrimary }]}>{range.label}</Text>
+            <IconButton icon="chevron-forward" accessibilityLabel="Próximo mês" onPress={() => shiftMonth(1)} color={theme.colors.primary} />
+          </View>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityHint="Volta para a visão por mês"
+            onPress={() => setPeriod({ kind: 'month', month: today.slice(0, 7) })}
+            style={styles.monthNav}
+          >
+            <Icon name="calendar-outline" size={20} color={theme.colors.primary} />
+            <Text style={[theme.type.bodyStrong, styles.periodLabel, { color: theme.colors.textPrimary }]}>{range.label}</Text>
+            <Icon name="close" size={18} color={theme.colors.textSecondary} />
+          </Pressable>
+        )}
+        <FilterButton count={activeFilterCount(filters)} onPress={() => setFiltersOpen(true)} />
+      </View>
+
+      <ActiveFilterChips value={filters} onChange={setFilters} options={filterOptions} />
+
+      {data && entries.length > 0 && (
+        <View style={[styles.summary, { backgroundColor: theme.colors.surface, borderRadius: theme.radius.md }]}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[theme.type.label, { color: theme.colors.textSecondary }]}>
+              {filtering ? 'Resultado do que está filtrado' : 'Resultado do período'}
+            </Text>
+            <MutedText style={{ fontSize: 13 }}>
+              {entries.length} lançamento{entries.length === 1 ? '' : 's'}
+              {neutralCount > 0 ? ` · ${neutralCount} sem efeito no resultado (transferências, faturas, investimentos)` : ''}
+            </MutedText>
+          </View>
+          <FinancialAmount cents={totals.result} tone="auto" />
+        </View>
+      )}
+    </View>
+  );
 
   return (
-    <View style={styles.container}>
-      <FlatList
+    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <SectionList
         contentContainerStyle={styles.list}
-        data={transactions}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={<Text style={styles.title}>Lançamentos</Text>}
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum lançamento ainda.</Text>}
-        renderItem={({ item }) => {
-          const category = categoryById.get(item.categoryId);
-          const isExpense = item.type === 'expense';
-          return (
-            <View style={styles.row}>
-              <View style={[styles.swatch, { backgroundColor: category?.color ?? '#9ca3af' }]} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowTitle}>{category?.name ?? 'Categoria removida'}</Text>
-                <Text style={styles.rowSubtitle}>
-                  {item.date}
-                  {item.note ? ` · ${item.note}` : ''}
-                </Text>
-              </View>
-              <Text style={[styles.amount, isExpense ? styles.amountExpense : styles.amountIncome]}>
-                {isExpense ? '-' : '+'}
-                {formatCents(item.amount)}
-              </Text>
-              <Pressable onPress={() => handleDelete(item.id)} hitSlop={8} style={styles.deleteButton}>
-                <Text style={styles.deleteText}>✕</Text>
-              </Pressable>
+        sections={sections}
+        keyExtractor={(item) => item.transaction.id}
+        stickySectionHeadersEnabled={false}
+        ListHeaderComponent={header}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.dayHeader} accessibilityRole="header">
+            <Text style={[theme.type.label, { color: theme.colors.textSecondary, flex: 1 }]}>{section.title}</Text>
+            {section.total !== 0 && <FinancialAmount cents={section.total} tone="auto" size="label" style={{ color: theme.colors.textSecondary }} />}
+          </View>
+        )}
+        renderItem={({ item }) => (
+          <TransactionRow
+            {...presentTransaction(item, categoryById, accountById)}
+            onPress={() => router.push({ pathname: '/transaction/[id]', params: { id: item.transaction.id } })}
+          />
+        )}
+        ListEmptyComponent={
+          !data ? (
+            <SkeletonRows count={6} />
+          ) : filtering && data.transactions.length > 0 ? (
+            <EmptyState
+              icon="filter"
+              title="Nada com esses filtros"
+              message={`Em ${range.label.toLowerCase()} há ${data.transactions.length} lançamento(s), mas nenhum combina com a busca e os filtros.`}
+              action={{ label: 'Limpar filtros e busca', onPress: () => setFilters(EMPTY_FILTERS) }}
+            />
+          ) : (
+            <EmptyState
+              icon="receipt-outline"
+              title={`Nenhum lançamento em ${range.label.toLowerCase()}`}
+              message="Registre um gasto, uma receita ou uma transferência; eles aparecem aqui, agrupados por dia."
+              action={{ label: 'Novo lançamento', icon: 'add', onPress: () => router.push({ pathname: '/transaction/[id]', params: { id: 'new' } }) }}
+            />
+          )
+        }
+        ListFooterComponent={
+          data && filtering && entries.length > 0 ? (
+            <View style={{ marginTop: 12 }}>
+              <Button label="Limpar filtros e busca" variant="ghost" onPress={() => setFilters(EMPTY_FILTERS)} />
             </View>
-          );
-        }}
+          ) : undefined
+        }
       />
-
-      <View style={styles.form}>
-        <Text style={styles.formTitle}>Novo lançamento</Text>
-
-        <View style={styles.typeRow}>
-          <Pressable
-            style={[styles.typeButton, type === 'expense' && styles.typeButtonActiveExpense]}
-            onPress={() => setType('expense')}
-          >
-            <Text style={[styles.typeButtonText, type === 'expense' && styles.typeButtonTextActive]}>Despesa</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.typeButton, type === 'income' && styles.typeButtonActiveIncome]}
-            onPress={() => setType('income')}
-          >
-            <Text style={[styles.typeButtonText, type === 'income' && styles.typeButtonTextActive]}>Receita</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.categoryRow}>
-          {categories.length === 0 && <Text style={styles.emptyText}>Cadastre uma categoria na aba Categorias.</Text>}
-          {categories.map((c) => (
-            <Pressable
-              key={c.id}
-              style={[
-                styles.categoryChip,
-                { borderColor: c.color },
-                activeCategoryId === c.id && { backgroundColor: c.color },
-              ]}
-              onPress={() => setCategoryId(c.id)}
-            >
-              <Text style={[styles.categoryChipText, activeCategoryId === c.id && { color: '#fff' }]}>{c.name}</Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <TextInput style={styles.input} placeholder="Valor (ex: 45,90)" keyboardType="decimal-pad" value={amount} onChangeText={setAmount} />
-        <TextInput style={styles.input} placeholder="Data (AAAA-MM-DD)" value={date} onChangeText={setDate} />
-        <TextInput style={styles.input} placeholder="Observação (opcional)" value={note} onChangeText={setNote} />
-
-        <Pressable style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>Adicionar lançamento</Text>
-        </Pressable>
-      </View>
-    </View>
+      <Fab accessibilityLabel="Novo lançamento" onPress={() => router.push({ pathname: '/transaction/[id]', params: { id: 'new' } })} />
+      <TransactionFiltersPanel
+        visible={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        value={filters}
+        onChange={setFilters}
+        period={period}
+        onPeriodChange={setPeriod}
+        today={today}
+        options={filterOptions}
+        resultCount={entries.length}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  list: { padding: 16, gap: 10 },
-  title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 8 },
-  emptyText: { color: '#6b7280' },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    gap: 10,
-  },
-  swatch: { width: 10, height: 10, borderRadius: 5 },
-  rowTitle: { fontSize: 15, fontWeight: '600', color: '#111827' },
-  rowSubtitle: { fontSize: 12, color: '#6b7280' },
-  amount: { fontSize: 14, fontWeight: '700' },
-  amountExpense: { color: '#991b1b' },
-  amountIncome: { color: '#166534' },
-  deleteButton: { paddingHorizontal: 4 },
-  deleteText: { color: '#9ca3af', fontSize: 16 },
-  form: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#fff',
-    gap: 10,
-  },
-  formTitle: { fontSize: 15, fontWeight: '700', color: '#111827' },
-  typeRow: { flexDirection: 'row', gap: 8 },
-  typeButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingVertical: 8,
-    alignItems: 'center',
-  },
-  typeButtonActiveExpense: { backgroundColor: '#dc2626', borderColor: '#dc2626' },
-  typeButtonActiveIncome: { backgroundColor: '#16a34a', borderColor: '#16a34a' },
-  typeButtonText: { fontWeight: '600', color: '#374151' },
-  typeButtonTextActive: { color: '#fff' },
-  categoryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  categoryChip: {
-    borderWidth: 1.5,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  categoryChipText: { fontSize: 13, fontWeight: '600', color: '#111827' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-  },
-  addButton: {
-    backgroundColor: '#2563eb',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  addButtonText: { color: '#fff', fontWeight: '700' },
+  list: { padding: SCREEN_PADDING, paddingBottom: 112, width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' },
+  search: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: 1, paddingHorizontal: 12, minHeight: 48 },
+  searchInput: { flex: 1, paddingVertical: 8, outlineWidth: 0 },
+  periodRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  monthNav: { flexDirection: 'row', alignItems: 'center', gap: 4, flexShrink: 1, minHeight: 48 },
+  periodLabel: { textAlign: 'center', flexShrink: 1 },
+  summary: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14 },
+  dayHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingTop: 16, paddingBottom: 4, paddingHorizontal: 8 },
 });

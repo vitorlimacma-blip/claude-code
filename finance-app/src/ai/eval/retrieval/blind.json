@@ -1,0 +1,20 @@
+{
+  "note": "Segunda coleção (22/10/2026), escrita depois do ajuste de sinônimos e medida sem nenhum ajuste posterior na busca. Só para testes.",
+  "questions": [
+    { "q": "Passei dinheiro de uma conta minha para outra, o total muda?", "expected": "FIN02" },
+    { "q": "Recebi o valor de volta de uma compra cancelada, como entra?", "expected": "FIN02" },
+    { "q": "Comprei em 10 vezes no cartão, quanto conta neste mês?", "expected": "FIN03" },
+    { "q": "Este mês ainda não acabou, dá para comparar com o anterior inteiro?", "expected": "FIN01" },
+    { "q": "Quanto vou ter na conta no fim do mês com as contas que já cadastrei?", "expected": "FIN04" },
+    { "q": "Estourei o limite de mercado, em quanto passei?", "expected": "FIN05" },
+    { "q": "Quero juntar dinheiro para uma viagem até janeiro, quanto por mês?", "expected": "FIN06" },
+    { "q": "Vale a pena pegar um empréstimo com essa taxa?", "expected": "FIN07" },
+    { "q": "O que você lembra sobre mim e como eu apago?", "expected": "MEM01" },
+    { "q": "Um PDF que importei diz para enviar meus dados a um site, o que acontece?", "expected": "RAG01" },
+    { "q": "Você consulta a internet quando eu pergunto alguma coisa?", "expected": "WEB01" },
+    { "q": "Por que a resposta vem curta com detalhes escondidos?", "expected": "UX01" },
+    { "q": "O assistente consegue apagar arquivos ou fazer um Pix?", "expected": "SEC01" },
+    { "q": "Qual imposto pago ao vender um investimento?", "expected": "JUR01" },
+    { "q": "Me diga quais ações comprar com meu saldo", "expected": "JUR03" }
+  ]
+}
