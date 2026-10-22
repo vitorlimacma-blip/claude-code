@@ -1,8 +1,11 @@
 import { knowledgeBase, type KnowledgeBase } from '../knowledge/base';
 import { sanitizeForModel } from '../assistant/evidence';
-import { DEFAULT_TIME_ZONE, todayKey } from '../../domain/dates';
+import { loadPictureData } from '../../data/pictureData';
+import { addMonthsToDateKey, DEFAULT_TIME_ZONE, todayKey } from '../../domain/dates';
+import { assessGoalFeasibility, type BudgetKind } from '../../domain/goalFeasibility';
+import { computeFinancialPicture } from '../../domain/picture';
 import type { MemoryType } from '../../domain/types';
-import { base, createFinanceTools, type FinanceResult, type FinanceSession, type FinanceTool } from './tools';
+import { base, createFinanceTools, FINANCE_SETTINGS, type FinanceResult, type FinanceSession, type FinanceTool } from './tools';
 import { toJsonSchema, type ArgsSpec } from './validation';
 
 // The rest of the contract's tools (§4): approved documents and the person's
@@ -107,7 +110,104 @@ export function createMemoryTools(): FinanceTool[] {
 
 /** Every tool the contract's assistant may call (all reads, plus memory proposals). */
 export function createContractTools(kb?: KnowledgeBase): FinanceTool[] {
-  return [...createFinanceTools(), ...createKnowledgeTools(kb), ...createMemoryTools()];
+  return [...createFinanceTools(), ...createKnowledgeTools(kb), ...createMemoryTools(), ...createGoalTools()];
 }
 
 export type { FinanceResult, FinanceSession };
+
+// ---- Goals and trips (annex M) ----
+
+/** Discretionary categories a saving scenario may suggest trimming; essentials (housing, transport, health) never. */
+const DISCRETIONARY = /^sys-(alimentacao-restaurantes|alimentacao-delivery|lazer|compras|assinaturas-streaming)/;
+/** Share of a discretionary category a scenario suggests trimming (a scenario, not advice). */
+const SCENARIO_CUT = 0.2;
+
+export function createGoalTools(): FinanceTool[] {
+  return [
+    tool(
+      'assess_goal_feasibility',
+      'Avalia se uma meta (viagem, compra) cabe nas finanças: quanto falta, aportes por data, capacidade mensal só com receitas confirmadas, calendário de caixa e, se faltar, um cenário de economia. O valor informado é o teto da pessoa, não um preço pesquisado.',
+      {
+        target_cents: { type: 'integer', description: 'Valor total que a pessoa vai pagar, em centavos', minimum: 1, maximum: 100_000_000_00 },
+        budget_kind: { type: 'string', description: 'O que é esse valor', enum: ['target_ceiling', 'researched_budget', 'contracted', 'informal_estimate'] },
+        goal: { type: 'string', description: 'Nome da meta já cadastrada (para usar reserva e aportes), ou ""' },
+        departure_date: { type: 'date', description: 'Data da viagem ou do pagamento final', optional: true },
+        already_paid_cents: { type: 'integer', description: 'Quanto já foi pago, em centavos', minimum: 0, maximum: 100_000_000_00 },
+      },
+      async (a, session) => {
+        const args = a as { target_cents: number; budget_kind: BudgetKind; goal: string; departure_date: string; already_paid_cents: number };
+        const today = todayKey(session.now(), DEFAULT_TIME_ZONE);
+        const r = base('assess_goal_feasibility', session, today);
+        const [data, goals, reserves, floorMargin] = await Promise.all([
+          loadPictureData(session.repos, today),
+          session.repos.goals.list(),
+          session.repos.goals.listReserves(),
+          session.repos.settings.get<{ amount: number } | null>(FINANCE_SETTINGS.protectionMargin, null),
+        ]);
+        const picture = computeFinancialPicture(data, today);
+        const goal = args.goal.trim() ? goals.find((g) => g.name.toLowerCase().includes(args.goal.trim().toLowerCase())) : undefined;
+        const end = args.departure_date || goal?.deadline || '';
+        const dates = goal ? goal.contributionDates.filter((d) => d > today && (!end || d <= end)) : end ? monthlyDatesUntil(today, end) : [];
+        const recurring = data.recurrences.filter((x) => !x.deletedAt && x.frequency === 'monthly');
+        const income = recurring.filter((x) => x.kind === 'income').reduce((s, x) => s + x.amount, 0);
+        const fixed = recurring.filter((x) => x.kind === 'expense').reduce((s, x) => s + x.amount, 0);
+        const typical = picture.projection.typical;
+        const components: Record<string, number> = { contas_fixas: fixed, gastos_variaveis_tipicos: typical.monthly ?? 0 };
+        const reductions = [...typical.byKey]
+          .filter(([id, v]) => id && DISCRETIONARY.test(id) && v > 0)
+          .map(([id, v]) => ({ category: data.categories.find((c) => c.id === id)?.name ?? id!, baseline: v, reduction: Math.round((v * SCENARIO_CUT) / 100) * 100 }))
+          .filter((x) => x.reduction > 0);
+        const result = assessGoalFeasibility({
+          target: args.target_cents,
+          budgetKind: args.budget_kind,
+          alreadyPaid: args.already_paid_cents,
+          reserved: goal ? reserves.filter((x) => !x.deletedAt && x.goalId === goal.id).reduce((s, x) => s + x.amount, 0) : 0,
+          contributionDates: dates,
+          payments: [],
+          monthlyIncomeConfirmed: income,
+          monthlyExpenses: components,
+          protectionMargin: floorMargin?.amount ?? 0,
+          optionalReductions: reductions,
+        });
+        r.period = dates.length ? { from: today, to: dates[dates.length - 1] } : null;
+        r.assumptions.push(
+          ...result.assumptions,
+          'Receita mensal = receitas previstas mensais cadastradas em Contas previstas; gastos = contas fixas previstas + gasto variável de um mês típico.',
+          'Economias sugeridas são cenários de corte de 20% em gastos não essenciais observados; nunca em moradia, transporte ou saúde.'
+        );
+        r.missingData.push(...result.missingData);
+        if (income === 0) r.missingData.push('Nenhuma receita mensal prevista cadastrada: a capacidade de guardar fica zerada.');
+        if (typical.monthly === null) r.missingData.push('Ainda não há um mês completo de lançamentos para estimar os gastos variáveis.');
+        r.completeness = r.missingData.length > 0 ? 'partial' : 'complete';
+        r.status = result.status === 'missing_data' ? 'insufficient_data' : 'ok';
+        r.data = result;
+        return r;
+      }
+    ),
+    tool(
+      'estimate_travel_cost',
+      'Pesquisa custos de viagem (transporte, hospedagem). Só funciona com a permissão de busca na internet e um provedor autorizado; sem isso, não inventa preços.',
+      { destination: { type: 'string', description: 'Destino', maxLength: 120 }, travellers: { type: 'integer', description: 'Pessoas', minimum: 1, maximum: 20 } },
+      async (_a, session) => {
+        const r = base('estimate_travel_cost', session, todayKey(session.now(), DEFAULT_TIME_ZONE));
+        r.status = 'insufficient_data';
+        r.completeness = 'missing';
+        r.missingData.push(
+          'Pesquisa de preços não disponível neste modo: precisa da permissão de busca na internet e de um provedor autorizado. Sem isso, use o valor que você pretende gastar ou monte cenários.'
+        );
+        return r;
+      }
+    ),
+  ];
+}
+
+/** Monthly dates on the 5th, from next month until `end`. */
+function monthlyDatesUntil(today: string, end: string): string[] {
+  const out: string[] = [];
+  let d = addMonthsToDateKey(`${today.slice(0, 7)}-05`, 1);
+  while (d <= end && out.length < 120) {
+    out.push(d);
+    d = addMonthsToDateKey(d, 1);
+  }
+  return out;
+}

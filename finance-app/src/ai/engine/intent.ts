@@ -22,6 +22,7 @@ export type Intent =
   | 'forecast'
   | 'purchase_simulation'
   | 'goal_plan'
+  | 'trip_plan'
   | 'compare_periods'
   | 'transfer_question'
   | 'interest_simulation'
@@ -166,6 +167,8 @@ export function classify(text: string, today: DateKey, categories: Category[] = 
   if (has(t, /(atrasei|nao consigo pagar|estou devendo|preocupad|desesperad|sem dinheiro para (comer|comida|aluguel))/)) return out('distress');
 
   // The person's own data.
+  // A trip with an amount is a plan over time, not a purchase today ("cabe uma viagem de R$ 6.000 em março?").
+  if (has(t, /(viagem|viajar|ferias)/) && base.amount && has(t, /(cabe|consigo|da para|juntar|quero gastar|pretendo gastar|vai caber|planej)/)) return out('trip_plan');
   if (has(t, /(posso (gastar|comprar)|cabe (no|uma)|se eu (comprar|gastar)|compra de r\$|afetaria (minha )?margem|piso|saldo minimo)/) && base.amount) return out('purchase_simulation');
   if (has(t, /(quanto posso gastar|folga|sem cair abaixo)/)) return out('purchase_simulation');
   if (has(t, /(meta|viagem|objetivo|aportes?)/) && has(t, /(falta|dividir|aporte|quanto guardar|quanto poupar|plano)/)) return out('goal_plan');

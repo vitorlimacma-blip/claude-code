@@ -105,5 +105,21 @@ simulado nos relatórios.
   `src/ai/finance/contractTools.ts`.
 - Telas: Assistente (modo de cada resposta, cancelar, útil/incorreto, confirmar memória, apagar memória), Memória do
   assistente, Metas, reservas e saldo mínimo, e "Apagar todos os meus dados" (D-080).
-- Ainda não implementado: motor e gerenciador do modelo local (6.3), planejamento de viagens (6.3), avaliação com
-  modelo real (bloqueada pela rede desta sessão).
+- Ainda não implementado ao fim da 6.2: motor e gerenciador do modelo local e planejamento de viagens (feitos na
+  6.3, §6), avaliação com modelo real (bloqueada pela rede desta sessão).
+
+## 6. Situação ao fim da etapa 6.3
+
+- Planejamento de viagens e metas (anexo M, D-082): `src/domain/goalFeasibility.ts`, ferramentas
+  `assess_goal_feasibility` e `estimate_travel_cost` em `src/ai/finance/contractTools.ts`, intenção `trip_plan`.
+  Sem busca autorizada, o custo da viagem é declarado como dado faltante (nunca estimado).
+- Motores locais atrás de `ModelEngine` (D-083): `src/ai/local/ollama.ts` (PC, só loopback, streaming, cancelamento) e
+  `src/ai/local/llamaRn.ts` (aparelho; o módulo é registrado só por um development build, sem import no Expo Go).
+- `ModelManager` (D-084): consentimento, espaço livre, download retomável, SHA-256 em blocos antes da ativação
+  atômica; arquivo parcial ou com hash diferente nunca é carregado. Manifesto ainda com campos nulos: instalação
+  bloqueada. Armazenamento real em `src/ai/local/expoFileStore.ts`, ainda não testado em aparelho.
+- Resposta com modelo local (D-085): `src/ai/engine/localModel.ts`; o modelo recebe só os fatos calculados e trechos
+  aprovados, e o texto passa por `checkAnswer` antes de aparecer. Telas: Ajustes › Inteligência artificial › Modelo
+  local; Assistente mostra o modo e o cancelar interrompe a geração.
+- Não executado: modelo real (rede desta sessão bloqueia os pesos), prova em aparelho (sem development build) e
+  benchmark. Casos E27, E29, E34 e E93 seguem `not_run` com testes parciais; instruções em `docs/ai/user-setup.md`.

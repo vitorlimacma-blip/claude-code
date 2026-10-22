@@ -19,5 +19,5 @@
   "tool_format_verified": false,
   "offline_verified": false,
   "approved_devices": [],
-  "notes": "Preencher de fonte verificada. Nunca inventar hash, revisão, tamanho ou compatibilidade."
+  "notes": "Preencher de fonte verificada. Nunca inventar hash, revisão, tamanho ou compatibilidade. Etapa 6.3: o app (src/ai/local/manifest.ts) bloqueia a instalação enquanto download_url, sha256 ou size_bytes forem null; a fonte oficial não estava acessível nesta sessão (rede)."
 }

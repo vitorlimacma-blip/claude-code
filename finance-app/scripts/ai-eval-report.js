@@ -16,10 +16,10 @@ const cases = fs
 
 // Why a case was not run yet, by the stage that implements it (docs/ai/architecture.md §2).
 const PENDING = [
-  [/^E(27|28|29|30|34)$/, 'Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho.'],
+  [/^E(27|29|34)$/, 'Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes "parcial"). Sem modelo nesta sessão: rede bloqueada para os pesos.'],
   [/^E(4\d|5\d|60)$/, 'Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos.'],
   [/^E(6\d|7\d|80|81)$/, 'Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão.'],
-  [/^E(8[2-9]|9[0-3])$/, 'Etapa 6.3: planejamento de viagens (anexo M).'],
+  [/^E93$/, 'Exige busca de preços na internet com permissão e o modelo real; sem isso o app só declara a falta de dados (teste "parcial").'],
 ];
 
 const out = path.join(root, '.ai-eval-jest.json');

@@ -14,5 +14,5 @@
   "crashes": 0,
   "external_network_calls": null,
   "evaluation_results": [],
-  "notes": "Preencher com medições reais; null não significa zero nem aprovação."
+  "notes": "Preencher com medições reais; null não significa zero nem aprovação. Etapa 6.3: não executado — sem development build (sem conta Apple Developer nem Android) e sem os pesos (rede bloqueada)."
 }

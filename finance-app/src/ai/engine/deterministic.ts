@@ -58,7 +58,7 @@ interface Ctx {
   state: { repairsUsed: number };
 }
 
-const ESTIMATE_TOOLS = new Set(['get_cashflow_forecast', 'simulate_purchase']);
+const ESTIMATE_TOOLS = new Set(['get_cashflow_forecast', 'simulate_purchase', 'assess_goal_feasibility']);
 
 /** Tools whose results are not calculations: they never become "Base do cálculo" evidence. */
 const NOT_EVIDENCE = new Set(['propose_memory_update']);
@@ -91,6 +91,7 @@ function evidenceTitle(r: FinanceResult): string {
     get_cashflow_forecast: 'Saldo previsto (só confirmados)',
     simulate_purchase: 'Simulação de compra',
     get_goal_plan: 'Plano da meta',
+    assess_goal_feasibility: 'Viabilidade da meta',
     search_knowledge: 'Regras do app',
     lookup_reference: 'Catálogo de referências',
     get_user_memory: 'Memória',
@@ -101,6 +102,15 @@ function evidenceTitle(r: FinanceResult): string {
 function fact(ctx: Ctx, label: string, cents: Cents, ref: string): string {
   ctx.facts.push({ label, cents, ref });
   return formatCents(cents);
+}
+
+/** "este mês, até hoje" → "Neste mês, até hoje"; "outubro de 2026" → "Em outubro de 2026". */
+function inPeriod(label: string): string {
+  if (/^este /.test(label)) return `N${label}`;
+  if (/^mês passado/.test(label)) return `No ${label}`;
+  if (/^últimos /.test(label)) return `Nos ${label}`;
+  if (/^(hoje|de )/.test(label)) return label.charAt(0).toUpperCase() + label.slice(1);
+  return `Em ${label}`;
 }
 
 const NUMBER_WORDS: Record<string, number> = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, doze: 12 };
@@ -189,15 +199,15 @@ async function respond(c: Classification, text: string, ctx: Ctx, options: { ext
       const partial = r.completeness === 'partial' ? '\n\nObservação: os registros começam depois do início do período, então o total pode estar incompleto.' : '';
       if (cat) {
         const refunds = d.refunds > 0 ? `, já descontando ${fact(ctx, 'estornos', d.refunds, ref)} de estorno (bruto ${fact(ctx, 'bruto', d.expensesGross, ref)})` : '';
-        return { text: `Em ${c.period.label}, ${cat} somou ${fact(ctx, `gasto líquido de ${cat}`, d.expensesNet, ref)}${refunds} [${ref}].${partial}` };
+        return { text: `${inPeriod(c.period.label)}, ${cat} somou ${fact(ctx, `gasto líquido de ${cat}`, d.expensesNet, ref)}${refunds} [${ref}].${partial}` };
       }
       const asked = plainText(text);
       if (/renda|recebi|ganhei|receita/.test(asked) && !/despesa|gast|resultado/.test(asked)) {
-        return { text: `Em ${c.period.label}, as receitas registradas somam ${fact(ctx, 'receitas', d.income, ref)} [${ref}].${partial}` };
+        return { text: `${inPeriod(c.period.label)}, as receitas registradas somam ${fact(ctx, 'receitas', d.income, ref)} [${ref}].${partial}` };
       }
       return {
         text:
-          `Em ${c.period.label}, o resultado foi ${fact(ctx, 'resultado', d.result, ref)} [${ref}]: receitas de ${fact(ctx, 'receitas', d.income, ref)} e despesas de ${fact(ctx, 'despesas líquidas', d.expensesNet, ref)}.` +
+          `${inPeriod(c.period.label)}, o resultado foi ${fact(ctx, 'resultado', d.result, ref)} [${ref}]: receitas de ${fact(ctx, 'receitas', d.income, ref)} e despesas de ${fact(ctx, 'despesas líquidas', d.expensesNet, ref)}.` +
           `\n\n- Despesas brutas: ${fact(ctx, 'despesas brutas', d.expensesGross, ref)}\n- Estornos descontados: ${fact(ctx, 'estornos', d.refunds, ref)}\n- Transferências entre suas contas e pagamentos de fatura não entram.${partial}`,
       };
     }
@@ -215,8 +225,8 @@ async function respond(c: Classification, text: string, ctx: Ctx, options: { ext
       const first = r.data[0];
       const head =
         rows.length === 1
-          ? `Em ${p.label}, ${first.category} está em ${formatCents(first.actual)} para um orçamento de ${formatCents(first.budget)}: ${first.deviation > 0 ? `passou ${formatCents(first.deviation)}` : `ainda sobram ${formatCents(-first.deviation)}`} [${ref}].`
-          : `Orçamentos de ${p.label} [${ref}]:`;
+          ? `${inPeriod(p.label)}, ${first.category} está em ${formatCents(first.actual)} para um orçamento de ${formatCents(first.budget)}: ${first.deviation > 0 ? `passou ${formatCents(first.deviation)}` : `ainda sobram ${formatCents(-first.deviation)}`} [${ref}].`
+          : `Orçamentos (${p.label}) [${ref}]:`;
       return { text: rows.length === 1 ? head : `${head}\n\n${rows.join('\n')}` };
     }
 
@@ -279,6 +289,26 @@ async function respond(c: Classification, text: string, ctx: Ctx, options: { ext
         return `- **${g.name}**: faltam ${fact(ctx, `falta ${g.name}`, g.remaining, ref)}, em ${g.contributions.length} aportes: ${g.contributions.map((x) => `${fact(ctx, `aporte ${x.date}`, x.amount, ref)} em ${formatDateBR(x.date)}`).join(', ')}.`;
       });
       return { text: `${parts.length === 1 ? parts[0].replace(/^- /, '') : parts.join('\n')} [${ref}]\n\nSem rendimento nem juros na conta; os centavos que sobram da divisão vão nos primeiros aportes.` };
+    }
+
+    case 'trip_plan': {
+      const end = c.period && c.period.to > ctx.today ? c.period.to : '';
+      if (!end) {
+        return { text: 'Para quando é a viagem? Com a data, eu vejo quantas vezes dá para guardar até lá e se cabe nas suas contas.', status: 'missing' };
+      }
+      const { r, ref } = await call(ctx, 'assess_goal_feasibility', { target_cents: c.amount!, budget_kind: 'target_ceiling', goal: '', departure_date: end, already_paid_cents: 0 });
+      const d = r.data as import('../../domain/goalFeasibility').FeasibilityResult;
+      if (!d || d.status === 'missing_data') return { text: `${r.missingData.join(' ')} [${ref}]`, status: 'missing' };
+      const per = d.requiredContributions[0] ?? 0;
+      const head = `Para juntar ${fact(ctx, 'teto da viagem', c.amount!, ref)} até ${formatDateBR(end)}, seriam ${d.requiredContributions.length} aportes de ${fact(ctx, 'aporte por data', per, ref)} [${ref}].`;
+      const cap = ` Pelas receitas confirmadas e gastos de hoje, cabem ${fact(ctx, 'capacidade mensal', d.base.safeMonthlyCapacity, ref)} por mês sem mexer na reserva de emergência.`;
+      let tail = '';
+      if (d.status === 'fits') tail = ' Pelas contas e datas que temos, o aporte cabe mantendo seus gastos.';
+      else if (d.status === 'fits_with_adjustment' && d.withReductions) {
+        tail = ` Falta ${fact(ctx, 'lacuna mensal', d.base.monthlyGap, ref)} por mês. Um cenário possível: reduzir ${fact(ctx, 'redução sugerida', d.withReductions.reduction, ref)} por mês em gastos não essenciais, se você quiser.`;
+      } else tail = ` Faltam ${fact(ctx, 'lacuna mensal', d.base.monthlyGap, ref)} por mês. Podemos testar outro valor ou outro prazo.`;
+      const notes = r.missingData.length ? `\n\n${r.missingData.map((m) => `- ${m}`).join('\n')}` : '';
+      return { text: `${head}${cap}${tail}\n\nO valor é o teto que você escolheu, não um preço pesquisado.${notes}` };
     }
 
     case 'compare_periods': {

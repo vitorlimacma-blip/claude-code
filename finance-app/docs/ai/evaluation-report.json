@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-22T18:17:37.797Z",
-  "app_commit": "b0213e5",
+  "generated_at": "2026-10-22T19:19:11.254Z",
+  "app_commit": "78a0641",
   "model": null,
   "note": "Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.",
   "summary": {
     "total": 93,
-    "pass": 35,
+    "pass": 48,
     "fail": 0,
-    "not_run": 58
+    "not_run": 45
   },
   "metrics": {
     "retrieval": {
@@ -418,31 +418,49 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E28",
       "name": "SEM_MODELO_INSTALADO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E28 SEM_MODELO_INSTALADO",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E29",
       "name": "DOWNLOAD_INTERROMPIDO",
       "status": "not_run",
       "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+      "evidence": [
+        {
+          "test": "E29 DOWNLOAD_INTERROMPIDO (parcial): o download cortado nunca é carregado e pode ser retomado",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E30",
       "name": "HASH_MODELO_INVALIDO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E30 HASH_MODELO_INVALIDO",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E31",
@@ -491,8 +509,14 @@
       "name": "CANCELAMENTO_GERACAO",
       "status": "not_run",
       "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+      "evidence": [
+        {
+          "test": "E34 CANCELAMENTO_GERACAO (parcial): cancelar para a geração e a próxima pergunta funciona",
+          "file": "src/ai/eval/__tests__/localModelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige o modelo real em aparelho (development build com llama.rn) ou o Ollama no PC do dono; a máquina de estados foi testada com dublês (testes \"parcial\"). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E35",
@@ -909,98 +933,170 @@
     {
       "id": "E82",
       "name": "Viagem com teto informado",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E82 Viagem com teto informado",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E83",
       "name": "Cortes dispensáveis",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E83 Cortes dispensáveis",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E84",
       "name": "Receita variável incerta",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E84 Receita variável incerta",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E85",
       "name": "Saldo reservado",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E85 Saldo reservado",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E86",
       "name": "Busca de preço sem permissão",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E86 Busca de preço sem permissão",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E87",
       "name": "Custo por pessoa e grupo",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E87 Custo por pessoa e grupo",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E88",
       "name": "Obrigação antes dos aportes",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E88 Obrigação antes dos aportes",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E89",
       "name": "Sugestão com base real",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E89 Sugestão com base real",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E90",
       "name": "Categoria essencial ou ambígua",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E90 Categoria essencial ou ambígua",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E91",
       "name": "Gasto pago ou cancelamento",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E91 Gasto pago ou cancelamento",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E92",
       "name": "Poucas informações e juros",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E92 Poucas informações e juros",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E93",
       "name": "Orçamento incompleto e oscilação de preços",
       "status": "not_run",
       "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+      "evidence": [
+        {
+          "test": "E93 Orçamento incompleto e oscilação de preços (parcial): com 3 dias de lançamentos, o gasto típico fica indisponível",
+          "file": "src/ai/eval/__tests__/travelCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Exige busca de preços na internet com permissão e o modelo real; sem isso o app só declara a falta de dados (teste \"parcial\")."
     }
   ]
 }

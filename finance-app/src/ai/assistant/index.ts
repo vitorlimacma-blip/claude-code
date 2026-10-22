@@ -35,6 +35,8 @@ export interface AssistantAnswer {
   local: boolean;
   /** How it was produced (AI contract §4): rules on the device, a local model, or the authorized external provider. */
   mode?: 'deterministic' | 'local_model' | 'external_opt_in';
+  /** Shown next to the mode, e.g. why the local model's text was not used. */
+  notice?: string;
   /** Response contract fields when produced by the engine (status of the evidence, missing data). */
   evidenceStatus?: 'sufficient' | 'partial' | 'missing' | 'conflicting';
   missingData?: string[];

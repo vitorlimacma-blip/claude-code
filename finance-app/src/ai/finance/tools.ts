@@ -27,6 +27,8 @@ export const FINANCE_SETTINGS = {
   operatingFloor: 'finance.operatingFloor',
   /** `string[]`: accounts used for day-to-day spending. Default: checking accounts and wallets. */
   operatingAccounts: 'finance.operatingAccounts',
+  /** `{ amount: Cents }`: extra monthly safety margin kept out of savings plans (not an expense). */
+  protectionMargin: 'finance.protectionMargin',
 } as const;
 
 export interface FinanceSession {

@@ -50,7 +50,7 @@ const SUGGESTIONS: { label: string; prefill?: string }[] = [
 
 const MODE_TEXT = {
   deterministic: 'Calculado por regras no aparelho, sem IA.',
-  local_model: 'Modelo local, no aparelho.',
+  local_model: Platform.OS === 'web' ? 'Escrito pelo modelo local deste computador; valores conferidos pelo app.' : 'Escrito pelo modelo local do aparelho; valores conferidos pelo app.',
   external_opt_in: 'Provedor externo, com a sua permissão.',
 } as const;
 
@@ -62,7 +62,7 @@ let nextId = 0;
 export default function AssistantScreen() {
   const theme = useTheme();
   const repos = useRepositories();
-  const { provider, settings, loaded } = useAI();
+  const { provider, settings, loaded, localEngine } = useAI();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -103,6 +103,9 @@ export default function AssistantScreen() {
         provider,
         webSearch: webSearchAllowed(settings),
         onProgress: setProgress,
+        localEngine,
+        // The model's text is shown only after the app checks it, so streaming just updates the progress line.
+        onToken: () => setProgress('Escrevendo com o modelo local'),
       });
       if (mine !== requestId.current) return;
       setTurns((prev) => [
@@ -134,6 +137,7 @@ export default function AssistantScreen() {
   /** Stops waiting for the current answer; a new question can be asked right away. */
   function cancel() {
     requestId.current++;
+    localEngine?.cancel();
     setTurns((prev) => [
       ...prev,
       {
@@ -407,6 +411,7 @@ function TurnView({
           {answer && (
             <Text style={[theme.type.caption, { color: theme.colors.textSecondary, marginTop: 6 }]}>
               {MODE_TEXT[answer.mode ?? (answer.local ? 'deterministic' : 'external_opt_in')]}
+              {answer.notice ? ` ${answer.notice}` : ''}
             </Text>
           )}
           {!!answer?.sources.length && (

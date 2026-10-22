@@ -22,39 +22,66 @@ function utf8(text: string): number[] {
   return bytes;
 }
 
-export function sha256Hex(text: string): string {
-  const bytes = utf8(text);
-  const bitLength = bytes.length * 8;
-  bytes.push(0x80);
-  while (bytes.length % 64 !== 56) bytes.push(0);
-  const high = Math.floor(bitLength / 0x100000000);
-  for (const word of [high, bitLength >>> 0]) bytes.push((word >>> 24) & 255, (word >>> 16) & 255, (word >>> 8) & 255, word & 255);
+const rotr = (x: number, n: number) => (x >>> n) | (x << (32 - n));
 
-  const h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-  const w = new Array<number>(64);
-  const rotr = (x: number, n: number) => (x >>> n) | (x << (32 - n));
-  for (let i = 0; i < bytes.length; i += 64) {
-    for (let t = 0; t < 16; t++) w[t] = (bytes[i + 4 * t] << 24) | (bytes[i + 4 * t + 1] << 16) | (bytes[i + 4 * t + 2] << 8) | bytes[i + 4 * t + 3];
+/**
+ * Incremental SHA-256: feed bytes in chunks (a model file of several GB is
+ * hashed block by block, never loaded whole).
+ */
+export class Sha256 {
+  private readonly h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+  private readonly w = new Array<number>(64);
+  private readonly block = new Uint8Array(64);
+  private blockLength = 0;
+  private total = 0;
+
+  update(bytes: Uint8Array | number[]): this {
+    for (let i = 0; i < bytes.length; i++) {
+      this.block[this.blockLength++] = bytes[i];
+      if (this.blockLength === 64) {
+        this.compress(this.block);
+        this.blockLength = 0;
+      }
+    }
+    this.total += bytes.length;
+    return this;
+  }
+
+  digestHex(): string {
+    const bitLength = this.total * 8;
+    const tail: number[] = [0x80];
+    while ((this.blockLength + tail.length) % 64 !== 56) tail.push(0);
+    const high = Math.floor(bitLength / 0x100000000);
+    for (const word of [high, bitLength >>> 0]) tail.push((word >>> 24) & 255, (word >>> 16) & 255, (word >>> 8) & 255, word & 255);
+    const total = this.total;
+    this.update(tail);
+    this.total = total;
+    return this.h.map((x) => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  }
+
+  private compress(b: Uint8Array) {
+    const { w, h } = this;
+    for (let t = 0; t < 16; t++) w[t] = (b[4 * t] << 24) | (b[4 * t + 1] << 16) | (b[4 * t + 2] << 8) | b[4 * t + 3];
     for (let t = 16; t < 64; t++) {
       const s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
       const s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
       w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
     }
-    let [a, b, c, d, e, f, g, hh] = h;
+    let [a, bb, c, d, e, f, g, hh] = h;
     for (let t = 0; t < 64; t++) {
       const t1 = (hh + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + w[t]) | 0;
-      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
       hh = g;
       g = f;
       f = e;
       e = (d + t1) | 0;
       d = c;
-      c = b;
-      b = a;
+      c = bb;
+      bb = a;
       a = (t1 + t2) | 0;
     }
     h[0] = (h[0] + a) | 0;
-    h[1] = (h[1] + b) | 0;
+    h[1] = (h[1] + bb) | 0;
     h[2] = (h[2] + c) | 0;
     h[3] = (h[3] + d) | 0;
     h[4] = (h[4] + e) | 0;
@@ -62,5 +89,8 @@ export function sha256Hex(text: string): string {
     h[6] = (h[6] + g) | 0;
     h[7] = (h[7] + hh) | 0;
   }
-  return h.map((x) => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+
+export function sha256Hex(text: string): string {
+  return new Sha256().update(utf8(text)).digestHex();
 }

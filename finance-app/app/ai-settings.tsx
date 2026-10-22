@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { MODEL_OPTIONS, PROVIDER_KEY_HINTS, PROVIDER_LABELS, type AISettings } from '../src/ai/config';
+import { CANDIDATE_MODEL } from '../src/ai/local/manifest';
+import type { ModelState } from '../src/ai/local/types';
 import { describeAIError, type ModelTier, type ProviderId } from '../src/ai/types';
 import { secrets } from '../src/platform/secrets';
 import { useAI } from '../src/state/AIContext';
@@ -78,6 +80,8 @@ export default function AISettingsScreen() {
             : 'Ainda aprendendo: cada lançamento que você categoriza ensina o app.'}
         </MutedText>
       </Card>
+
+      <LocalModelSection />
 
       <SectionTitle>Provedor de IA</SectionTitle>
       <SegmentedControl
@@ -190,6 +194,89 @@ export default function AISettingsScreen() {
         />
       </Card>
     </ScrollView>
+  );
+}
+
+/** What each local model state means to the person (contract §5). */
+function describeLocalState(state: ModelState): { text: string; ok: boolean } {
+  switch (state.kind) {
+    case 'ready':
+      return { text: `Pronto: ${state.modelId}. O assistente escreve as respostas com ele, e o app confere cada valor.`, ok: true };
+    case 'generating':
+      return { text: 'Escrevendo uma resposta…', ok: true };
+    case 'loading':
+      return { text: 'Verificando…', ok: true };
+    case 'not_installed':
+      return { text: 'O modelo escolhido não está instalado. Enquanto isso, o assistente responde pelas regras do app.', ok: false };
+    case 'unavailable':
+    case 'invalid_file':
+      return { text: `${state.reason} Enquanto isso, o assistente responde pelas regras do app.`, ok: false };
+    default:
+      return { text: 'Instalação em andamento.', ok: false };
+  }
+}
+
+function LocalModelSection() {
+  const theme = useTheme();
+  const { local, saveLocal, localState, refreshLocal } = useAI();
+  const [model, setModel] = useState(local.ollamaModel);
+  const [checking, setChecking] = useState(false);
+  const status = describeLocalState(localState);
+  const onWeb = Platform.OS === 'web';
+
+  async function check() {
+    setChecking(true);
+    try {
+      if (model.trim() && model.trim() !== local.ollamaModel) await saveLocal({ ...local, ollamaModel: model.trim() });
+      else await refreshLocal();
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  return (
+    <>
+      <SectionTitle>Modelo local</SectionTitle>
+      <MutedText>
+        Um modelo de linguagem que roda {onWeb ? 'neste computador' : 'no próprio aparelho'}: as perguntas não saem dele. O
+        modelo só escreve a explicação; os números continuam vindo dos cálculos do app, e uma resposta com valor diferente é
+        descartada.
+      </MutedText>
+      <Card style={{ gap: 12 }}>
+        <ToggleRow
+          title={onWeb ? 'Usar o Ollama deste computador' : 'Usar o modelo no aparelho'}
+          subtitle={
+            onWeb
+              ? 'Precisa do Ollama aberto e liberado para o app (veja docs/ai/user-setup.md).'
+              : 'Precisa do app de desenvolvimento; no Expo Go o modelo não roda.'
+          }
+          value={local.enabled}
+          onChange={(v) => saveLocal({ ...local, enabled: v })}
+        />
+        {local.enabled && (
+          <View style={{ gap: 10 }}>
+            {onWeb ? (
+              <>
+                <TextField
+                  label="Nome do modelo no Ollama"
+                  value={model}
+                  onChangeText={setModel}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                <Button label={checking ? 'Verificando…' : 'Verificar'} variant="secondary" onPress={check} disabled={checking} />
+              </>
+            ) : (
+              <MutedText style={{ fontSize: 12 }}>
+                Modelo candidato: {CANDIDATE_MODEL.baseModel}, {CANDIDATE_MODEL.quantization}. A instalação fica bloqueada até
+                a origem e o hash do arquivo serem confirmados; nada é baixado sem o seu consentimento.
+              </MutedText>
+            )}
+            <Text style={{ color: status.ok ? theme.colors.success : theme.colors.textSecondary }}>{status.text}</Text>
+          </View>
+        )}
+      </Card>
+    </>
   );
 }
 
