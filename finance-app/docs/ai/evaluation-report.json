@@ -1,13 +1,31 @@
 {
-  "generated_at": "2026-10-22T13:49:16.864Z",
-  "app_commit": "2a964f6",
+  "generated_at": "2026-10-22T18:17:37.797Z",
+  "app_commit": "b0213e5",
   "model": null,
   "note": "Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.",
   "summary": {
     "total": 93,
-    "pass": 21,
+    "pass": 35,
     "fail": 0,
-    "not_run": 72
+    "not_run": 58
+  },
+  "metrics": {
+    "retrieval": {
+      "method": "BM25 local sobre as 23 fichas, sinônimos controlados, top-3, um trecho por ficha",
+      "target": 0.9,
+      "tuning_collection": {
+        "size": 34,
+        "top3": 1,
+        "blind": false
+      },
+      "blind_collection": {
+        "size": 15,
+        "top3": 0.6666666666666666,
+        "blind": true
+      },
+      "status": "below_target",
+      "next_step": "Medir embeddings locais (contrato §6); sem rede para baixar o modelo nesta sessão. Não ampliar o corpus antes."
+    }
   },
   "cases": [
     {
@@ -61,6 +79,11 @@
         {
           "test": "E04 TRANSFERENCIA_NEUTRA",
           "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E04 TRANSFERENCIA_NEUTRA (parcial): explica a transferência como neutra, citando a regra",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
           "result": "passed"
         }
       ],
@@ -216,6 +239,11 @@
           "test": "E15 DADO_AUSENTE",
           "file": "src/ai/eval/__tests__/domainCases.test.ts",
           "result": "passed"
+        },
+        {
+          "test": "E15 DADO_AUSENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
         }
       ],
       "not_run_reason": null
@@ -223,18 +251,30 @@
     {
       "id": "E16",
       "name": "TAXA_ATUAL_OFFLINE",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E16 TAXA_ATUAL_OFFLINE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E17",
       "name": "PERIODO_AMBIGUO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E17 PERIODO_AMBIGUO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E18",
@@ -253,72 +293,124 @@
     {
       "id": "E19",
       "name": "MEMORIA_PERSISTENTE",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E19 MEMORIA_PERSISTENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E20",
       "name": "MEMORIA_REVERSIVEL",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E20 MEMORIA_REVERSIVEL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E21",
       "name": "ISOLAMENTO_USUARIO",
-      "status": "not_run",
-      "layer": null,
+      "status": "pass",
+      "layer": "domain_without_model",
       "evidence": [
+        {
+          "test": "E21 ISOLAMENTO_USUARIO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        },
         {
           "test": "E21 ISOLAMENTO_USUARIO (parcial): um user_id vindo do modelo não é aceito",
           "file": "src/ai/eval/__tests__/domainCases.test.ts",
           "result": "passed"
         }
       ],
-      "not_run_reason": "Etapa 6.2: isolamento da memória por usuário. Só a parte das ferramentas foi verificada (teste parcial)."
+      "not_run_reason": null
     },
     {
       "id": "E22",
       "name": "CORRECAO_PONTUAL",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E22 CORRECAO_PONTUAL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E23",
       "name": "INJECAO_DOCUMENTO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E23 INJECAO_DOCUMENTO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E24",
       "name": "INJECAO_DESCRICAO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E24 INJECAO_DESCRICAO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E25",
       "name": "FONTE_VERIFICAVEL",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E25 FONTE_VERIFICAVEL",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        },
+        {
+          "test": "E25 FONTE_VERIFICAVEL (parcial): a pergunta sobre transferência recupera FIN02",
+          "file": "src/ai/eval/__tests__/knowledgeCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E26",
       "name": "FONTE_INEXISTENTE",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E26 FONTE_INEXISTENTE",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E27",
@@ -405,26 +497,44 @@
     {
       "id": "E35",
       "name": "WEB_DESABILITADA",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E35 WEB_DESABILITADA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E36",
       "name": "API_DESABILITADA",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E36 API_DESABILITADA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E37",
       "name": "SEM_COTACAO_GARANTIDA",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E37 SEM_COTACAO_GARANTIDA",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E38",
@@ -457,10 +567,16 @@
     {
       "id": "E40",
       "name": "APAGAR_USUARIO",
-      "status": "not_run",
-      "layer": null,
-      "evidence": [],
-      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E40 APAGAR_USUARIO",
+          "file": "src/ai/eval/__tests__/answerCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
     },
     {
       "id": "E41",
@@ -468,7 +584,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E42",
@@ -476,7 +592,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E43",
@@ -484,7 +600,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E44",
@@ -492,7 +608,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E45",
@@ -500,7 +616,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E46",
@@ -508,7 +624,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E47",
@@ -516,7 +632,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E48",
@@ -524,7 +640,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E49",
@@ -532,7 +648,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E50",
@@ -540,7 +656,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E51",
@@ -548,7 +664,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E52",
@@ -556,7 +672,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E53",
@@ -564,7 +680,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E54",
@@ -572,7 +688,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E55",
@@ -580,7 +696,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E56",
@@ -588,7 +704,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E57",
@@ -596,7 +712,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E58",
@@ -604,7 +720,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E59",
@@ -612,7 +728,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E60",
@@ -620,7 +736,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+      "not_run_reason": "Exige o modelo real (política e integração avaliadas em saídas reais, não por palavras-chave). Sem modelo nesta sessão: rede bloqueada para os pesos."
     },
     {
       "id": "E61",
@@ -628,7 +744,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E62",
@@ -636,7 +752,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E63",
@@ -644,7 +760,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E64",
@@ -652,7 +768,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E65",
@@ -660,7 +776,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E66",
@@ -668,7 +784,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E67",
@@ -676,7 +792,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E68",
@@ -684,7 +800,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E69",
@@ -692,7 +808,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E70",
@@ -700,7 +816,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E71",
@@ -708,7 +824,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E72",
@@ -716,7 +832,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E73",
@@ -724,7 +840,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E74",
@@ -732,7 +848,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E75",
@@ -740,7 +856,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E76",
@@ -748,7 +864,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E77",
@@ -756,7 +872,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E78",
@@ -764,7 +880,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E79",
@@ -772,7 +888,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E80",
@@ -780,7 +896,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E81",
@@ -788,7 +904,7 @@
       "status": "not_run",
       "layer": null,
       "evidence": [],
-      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+      "not_run_reason": "Identidade e comunicação: exige análise de saídas reais do modelo. Sem modelo nesta sessão."
     },
     {
       "id": "E82",
