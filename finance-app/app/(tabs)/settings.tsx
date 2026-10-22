@@ -1,7 +1,7 @@
 import { router, type Href } from 'expo-router';
 import { useState, type ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
-import { PROVIDER_LABELS } from '../../src/ai/config';
+import { PROVIDER_LABELS, withDefaults } from '../../src/ai/config';
 import { todayKey } from '../../src/domain/dates';
 import { confirm, notify } from '../../src/platform/dialogs';
 import { useAI } from '../../src/state/AIContext';
@@ -54,7 +54,7 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
 
 /** Ajustes, by the sections of briefing §7. */
 export default function SettingsScreen() {
-  const { settings, provider, saveSettings } = useAI();
+  const { settings, provider, saveSettings, saveKey } = useAI();
   const repos = useRepositories();
   const { data } = useQuery(
     async (r) => {
@@ -88,6 +88,27 @@ export default function SettingsScreen() {
     }
   }
 
+  async function eraseEverything() {
+    const ok = await confirm(
+      'Apagar todos os meus dados',
+      'Apaga contas, lançamentos, orçamentos, metas, a memória do assistente, os backups automáticos e as chaves de API deste ' +
+        `${Platform.OS === 'web' ? 'navegador' : 'aparelho'}. Não dá para desfazer: exporte antes em Backup e restauração se quiser guardar uma cópia. ` +
+        'Cópias que você exportou ou enviou para outros lugares não são alcançadas pelo app.',
+      { confirmLabel: 'Apagar tudo', destructive: true }
+    );
+    if (!ok || !repos.eraseAll) return;
+    setBusy(true);
+    try {
+      await repos.eraseAll();
+      await saveKey('claude', null);
+      await saveKey('openai', null);
+      await saveSettings(withDefaults(null));
+      notify('Dados apagados', 'O app voltou ao estado inicial.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function clearDemo() {
     const ok = await confirm(
       'Apagar dados de teste',
@@ -105,10 +126,12 @@ export default function SettingsScreen() {
 
   const aiStatus =
     settings.provider === 'none'
-      ? 'Desligada: só a inteligência local, no aparelho'
+      ? 'Respostas por regras, no aparelho; nenhum provedor externo'
       : provider
-        ? `${PROVIDER_LABELS[settings.provider]} · ativa`
-        : `${PROVIDER_LABELS[settings.provider]} · falta a chave de API`;
+        ? `${PROVIDER_LABELS[settings.provider]} · permitido`
+        : settings.permissions.externalInference
+          ? `${PROVIDER_LABELS[settings.provider]} · falta a chave de API`
+          : `${PROVIDER_LABELS[settings.provider]} · permissão desligada`;
   const activeCategories = data?.categories.filter((c) => !c.archived && !c.parentId).length;
   const lastBackup = data?.backups[0];
 
@@ -121,6 +144,7 @@ export default function SettingsScreen() {
         <Row icon="pricetags-outline" color="#365BB5" title="Categorias" subtitle={activeCategories !== undefined ? `${activeCategories} principais · reordenar, arquivar, juntar` : ' '} href="/categories" />
         <Row icon="calendar-outline" color="#8A5200" title="Contas previstas" subtitle="Salário e contas fixas, usados na margem do Resumo" href="/recurrences" />
         <Row icon="trending-up-outline" color="#0891B2" title="Previsões por categoria" subtitle="Gasto do mês, mês típico e previsão" href="/forecasts" />
+        <Row icon="star-outline" color="#B45309" title="Metas, reservas e saldo mínimo" subtitle="Dinheiro separado não conta como livre" href="/goals" />
       </Group>
 
       <Section title="Aparência e acessibilidade">
@@ -141,6 +165,7 @@ export default function SettingsScreen() {
 
       <Group title="Privacidade e inteligência artificial">
         <Row icon="sparkles-outline" color="#7C3AED" title="Inteligência artificial" subtitle={aiStatus} href="/ai-settings" />
+        <Row icon="bulb-outline" color="#0F766E" title="Memória do assistente" subtitle="O que ele guarda e o que o app aprendeu: revisar, corrigir, apagar" href="/memory" />
         <SwitchRow
           title="Aprender com minhas correções"
           subtitle="Quando você escolhe ou corrige uma categoria, as próximas sugestões passam a seguir essa escolha. Desligado, valem só as regras do app."
@@ -149,8 +174,8 @@ export default function SettingsScreen() {
         />
         <View style={styles.note}>
           <MutedText style={{ fontSize: 13 }}>
-            Seus dados ficam só {Platform.OS === 'web' ? 'neste navegador' : 'neste aparelho'}. Com a IA ligada, cada pergunta envia ao
-            provedor escolhido apenas os números necessários para respondê-la; a chave de API fica guardada à parte.
+            Seus dados ficam só {Platform.OS === 'web' ? 'neste navegador' : 'neste aparelho'}. Só com a permissão de provedor externo
+            ligada, perguntas que as regras não cobrem vão a ele com os números necessários; a chave de API fica guardada à parte.
           </MutedText>
         </View>
       </Group>
@@ -163,6 +188,9 @@ export default function SettingsScreen() {
           subtitle={lastBackup ? `Último backup: ${new Date(lastBackup.createdAt).toLocaleDateString('pt-BR')}` : 'Exportar, restaurar e backups automáticos'}
           href="/backup"
         />
+        <View style={[styles.note, { gap: 8 }]}>
+          <Button label="Apagar todos os meus dados" icon="trash-outline" variant="ghost" onPress={eraseEverything} disabled={busy} />
+        </View>
         {Platform.OS === 'web' && (
           <View style={styles.note}>
             <MutedText style={{ fontSize: 13 }}>

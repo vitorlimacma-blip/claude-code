@@ -60,8 +60,12 @@ interface Ctx {
 
 const ESTIMATE_TOOLS = new Set(['get_cashflow_forecast', 'simulate_purchase']);
 
+/** Tools whose results are not calculations: they never become "Base do cálculo" evidence. */
+const NOT_EVIDENCE = new Set(['propose_memory_update']);
+
 async function call(ctx: Ctx, name: string, args: unknown): Promise<{ r: FinanceResult<any>; ref: string }> {
   const r = (await invokeFinanceTool(ctx.tools, { name, arguments: args }, ctx.session, ctx.state)) as FinanceResult<any>;
+  if (NOT_EVIDENCE.has(name)) return { r, ref: '' };
   ctx.results.push(r);
   const ref = `E${ctx.evidences.length + 1}`;
   const chunks = r.chunkIds ?? [];
@@ -351,9 +355,13 @@ async function respond(c: Classification, text: string, ctx: Ctx, options: { ext
     }
 
     case 'memory_save': {
-      const { r, ref } = await call(ctx, 'propose_memory_update', { type: 'preference', text: text.slice(0, 300) });
+      const { r } = await call(ctx, 'propose_memory_update', { type: 'preference', text: text.slice(0, 300) });
       if (r.status !== 'ok') return { text: r.errors?.join(' ') ?? 'Não consegui preparar a memória.' };
-      return { text: `Posso guardar isto como preferência sua. Só vale depois que você confirmar, e dá para editar ou apagar em Ajustes › Memória do assistente [${ref}].`, memoryProposalId: r.data.proposalId };
+      return {
+        text: 'Posso guardar isto como preferência sua. Só vale depois que você confirmar, e dá para editar ou apagar em Ajustes › Memória do assistente.',
+        status: 'sufficient',
+        memoryProposalId: r.data.proposalId,
+      };
     }
 
     case 'memory_forget': {

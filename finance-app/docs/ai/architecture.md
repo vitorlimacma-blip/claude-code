@@ -92,3 +92,18 @@ simulado nos relatórios.
   validação estrita e um reparo no máximo (`src/ai/finance/`).
 - Avaliação: `docs/ai/evaluation-report.json`. Casos de domínio executados sem modelo; todos os que exigem modelo,
   memória, base de conhecimento ou aparelho estão `not_run`, com o motivo.
+
+## 5. Situação ao fim da etapa 6.2
+
+- Permissões por finalidade e roteamento de modo (D-074, D-075): `src/ai/config.ts`, `src/ai/engine/answer.ts`.
+- Base de conhecimento (D-076): `src/ai/knowledge/` (fichas, catálogo só de referência, SHA-256, busca BM25).
+  Recuperação abaixo da meta na coleção cega: ver `docs/ai/evaluation-report.json` › `metrics.retrieval`.
+- Memória (D-077): `memory_items` (migração 0005), `src/data/repositories/memory.ts`, tela `app/memory.tsx`.
+- Classificação e capacidades (D-078): `src/ai/engine/intent.ts`. Voz (D-079): `src/ai/engine/voice.ts`.
+- Motor sem modelo com o contrato de resposta (facts, evidence, assumptions, missingData, evidenceStatus, mode):
+  `src/ai/engine/deterministic.ts`. Ferramentas do §4 completas (9 + `lookup_reference`):
+  `src/ai/finance/contractTools.ts`.
+- Telas: Assistente (modo de cada resposta, cancelar, útil/incorreto, confirmar memória, apagar memória), Memória do
+  assistente, Metas, reservas e saldo mínimo, e "Apagar todos os meus dados" (D-080).
+- Ainda não implementado: motor e gerenciador do modelo local (6.3), planejamento de viagens (6.3), avaliação com
+  modelo real (bloqueada pela rede desta sessão).

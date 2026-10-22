@@ -67,6 +67,8 @@ function AppNavigation() {
             <Stack.Screen name="catalogo" options={{ title: 'Catálogo de componentes' }} />
             <Stack.Screen name="categories" options={{ title: 'Categorias' }} />
             <Stack.Screen name="recurrences" options={{ title: 'Contas previstas' }} />
+            <Stack.Screen name="memory" options={{ title: 'Memória do assistente' }} />
+            <Stack.Screen name="goals" options={{ title: 'Metas, reservas e saldo mínimo' }} />
             <Stack.Screen name="recurrence/[id]" options={{ presentation: 'modal', title: 'Conta prevista' }} />
           </Stack>
           </ToastProvider>
