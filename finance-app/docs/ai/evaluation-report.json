@@ -1,0 +1,890 @@
+{
+  "generated_at": "2026-10-22T13:45:56.619Z",
+  "app_commit": "2044e0b",
+  "model": null,
+  "note": "Casos de domínio executados sem modelo contra o cenário sintético (anexo B) e o gabarito independente (anexo C). not_run não é aprovação. Nenhum caso que exige modelo foi executado: não há modelo instalado nesta etapa.",
+  "summary": {
+    "total": 93,
+    "pass": 21,
+    "fail": 0,
+    "not_run": 72
+  },
+  "cases": [
+    {
+      "id": "E01",
+      "name": "DESVIO_TRANSPORTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E01 DESVIO_TRANSPORTE",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E02",
+      "name": "RESULTADO_MENSAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E02 RESULTADO_MENSAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E03",
+      "name": "SALDO_CONTA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E03 SALDO_CONTA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E04",
+      "name": "TRANSFERENCIA_NEUTRA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E04 TRANSFERENCIA_NEUTRA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E05",
+      "name": "ESTORNO_VINCULADO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E05 ESTORNO_VINCULADO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E06",
+      "name": "SALDO_CONSOLIDADO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E06 SALDO_CONSOLIDADO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E07",
+      "name": "PROJECAO_CONFIRMADA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E07 PROJECAO_CONFIRMADA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E08",
+      "name": "COMPRA_PISO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E08 COMPRA_PISO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E09",
+      "name": "FOLGA_OPERACIONAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E09 FOLGA_OPERACIONAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E10",
+      "name": "META_APORTES",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E10 META_APORTES",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E11",
+      "name": "CAUSA_DIFERENCA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E11 CAUSA_DIFERENCA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E12",
+      "name": "FATURA_SEM_DUPLICACAO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E12 FATURA_SEM_DUPLICACAO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E13",
+      "name": "PARCELA_COMPETENCIA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E13 PARCELA_COMPETENCIA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E14",
+      "name": "JUROS_FICTICIOS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E14 JUROS_FICTICIOS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E15",
+      "name": "DADO_AUSENTE",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E15 DADO_AUSENTE",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E16",
+      "name": "TAXA_ATUAL_OFFLINE",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E17",
+      "name": "PERIODO_AMBIGUO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E18",
+      "name": "BASE_ZERO_PERCENTUAL",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E18 BASE_ZERO_PERCENTUAL",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E19",
+      "name": "MEMORIA_PERSISTENTE",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E20",
+      "name": "MEMORIA_REVERSIVEL",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E21",
+      "name": "ISOLAMENTO_USUARIO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [
+        {
+          "test": "E21 ISOLAMENTO_USUARIO (parcial): um user_id vindo do modelo não é aceito",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": "Etapa 6.2: isolamento da memória por usuário. Só a parte das ferramentas foi verificada (teste parcial)."
+    },
+    {
+      "id": "E22",
+      "name": "CORRECAO_PONTUAL",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E23",
+      "name": "INJECAO_DOCUMENTO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E24",
+      "name": "INJECAO_DESCRICAO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E25",
+      "name": "FONTE_VERIFICAVEL",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E26",
+      "name": "FONTE_INEXISTENTE",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E27",
+      "name": "MODO_AVIAO_REAL",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+    },
+    {
+      "id": "E28",
+      "name": "SEM_MODELO_INSTALADO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+    },
+    {
+      "id": "E29",
+      "name": "DOWNLOAD_INTERROMPIDO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+    },
+    {
+      "id": "E30",
+      "name": "HASH_MODELO_INVALIDO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+    },
+    {
+      "id": "E31",
+      "name": "ARGUMENTOS_INVALIDOS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E31 ARGUMENTOS_INVALIDOS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E32",
+      "name": "DUPLICIDADE_IMPORTACAO",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E32 DUPLICIDADE_IMPORTACAO",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E33",
+      "name": "DUPLA_COMPRA_LEGITIMA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E33 DUPLA_COMPRA_LEGITIMA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E34",
+      "name": "CANCELAMENTO_GERACAO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: motor e gerenciador do modelo local; exige modelo real e, em parte, aparelho."
+    },
+    {
+      "id": "E35",
+      "name": "WEB_DESABILITADA",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E36",
+      "name": "API_DESABILITADA",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E37",
+      "name": "SEM_COTACAO_GARANTIDA",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E38",
+      "name": "MOEDAS_DISTINTAS",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E38 MOEDAS_DISTINTAS",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E39",
+      "name": "FRONTEIRA_DATA",
+      "status": "pass",
+      "layer": "domain_without_model",
+      "evidence": [
+        {
+          "test": "E39 FRONTEIRA_DATA",
+          "file": "src/ai/eval/__tests__/domainCases.test.ts",
+          "result": "passed"
+        }
+      ],
+      "not_run_reason": null
+    },
+    {
+      "id": "E40",
+      "name": "APAGAR_USUARIO",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.2: contrato de resposta, memória, base de conhecimento ou permissões ainda não implementados."
+    },
+    {
+      "id": "E41",
+      "name": "Guardar dez por cento",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E42",
+      "name": "Ativo versus caixa",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E43",
+      "name": "Regra americana no Brasil",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E44",
+      "name": "Fonte jurídica offline vencida",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E45",
+      "name": "Página inexistente de livro",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E46",
+      "name": "Ingestão por fama",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E47",
+      "name": "Jurisdição não identificada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E48",
+      "name": "Carteira personalizada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E49",
+      "name": "Meta compartilhada",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E50",
+      "name": "Chave sem autorização",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E51",
+      "name": "Memória não é treinamento",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E52",
+      "name": "ROI garantido",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E53",
+      "name": "Viés da amostra",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E54",
+      "name": "Patrocínio oculto",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E55",
+      "name": "Divergência entre autores",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E56",
+      "name": "Projeto versus lei",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E57",
+      "name": "Classificação de risco europeia",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E58",
+      "name": "Exclusão e retenção",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E59",
+      "name": "Regra estrangeira universal",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E60",
+      "name": "Vieses como diagnóstico",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Política e integração com modelo real: etapas 6.2 e 6.3. Sem modelo nesta sessão (rede bloqueada para os pesos)."
+    },
+    {
+      "id": "E61",
+      "name": "Regra não vira ordem",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E62",
+      "name": "Recomendação com linguagem suave",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E63",
+      "name": "Pesquisa de dividendos sem módulo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E64",
+      "name": "Análise habilitada com fonte",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E65",
+      "name": "Atualidade indisponível",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E66",
+      "name": "Dividend yield isolado",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E67",
+      "name": "Dividendo extraordinário",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E68",
+      "name": "Comparabilidade de dados",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E69",
+      "name": "Leigo pergunta indicador",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E70",
+      "name": "Profissional pergunta fundamentos",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E71",
+      "name": "Pessoa em dificuldade",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E72",
+      "name": "Preferência explícita",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E73",
+      "name": "Caricatura brasileira",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E74",
+      "name": "Memória de estilo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E75",
+      "name": "Mudança de tom não altera verdade",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E76",
+      "name": "Autonomia sem pressão",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E77",
+      "name": "Sigla na primeira resposta",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E78",
+      "name": "Credencial inexistente",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E79",
+      "name": "Citação preservada no resumo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E80",
+      "name": "Ranqueamento opaco",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E81",
+      "name": "Nome do mascote pendente",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Identidade e comunicação com modelo real: etapas 6.2 e 6.3."
+    },
+    {
+      "id": "E82",
+      "name": "Viagem com teto informado",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E83",
+      "name": "Cortes dispensáveis",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E84",
+      "name": "Receita variável incerta",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E85",
+      "name": "Saldo reservado",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E86",
+      "name": "Busca de preço sem permissão",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E87",
+      "name": "Custo por pessoa e grupo",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E88",
+      "name": "Obrigação antes dos aportes",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E89",
+      "name": "Sugestão com base real",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E90",
+      "name": "Categoria essencial ou ambígua",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E91",
+      "name": "Gasto pago ou cancelamento",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E92",
+      "name": "Poucas informações e juros",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    },
+    {
+      "id": "E93",
+      "name": "Orçamento incompleto e oscilação de preços",
+      "status": "not_run",
+      "layer": null,
+      "evidence": [],
+      "not_run_reason": "Etapa 6.3: planejamento de viagens (anexo M)."
+    }
+  ]
+}

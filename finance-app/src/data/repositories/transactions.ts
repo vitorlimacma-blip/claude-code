@@ -80,6 +80,11 @@ export type TransactionPatch = Partial<
   >
 >;
 
+/** Stable id of an imported record: the same origin and external id always map to the same row. */
+export function importedTransactionId(origin: string, externalId: string): string {
+  return `import:${origin}:${externalId}`;
+}
+
 export interface NewTransferInput {
   /** Client-generated pair id; makes the call idempotent. */
   id?: string;
@@ -360,6 +365,18 @@ export function createTransactionsRepository(ctx: RepositoryContext) {
         }
       });
       bus.emit('transactions');
+    },
+
+    /**
+     * Records a transaction that came from an import. The id is derived from
+     * the origin and the origin's own identifier, so importing the same record
+     * again creates nothing, while look-alike purchases with different
+     * identifiers are all kept (never deduplicated by amount and date).
+     */
+    async createImported(input: Omit<NewTransactionInput, 'id' | 'externalId' | 'importBatchId'> & { origin: string; externalId: string }): Promise<Transaction> {
+      const { origin, externalId, ...rest } = input;
+      if (!origin.trim() || !externalId.trim()) throw new ValidationError('Importação sem origem ou identificador.');
+      return this.create({ ...rest, id: importedTransactionId(origin, externalId), externalId, importBatchId: origin });
     },
 
     /**

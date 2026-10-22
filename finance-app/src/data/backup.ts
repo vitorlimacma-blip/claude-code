@@ -11,7 +11,7 @@ export const SNAPSHOT_FORMAT = 'finance-app-data';
 export const SNAPSHOT_VERSION = 1;
 
 /** Tables that hold the user's data, in restore order. Anything else is never touched by a restore. */
-export const DATA_TABLES = ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'settings'] as const;
+export const DATA_TABLES = ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'settings'] as const;
 
 export type SnapshotValue = string | number | null;
 

@@ -190,3 +190,26 @@ export interface Recurrence extends SyncFields {
   /** Last possible occurrence, or null while it continues. */
   endDate: DateKey | null;
 }
+
+export interface Goal extends SyncFields {
+  name: string;
+  targetAmount: Cents;
+  currency: CurrencyCode;
+  deadline: DateKey | null;
+  /** Planned contribution dates, ascending. */
+  contributionDates: DateKey[];
+  archived: boolean;
+}
+
+export const RESERVE_PURPOSES = ['emergency', 'goal', 'other'] as const;
+export type ReservePurpose = (typeof RESERVE_PURPOSES)[number];
+
+/** Part of an account's balance set aside for a purpose: not free to spend. */
+export interface Reserve extends SyncFields {
+  accountId: string;
+  purpose: ReservePurpose;
+  /** Set when `purpose` is 'goal'. */
+  goalId: string | null;
+  name: string;
+  amount: Cents;
+}

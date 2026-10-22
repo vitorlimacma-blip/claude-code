@@ -3,7 +3,7 @@ import { balanceGroup, openInvoices, resultEffect } from './ledger';
 import { formatCents } from './money';
 import { allOccurrences, reconcile, settledTransactionIds } from './recurrence';
 import { daysInclusive, typicalSpending, type TypicalSpending } from './spending';
-import type { Account, Cents, DateKey, Recurrence, Transaction } from './types';
+import type { Account, Cents, DateKey, Recurrence, Reserve, Transaction } from './types';
 
 // Cash projection until the next income (briefing §7 and §10): what is there
 // now, what is confirmed to come in and go out, and an estimate of variable
@@ -61,13 +61,17 @@ export function projectCash(input: {
   /** History (a few months back) plus anything dated in the future. */
   transactions: Transaction[];
   recurrences: Recurrence[];
+  /** Money set aside (emergency, goals): part of the balance, not free (AI contract §4, semantics 6). */
+  reserves?: Reserve[];
 }): CashProjection {
   const { today, accounts, balances, transactions, recurrences } = input;
   const live = transactions.filter((t) => !t.deletedAt);
   const availableAccounts = accounts.filter((a) => balanceGroup(a.type) === 'available' && !a.archived);
   const availableIds = new Set(availableAccounts.map((a) => a.id));
-  const available = availableAccounts.reduce((s, a) => s + (balances.get(a.id) ?? 0), 0);
+  const reserved = (input.reserves ?? []).filter((r) => !r.deletedAt && availableIds.has(r.accountId)).reduce((s, r) => s + r.amount, 0);
+  const available = availableAccounts.reduce((s, a) => s + (balances.get(a.id) ?? 0), 0) - reserved;
   const limitations: string[] = [];
+  if (reserved > 0) limitations.push(`${formatCents(reserved)} reservado(s) para emergência ou metas ficaram fora do disponível.`);
 
   const settled = settledTransactionIds(recurrences, live, addDaysToDateKey(today, -120), today);
   const typical = typicalSpending(live, settled, today);
@@ -174,7 +178,7 @@ export function projectCash(input: {
   }
 
   const steps: CashProjection['steps'] = [
-    { label: 'Saldo disponível hoje', cents: available, op: '+' },
+    { label: reserved > 0 ? 'Saldo disponível hoje, sem as reservas' : 'Saldo disponível hoje', cents: available, op: '+' },
     ...(totalIn > 0 ? [{ label: `Receitas confirmadas até ${formatDateBR(to)}`, cents: totalIn, op: '+' as const }] : []),
     ...(totalOut > 0 ? [{ label: 'Contas previstas e faturas', cents: totalOut, op: '−' as const }] : []),
     ...(variable ? [{ label: `Gastos variáveis estimados (${variable.days} dias × ${formatCents(variable.daily)})`, cents: variable.amount, op: '−' as const }] : []),

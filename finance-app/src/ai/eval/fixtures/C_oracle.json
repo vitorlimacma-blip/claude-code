@@ -1,0 +1,31 @@
+{
+  "september_expenses_cents": 293000,
+  "october_expenses_gross_cents": 353000,
+  "october_refunds_cents": 10000,
+  "october_expenses_net_cents": 343000,
+  "october_income_cents": 500000,
+  "october_operating_result_cents": 157000,
+  "transport_actual_cents": 70000,
+  "transport_budget_cents": 30000,
+  "transport_deviation_cents": 40000,
+  "expense_increase_vs_september_cents": 50000,
+  "expense_increase_percent_rounded_2": "17.06",
+  "checking_balance_as_of_cents": 307000,
+  "savings_balance_as_of_cents": 550000,
+  "consolidated_balance_as_of_cents": 857000,
+  "confirmed_future_expenses_cents": 55000,
+  "checking_forecast_end_cents": 252000,
+  "projected_october_expenses_cents": 398000,
+  "remaining_global_budget_after_forecast_cents": 2000,
+  "available_above_operating_floor_cents": 2000,
+  "purchase_simulation_cents": 50000,
+  "checking_forecast_after_purchase_cents": 202000,
+  "shortfall_against_operating_floor_cents": 48000,
+  "goal_remaining_cents": 170000,
+  "goal_contributions_cents": [
+    56667,
+    56667,
+    56666
+  ],
+  "internal_transfers_consolidated_effect_cents": 0
+}

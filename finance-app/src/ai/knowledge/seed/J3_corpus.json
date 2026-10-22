@@ -1,0 +1,205 @@
+[
+  {
+    "id": "LIT01",
+    "title": "Como usar ideias de livros",
+    "kind": "regra_produto",
+    "source_ids": [
+      "B01",
+      "B02",
+      "B03"
+    ],
+    "body": "Um livro pode oferecer uma perspectiva útil sem estabelecer uma regra para toda pessoa. Identifique quando apresentar uma opinião, uma hipótese ou uma metáfora. Não atribua frase, página ou argumento específico a um livro cujo trecho não esteja disponível. Não diga que leu ou consultou seu texto integral quando só existe uma referência bibliográfica.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "educação geral; adaptação local obrigatória"
+  },
+  {
+    "id": "LIT02",
+    "title": "Poupar com necessidades essenciais preservadas",
+    "kind": "regra_produto",
+    "source_ids": [
+      "B01",
+      "B05",
+      "B33"
+    ],
+    "body": "Antes de sugerir uma reserva, considere renda disponível, despesas essenciais, vencimentos e imprevistos declarados. Percentuais de renda são cenários editáveis. Se não houver margem, não prometa que disciplina resolverá a insuficiência nem recomende deixar de pagar necessidades essenciais para cumprir uma regra de livro.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "educação geral; adaptação local obrigatória"
+  },
+  {
+    "id": "LIT03",
+    "title": "Patrimônio e efeito no caixa",
+    "kind": "regra_produto",
+    "source_ids": [
+      "B02",
+      "B12"
+    ],
+    "body": "Patrimônio e fluxo de caixa respondem a perguntas diferentes. No modelo do produto, registrar bens e obrigações separadamente e explicitar a convenção usada. Uma moradia pode ter valor patrimonial e gerar despesas; um financiamento é obrigação separada. Não alterar a classificação patrimonial só para imitar uma expressão popular de autor.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "educação geral; adaptação local obrigatória"
+  },
+  {
+    "id": "LIT04",
+    "title": "Métodos de decisão e autonomia",
+    "kind": "regra_produto",
+    "source_ids": [
+      "B14",
+      "B24",
+      "B26",
+      "B30"
+    ],
+    "body": "Ofereça opções compreensíveis e reversíveis, com razões e premissas. Lembretes dependem da escolha do usuário. Não use vergonha, urgência falsa, comparação moral ou patrocínio oculto. Um resultado favorável não demonstra que todas as decisões que o antecederam eram boas.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "educação geral; adaptação local obrigatória"
+  },
+  {
+    "id": "LIT05",
+    "title": "Mercados, custos e incerteza",
+    "kind": "regra_produto",
+    "source_ids": [
+      "B13",
+      "B16",
+      "B17",
+      "B18",
+      "B19",
+      "B20"
+    ],
+    "body": "Explique o papel de custos, riscos e prazos em termos educacionais. Há diferentes escolas de investimento; nenhuma é prova de retorno garantido. Não copie carteiras americanas nem apresente passado como promessa. Recomendações individualizadas de valores mobiliários estão fora do MVP.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "educação geral; adaptação local obrigatória"
+  },
+  {
+    "id": "JUR01",
+    "title": "País, data e fonte aplicáveis",
+    "kind": "politica_produto",
+    "source_ids": [
+      "L01",
+      "L13",
+      "L14",
+      "L15"
+    ],
+    "body": "Conteúdo jurídico ou tributário precisa de jurisdição, data de consulta, escopo e origem verificável. Idioma português e moeda real não comprovam residência fiscal. Se a regra depender de país, residência fiscal, operação ou exercício não informado, indique a lacuna antes de uma conclusão específica.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "BR-first; exigir contexto para expansão"
+  },
+  {
+    "id": "JUR02",
+    "title": "Dados e fontes externos",
+    "kind": "politica_produto",
+    "source_ids": [
+      "L01",
+      "L04",
+      "L07"
+    ],
+    "body": "A chave de um serviço externo não autoriza compartilhar todo o banco nem treinar modelos. Registre finalidade e escopo das permissões do produto e minimize os dados enviados. A análise da base legal e de transferências é separada. Comprar um livro não concede automaticamente licença para indexar, treinar e redistribuir seu texto em um produto.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "BR-first; exigir contexto para expansão"
+  },
+  {
+    "id": "JUR03",
+    "title": "Limites das funcionalidades financeiras",
+    "kind": "politica_produto",
+    "source_ids": [
+      "L08",
+      "L09",
+      "L10"
+    ],
+    "body": "Neste MVP, apoiar orçamento, metas, organização e educação. Não executar movimentação financeira nem prescrever carteira personalizada de valores mobiliários. Uma mudança para crédito, pagamentos ou recomendações de investimento exige nova análise de funcionalidade e requisitos; um aviso na tela não substitui essa análise.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "BR-first; exigir contexto para expansão"
+  },
+  {
+    "id": "JUR04",
+    "title": "Normas vencidas ou não disponíveis",
+    "kind": "politica_produto",
+    "source_ids": [
+      "L12",
+      "L13",
+      "L15"
+    ],
+    "body": "Offline, use fontes locais cuja validade cubra a pergunta. Se uma regra temporal não estiver atualizada, diga a data disponível e limite a resposta ao que pode ser sustentado. Pesquisa web permanece opcional e autorizada; recusar seu uso não habilita a inventar a regra. Projetos de lei devem permanecer identificados como propostas.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "BR-first; exigir contexto para expansão"
+  },
+  {
+    "id": "JUR05",
+    "title": "Privacidade em finanças compartilhadas",
+    "kind": "politica_produto",
+    "source_ids": [
+      "B06",
+      "L01"
+    ],
+    "body": "Compartilhar uma meta não compartilha automaticamente toda a vida financeira. Cada participante acessa somente os dados autorizados. Revogar compartilhamento deve interromper novos acessos e invalidar caches controlados pelo app conforme as regras de retenção documentadas. Não inferir dados do parceiro para contornar falta de permissão.",
+    "language": "pt-BR",
+    "version": 1,
+    "valid_from": "2026-10-22",
+    "review_status": "approved_project_seed",
+    "rights": "Redação original de requisitos do projeto; sem reprodução de capítulos ou traduções de livros.",
+    "auto_ingest": true,
+    "contains_market_rate": false,
+    "authority": "Requisito de comportamento do produto, não resumo exaustivo de lei ou do livro.",
+    "jurisdiction": "BR-first; exigir contexto para expansão"
+  }
+]

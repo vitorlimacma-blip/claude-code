@@ -1,4 +1,4 @@
-export type TableName = 'accounts' | 'categories' | 'budgets' | 'transactions' | 'recurrences' | 'settings';
+export type TableName = 'accounts' | 'categories' | 'budgets' | 'transactions' | 'recurrences' | 'goals' | 'reserves' | 'settings';
 
 export type ChangeListener = (tables: ReadonlySet<TableName>) => void;
 

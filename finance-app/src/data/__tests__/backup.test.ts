@@ -1,7 +1,7 @@
 import { parseSnapshot, takeSnapshot, type SnapshotStore } from '../backup';
 import { ValidationError } from '../context';
 import { countInconsistentNatures } from '../dataMigrations';
-import { migrate, pendingMigrationCount, prepareDatabase } from '../setup';
+import { DEFAULT_ACCOUNT_ID, migrate, pendingMigrationCount, prepareDatabase } from '../setup';
 import { createTestContext, createTestSnapshotStore } from '../../test-utils/testDb';
 
 const T = '2026-01-01T00:00:00Z';
@@ -124,6 +124,8 @@ describe('export and import', () => {
     await repos.transactions.remove(gone.id);
     await repos.budgets.set('sys-lazer', 30000);
     await repos.settings.set('ui.theme', 'dark');
+    const trip = await repos.goals.create({ name: 'Viagem', targetAmount: 300000, contributionDates: ['2026-11-05'] });
+    await repos.goals.createReserve({ accountId: DEFAULT_ACCOUNT_ID, purpose: 'goal', goalId: trip.id, name: 'Viagem', amount: 130000 });
     return { ctx, repos };
   }
 
@@ -131,13 +133,13 @@ describe('export and import', () => {
     const source = await populated();
     const json = await source.repos.backup.exportJson();
     const parsed = parseSnapshot(json);
-    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'recurrences', 'settings', 'transactions']);
+    expect(Object.keys(parsed.tables).sort()).toEqual(['accounts', 'budgets', 'categories', 'goals', 'recurrences', 'reserves', 'settings', 'transactions']);
 
     const target = createTestContext();
     const targetRepos = await prepareDatabase(target, { backups: createTestSnapshotStore() });
     await targetRepos.backup.importJson(json);
 
-    for (const table of ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'settings']) {
+    for (const table of ['accounts', 'categories', 'budgets', 'recurrences', 'transactions', 'goals', 'reserves', 'settings']) {
       expect(rowsOf(target, table)).toEqual(rowsOf(source.ctx, table));
     }
     expect(rowsOf(target, 'transactions').some((r) => r.deleted_at !== null)).toBe(true);

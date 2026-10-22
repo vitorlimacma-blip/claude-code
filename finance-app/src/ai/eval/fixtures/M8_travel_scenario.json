@@ -1,0 +1,67 @@
+{
+  "fixture": {
+    "id": "TRIP_SYNTHETIC_01",
+    "synthetic": true,
+    "user_scope": "trip_test_user",
+    "independent_of_annex_B": true,
+    "as_of": "2026-10-22",
+    "currency": "BRL",
+    "timezone": "America/Sao_Paulo",
+    "departure_date": "2027-04-01",
+    "cost_origin": "user_budget_target_not_verified_quote",
+    "trip_budget_target_cents": 400000,
+    "trip_budget_assumption": "Teste de capacidade para um teto escolhido de R$4.000; não comprova preço de destino real.",
+    "authorized_trip_reserve_cents": 100000,
+    "emergency_reserve_cents": 500000,
+    "emergency_is_available_for_trip": false,
+    "contribution_dates": [
+      "2026-11-05",
+      "2026-12-05",
+      "2027-01-05",
+      "2027-02-05",
+      "2027-03-05"
+    ],
+    "monthly_income_confirmed_cents": 500000,
+    "variable_income_in_conservative_case_cents": 0,
+    "monthly_expense_components_cents": {
+      "fixed_and_essential": 340000,
+      "restaurants": 60000,
+      "delivery": 40000
+    },
+    "additional_monthly_protection_margin_cents": 20000,
+    "margin_note": "Reserva mensal de proteção de cenário, adicional às despesas; não é despesa já contada nem a reserva de emergência.",
+    "proposed_optional_reductions": [
+      {
+        "category": "restaurants",
+        "baseline_cents": 60000,
+        "reduction_cents": 12000
+      },
+      {
+        "category": "delivery",
+        "baseline_cents": 40000,
+        "reduction_cents": 8000
+      }
+    ],
+    "external_search_permitted": false,
+    "assessment": "conditional_on_target_cost_and_confirmed_flows"
+  },
+  "expected": {
+    "trip_funding_gap_cents": 300000,
+    "contribution_count": 5,
+    "required_contributions_cents": [
+      60000,
+      60000,
+      60000,
+      60000,
+      60000
+    ],
+    "base_monthly_expenses_cents": 440000,
+    "base_safe_monthly_capacity_cents": 40000,
+    "monthly_plan_gap_cents": 20000,
+    "optional_reduction_cents": 20000,
+    "scenario_monthly_expenses_cents": 420000,
+    "scenario_safe_monthly_capacity_cents": 60000,
+    "base_end_funding_cents": 300000,
+    "scenario_end_funding_cents": 400000
+  }
+}

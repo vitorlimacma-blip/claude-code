@@ -11,7 +11,8 @@
     "lint": "expo lint",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.js"
+    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.js",
+    "ai:eval": "node scripts/ai-eval-report.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

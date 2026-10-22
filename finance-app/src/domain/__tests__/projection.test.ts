@@ -144,6 +144,15 @@ describe('cash projection (§10, §16)', () => {
     expect(p.limitations.some((l) => l.includes('antes de hoje'))).toBe(true);
   });
 
+  it('leaves money set aside (emergency, goals) out of the margin and says so', () => {
+    const base = run();
+    const reserve = { id: 'r1', accountId: 'itau', purpose: 'emergency' as const, goalId: null, name: 'Emergência', amount: 100000, createdAt: '', updatedAt: '', deletedAt: null };
+    const p = run({ reserves: [reserve] });
+    expect(p.available).toBe(base.available - 100000);
+    expect(p.margin).toBe(base.margin - 100000);
+    expect(p.limitations.some((l) => l.includes('reservado'))).toBe(true);
+  });
+
   it('does not count again a bill already recorded, nor a card purchase plus its invoice', () => {
     const paidInternet = tx({ type: 'expense', amount: 10500, date: '2026-10-16', accountId: 'itau', categoryId: 'net' });
     const p = run({ transactions: [...history, cardPurchase, paidInternet], balances: new Map([...balances, ['itau', 289500]]) });

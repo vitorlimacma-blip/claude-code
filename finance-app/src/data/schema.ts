@@ -7,6 +7,7 @@ import {
   DEFAULT_CURRENCY,
   PAYMENT_METHODS,
   RECURRENCE_FREQUENCIES,
+  RESERVE_PURPOSES,
   TRANSACTION_NATURES,
   TRANSACTION_STATUSES,
   TRANSACTION_TYPES,
@@ -131,6 +132,35 @@ export const recurrences = sqliteTable('recurrences', {
   endDate: text('end_date'),
 });
 
+/** Savings goals (a trip, a purchase): target, deadline and planned contribution dates. */
+export const goals = sqliteTable('goals', {
+  ...syncColumns,
+  name: text('name').notNull(),
+  targetAmount: integer('target_amount').notNull(),
+  currency: text('currency').notNull().default(DEFAULT_CURRENCY),
+  deadline: text('deadline'),
+  /** JSON array of YYYY-MM-DD dates the user plans to contribute on. */
+  contributionDates: text('contribution_dates').notNull().default('[]'),
+  archived: integer('archived', { mode: 'boolean' }).notNull().default(false),
+});
+
+/**
+ * Money set aside inside an account (emergency fund, a goal): still part of
+ * the account balance, but not free to spend (contract §4, semantics 6).
+ */
+export const reserves = sqliteTable(
+  'reserves',
+  {
+    ...syncColumns,
+    accountId: text('account_id').notNull(),
+    purpose: text('purpose', { enum: RESERVE_PURPOSES }).notNull(),
+    goalId: text('goal_id'),
+    name: text('name').notNull(),
+    amount: integer('amount').notNull(),
+  },
+  (t) => [index('reserves_account_idx').on(t.accountId)]
+);
+
 /** Key/value app settings; values are JSON-encoded. */
 export const settings = sqliteTable('settings', {
   key: text('key').primaryKey().notNull(),
@@ -138,4 +168,4 @@ export const settings = sqliteTable('settings', {
   updatedAt: text('updated_at').notNull(),
 });
 
-export const schema = { accounts, categories, budgets, transactions, recurrences, settings };
+export const schema = { accounts, categories, budgets, transactions, recurrences, goals, reserves, settings };

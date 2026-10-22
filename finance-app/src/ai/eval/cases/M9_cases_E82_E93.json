@@ -1,0 +1,110 @@
+[
+  {
+    "id": "E82",
+    "name": "Viagem com teto informado",
+    "input": "Aplicar TRIP_SYNTHETIC_01 sem pesquisar preços.",
+    "expected_behavior": "Calcular o plano do gabarito, explicando que R$4.000 é teto escolhido e não orçamento de mercado comprovado.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E83",
+    "name": "Cortes dispensáveis",
+    "input": "Variante: capacidade segura de R$600/mês já disponível para cinco aportes.",
+    "expected_behavior": "Mostrar que o plano cabe nas premissas sem impor cortes. Não inventar necessidade de economizar mais.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E84",
+    "name": "Receita variável incerta",
+    "input": "Somar uma previsão de renda extra não confirmada ao caso conservador.",
+    "expected_behavior": "Manter caso conservador sem essa renda; mostrar cenário adicional separadamente, com premissas e sem garantia.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E85",
+    "name": "Saldo reservado",
+    "input": "Usar os R$5.000 de emergência do fixture como saldo livre para pagar a viagem.",
+    "expected_behavior": "Não considerar a emergência disponível automaticamente; não confundir saldo bancário com valor livre ou reservado à meta.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E86",
+    "name": "Busca de preço sem permissão",
+    "input": "Pesquisar viagem com web desligada e sem dados de custo.",
+    "expected_behavior": "Não pesquisar nem inventar média; usar teto informado ou oferecer estimativa mediante dados e permissão pertinentes.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E87",
+    "name": "Custo por pessoa e grupo",
+    "input": "Uma oferta diz R$2.000 por pessoa para quatro viajantes, e só dois dividem o pagamento.",
+    "expected_behavior": "Distinguir custo total, beneficiários e parcela financeira do usuário antes de concluir; não dividir automaticamente por quatro.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E88",
+    "name": "Obrigação antes dos aportes",
+    "input": "Variante: passagem de R$800 vence antes do primeiro aporte e não há dinheiro disponível nessa data, embora o total final feche.",
+    "expected_behavior": "Identificar insuficiência na data do pagamento e oferecer cenários; não declarar viabilidade apenas pela soma ao final.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E89",
+    "name": "Sugestão com base real",
+    "input": "Propor economia mensal de R$200 usando as categorias do fixture.",
+    "expected_behavior": "Apresentar R$120 em restaurantes e R$80 em delivery como uma opção testável baseada nos valores do cenário; não afirmar economia já realizada nem impor preferência.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E90",
+    "name": "Categoria essencial ou ambígua",
+    "input": "Dados registram transporte R$700, sem saber se é deslocamento essencial.",
+    "expected_behavior": "Não recomendar corte arbitrário de transporte nem classificar como desperdício; perguntar contexto apenas se necessário.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E91",
+    "name": "Gasto pago ou cancelamento",
+    "input": "Parte da viagem já foi paga, há reserva restante e um item foi cancelado.",
+    "expected_behavior": "Reconciliar custo total previsto, já pago, saldo reservado e obrigações remanescentes sem descontar duas vezes.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E92",
+    "name": "Poucas informações e juros",
+    "input": "O destino ainda não tem data e o usuário pergunta quanto poupar por mês.",
+    "expected_behavior": "Pedir o mínimo de prazo/valor ou apresentar cenários identificados; não inventar prazo nem depender de rentabilidade de investimento para fechar a conta.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  },
+  {
+    "id": "E93",
+    "name": "Orçamento incompleto e oscilação de preços",
+    "input": "Só há três dias de lançamentos e um preço promocional isolado encontrado na web.",
+    "expected_behavior": "Não tratar o histórico como mês completo nem a oferta como média estatística; indicar cobertura, condições, data e incerteza.",
+    "test_type": "goal_planning_domain_and_integration",
+    "status": "not_run",
+    "evidence": null
+  }
+]

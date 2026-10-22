@@ -50,3 +50,9 @@ O briefing descreve o destino. A execução segue as fases abaixo, que prevalece
 Itens da seção 14 (Open Finance, monetização) ficam só preparados nas interfaces, sem implementação.
 
 Comece pela Fase 0.
+
+## Fase 6 — IA financeira independente (definida em 22/10/2026)
+- Contrato: `docs/ai/spec/PROMPT_UNICO_CLAUDE_V2.md` (anexos A–M). Auditoria e plano: `docs/ai/architecture.md`.
+- Escolha do dono: o documento é a Fase 6; "corrigir aprendizados" e parte de privacidade entram nela. Open Finance (só interfaces) e onboarding/notificações ficam para a Fase 7.
+- Executar em etapas (6.1, 6.2, 6.3), com testes, commit, resumo e parada para aprovação ao fim de cada uma.
+- Prova no celular depende de development build; sem conta Apple Developer nem Android por ora: fica pendente, sem resultado inventado.
